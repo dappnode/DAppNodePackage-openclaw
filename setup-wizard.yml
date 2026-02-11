@@ -1,0 +1,248 @@
+version: "2"
+
+fields:
+  # Gateway Security
+  - id: gateway_token
+    title: Gateway Access Token
+    description: |
+      **Optional but recommended.** Set a secret token to protect your OpenClaw gateway.
+      
+      Anyone with this token can access your AI agents and use your API credits.
+      Leave empty to disable token authentication (not recommended for public access).
+    secret: true
+    target:
+      type: environment
+      name: OPENCLAW_GATEWAY_TOKEN
+      service: gateway
+
+  # Primary LLM Provider Selection
+  - id: llm_provider
+    title: Primary LLM Provider
+    description: |
+      Select your primary AI model provider. You can configure additional providers later.
+    enum:
+      - "openai"
+      - "anthropic"
+      - "google"
+      - "ollama"
+      - "azure"
+      - "openrouter"
+      - "groq"
+      - "together"
+      - "mistral"
+      - "deepseek"
+
+  # OpenAI Configuration
+  - id: openai_key
+    title: OpenAI API Key
+    description: |
+      Your OpenAI API key from [platform.openai.com](https://platform.openai.com/api-keys).
+      
+      Required for GPT-4, GPT-3.5, DALL-E, and Whisper models.
+    secret: true
+    target:
+      type: environment
+      name: OPENAI_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["openai"]
+
+  # Anthropic Configuration
+  - id: anthropic_key
+    title: Anthropic API Key
+    description: |
+      Your Anthropic API key from [console.anthropic.com](https://console.anthropic.com/).
+      
+      Required for Claude models (Claude 3 Opus, Sonnet, Haiku).
+    secret: true
+    target:
+      type: environment
+      name: ANTHROPIC_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["anthropic"]
+
+  # Google AI Configuration
+  - id: google_key
+    title: Google AI API Key
+    description: |
+      Your Google AI API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+      
+      Required for Gemini models.
+    secret: true
+    target:
+      type: environment
+      name: GEMINI_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["google"]
+
+  # Ollama Configuration
+  - id: ollama_host
+    title: Ollama Host URL
+    description: |
+      URL of your Ollama server (e.g., `http://ollama.dappnode:11434`).
+      
+      If running Ollama on DappNode, use the internal DNS name.
+    target:
+      type: environment
+      name: OLLAMA_HOST
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["ollama"]
+
+  - id: ollama_model
+    title: Ollama Model
+    description: |
+      Default Ollama model to use (e.g., `llama2`, `mistral`, `codellama`).
+    target:
+      type: environment
+      name: OLLAMA_MODEL
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["ollama"]
+
+  # Azure OpenAI Configuration
+  - id: azure_key
+    title: Azure OpenAI API Key
+    description: |
+      Your Azure OpenAI API key from Azure Portal.
+    secret: true
+    target:
+      type: environment
+      name: AZURE_OPENAI_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["azure"]
+
+  - id: azure_endpoint
+    title: Azure OpenAI Endpoint
+    description: |
+      Your Azure OpenAI endpoint URL (e.g., `https://your-resource.openai.azure.com/`).
+    target:
+      type: environment
+      name: AZURE_OPENAI_ENDPOINT
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["azure"]
+
+  # OpenRouter Configuration
+  - id: openrouter_key
+    title: OpenRouter API Key
+    description: |
+      Your OpenRouter API key from [openrouter.ai](https://openrouter.ai/keys).
+      
+      Provides access to multiple models from different providers through one API.
+    secret: true
+    target:
+      type: environment
+      name: OPENROUTER_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["openrouter"]
+
+  # Groq Configuration
+  - id: groq_key
+    title: Groq API Key
+    description: |
+      Your Groq API key from [console.groq.com](https://console.groq.com/).
+      
+      Provides fast inference for open-source models.
+    secret: true
+    target:
+      type: environment
+      name: GROQ_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["groq"]
+
+  # Together AI Configuration
+  - id: together_key
+    title: Together AI API Key
+    description: |
+      Your Together AI API key from [together.ai](https://api.together.xyz/).
+    secret: true
+    target:
+      type: environment
+      name: TOGETHER_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["together"]
+
+  # Mistral AI Configuration
+  - id: mistral_key
+    title: Mistral AI API Key
+    description: |
+      Your Mistral AI API key from [console.mistral.ai](https://console.mistral.ai/).
+    secret: true
+    target:
+      type: environment
+      name: MISTRAL_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["mistral"]
+
+  # DeepSeek Configuration
+  - id: deepseek_key
+    title: DeepSeek API Key
+    description: |
+      Your DeepSeek API key from [platform.deepseek.com](https://platform.deepseek.com/).
+    secret: true
+    target:
+      type: environment
+      name: DEEPSEEK_API_KEY
+      service: gateway
+    if:
+      llm_provider:
+        enum: ["deepseek"]
+
+  # Telegram Bot Integration
+  - id: telegram_token
+    title: Telegram Bot Token
+    description: |
+      **Optional.** Your Telegram bot token from [@BotFather](https://t.me/BotFather).
+      
+      Enables chatting with your AI via Telegram.
+    secret: true
+    target:
+      type: environment
+      name: TELEGRAM_BOT_TOKEN
+      service: gateway
+
+  - id: telegram_users
+    title: Allowed Telegram Users
+    description: |
+      Comma-separated list of Telegram user IDs allowed to use the bot.
+      
+      Leave empty to allow all users (not recommended).
+    target:
+      type: environment
+      name: TELEGRAM_ALLOWED_USERS
+      service: gateway
+    if:
+      telegram_token:
+        pattern: ".+"
+
+  # Discord Bot Integration
+  - id: discord_token
+    title: Discord Bot Token
+    description: |
+      **Optional.** Your Discord bot token from the [Discord Developer Portal](https://discord.com/developers/applications).
+      
+      Enables chatting with your AI via Discord.
+    secret: true
+    target:
+      type: environment
+      name: DISCORD_BOT_TOKEN
+      service: gateway

@@ -1,0 +1,119 @@
+version: "3.5"
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UPSTREAM_VERSION: "latest"
+    image: "gateway.openclaw.public.dappnode.eth:0.1.0"
+    container_name: DAppNodePackage-gateway.openclaw.public.dappnode.eth
+    restart: unless-stopped
+    environment:
+      # Core Settings
+      HOME: /home/node
+      TERM: xterm-256color
+      NODE_ENV: production
+      OPENCLAW_STATE_DIR: /home/node/.openclaw
+
+      # Gateway Authentication & Security
+      OPENCLAW_GATEWAY_TOKEN: ""
+      OPENCLAW_GATEWAY_PASSWORD: ""
+      OPENCLAW_GATEWAY_BIND: "lan"
+
+      # OpenAI API
+      OPENAI_API_KEY: ""
+      OPENAI_BASE_URL: ""
+      OPENAI_MODEL: ""
+
+      # Anthropic Claude API
+      ANTHROPIC_API_KEY: ""
+      ANTHROPIC_MODEL: ""
+
+      # Claude Web Session (alternative to API)
+      CLAUDE_AI_SESSION_KEY: ""
+      CLAUDE_WEB_SESSION_KEY: ""
+      CLAUDE_WEB_COOKIE: ""
+
+      # Google AI
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+
+      # Azure OpenAI
+      AZURE_OPENAI_API_KEY: ""
+      AZURE_OPENAI_ENDPOINT: ""
+      AZURE_OPENAI_DEPLOYMENT: ""
+
+      # Local LLM (Ollama)
+      OLLAMA_HOST: ""
+      OLLAMA_MODEL: ""
+
+      # Groq
+      GROQ_API_KEY: ""
+
+      # Together AI
+      TOGETHER_API_KEY: ""
+
+      # Mistral AI
+      MISTRAL_API_KEY: ""
+
+      # OpenRouter
+      OPENROUTER_API_KEY: ""
+
+      # DeepSeek
+      DEEPSEEK_API_KEY: ""
+
+      # Telegram Bot Integration
+      TELEGRAM_BOT_TOKEN: ""
+      TELEGRAM_ALLOWED_USERS: ""
+
+      # Discord Bot Integration
+      DISCORD_BOT_TOKEN: ""
+      DISCORD_CLIENT_ID: ""
+      DISCORD_GUILD_ID: ""
+
+      # Slack Integration
+      SLACK_BOT_TOKEN: ""
+      SLACK_APP_TOKEN: ""
+      SLACK_SIGNING_SECRET: ""
+
+      # WhatsApp Integration (Twilio)
+      TWILIO_ACCOUNT_SID: ""
+      TWILIO_AUTH_TOKEN: ""
+      TWILIO_WHATSAPP_FROM: ""
+
+      # Matrix Integration
+      MATRIX_HOMESERVER_URL: ""
+      MATRIX_ACCESS_TOKEN: ""
+      MATRIX_USER_ID: ""
+
+      # Advanced Settings
+      EXTRA_OPTS: ""
+
+    volumes:
+      - "openclaw_data:/home/node/.openclaw"
+      - "openclaw_workspace:/home/node/.openclaw/workspace"
+    ports:
+      - "18789:18789/tcp"
+      - "18790:18790/tcp"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    command:
+      - "node"
+      - "dist/index.js"
+      - "gateway"
+      - "--bind"
+      - "lan"
+      - "--port"
+      - "18789"
+      - "--allow-unconfigured"
+
+volumes:
+  openclaw_data: {}
+  openclaw_workspace: {}
