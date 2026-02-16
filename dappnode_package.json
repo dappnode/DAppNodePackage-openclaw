@@ -2,7 +2,7 @@
   "name": "openclaw.public.dappnode.eth",
   "version": "0.1.0",
   "upstreamVersion": "2026.2.1",
-  "upstreamRepo": "openclawsh/openclaw",
+  "upstreamRepo": "openclaw/openclaw",
   "upstreamArg": "UPSTREAM_VERSION",
   "shortDescription": "Personal AI assistant gateway with multi-LLM support",
   "description": "OpenClaw is a powerful, self-hosted AI agent gateway that runs on your own devices. It provides a unified interface for interacting with multiple LLM providers (OpenAI, Anthropic Claude, Google Gemini, local models via Ollama). Features include:\n\n- **Web UI & API**: Full-featured web interface at port 18789\n- **Multi-Channel Messaging**: WhatsApp, Telegram, Slack, Discord, Matrix, and more\n- **Agent Orchestration**: Claude AI integration with tool use and autonomous agents\n- **Code Execution**: Sandboxed environment for running code\n- **Canvas UI**: Visual interactions and image generation\n- **Voice Support**: Text-to-speech and speech-to-text capabilities\n\nRun your own AI infrastructure with full control over your data and API keys.",
@@ -17,14 +17,16 @@
     "homepage": "https://openclaw.ai",
     "ui": "http://gateway.openclaw.public.dappnode:18789",
     "api": "http://gateway.openclaw.public.dappnode:18789/api",
+    "terminal": "http://gateway.openclaw.public.dappnode:7681",
+    "setup-wizard": "http://gateway.openclaw.public.dappnode:8080",
     "docs": "https://docs.openclaw.ai"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dappnode/DAppNodePackage-openclaw-generic"
+    "url": "https://github.com/dappnode/DAppNodePackage-openclaw"
   },
   "bugs": {
-    "url": "https://github.com/dappnode/DAppNodePackage-openclaw-generic/issues"
+    "url": "https://github.com/dappnode/DAppNodePackage-openclaw/issues"
   },
   "requirements": {
     "minimumDappnodeVersion": "0.2.50"
@@ -48,6 +50,18 @@
       "description": "Bridge API for external integrations and webhooks",
       "serviceName": "gateway",
       "port": 18790
+    },
+    {
+      "name": "OpenClaw Terminal",
+      "description": "Web-based terminal for direct shell access to the container",
+      "serviceName": "gateway",
+      "port": 7681
+    },
+    {
+      "name": "OpenClaw Setup Wizard",
+      "description": "Web-based setup wizard for easy configuration",
+      "serviceName": "gateway",
+      "port": 8080
     }
   ],
   "globalEnvs": [

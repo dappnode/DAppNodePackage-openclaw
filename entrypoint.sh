@@ -140,6 +140,26 @@ EOCFG
     echo "Config written."
 fi
 
+# ---------------------------------------------------------------------------
+# Start setup wizard web UI in the background on port 8080
+# ---------------------------------------------------------------------------
+echo "Starting setup wizard on port 8080..."
+node /app/setup-wizard/server.cjs &
+WIZARD_PID=$!
+echo "Setup wizard started (PID: ${WIZARD_PID})"
+
+# ---------------------------------------------------------------------------
+# Start ttyd (web terminal) in the background on port 7681
+# ---------------------------------------------------------------------------
+echo "Starting ttyd web terminal on port 7681..."
+ttyd \
+    --port 7681 \
+    --interface 0.0.0.0 \
+    --writable \
+    /bin/bash &
+TTYD_PID=$!
+echo "ttyd started (PID: ${TTYD_PID})"
+
 # Execute the main command (runs as root; no-new-privileges prevents gosu/sudo)
 if [ -n "$EXTRA_OPTS" ]; then
     exec "$@" $EXTRA_OPTS

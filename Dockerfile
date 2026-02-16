@@ -37,12 +37,25 @@ RUN pnpm ui:build
 
 ENV NODE_ENV=production
 
+# Install ttyd (web terminal) - static binary from GitHub releases
+# ttyd is not available in bookworm repos, so we download the pre-built binary
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then TTYD_ARCH="x86_64"; \
+    elif [ "$ARCH" = "arm64" ]; then TTYD_ARCH="aarch64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    curl -fsSL "https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.${TTYD_ARCH}" \
+      -o /usr/local/bin/ttyd && \
+    chmod +x /usr/local/bin/ttyd
+
+# Copy setup wizard
+COPY setup-wizard/ /app/setup-wizard/
+
 # Copy entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Expose gateway and bridge ports
-EXPOSE 18789 18790
+# Expose gateway, bridge, terminal, and setup wizard ports
+EXPOSE 18789 18790 7681 8080
 
 # Health check for DappNode monitoring
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
