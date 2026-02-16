@@ -1,5 +1,3 @@
-version: "3.5"
-
 services:
   gateway:
     build:
@@ -18,11 +16,6 @@ services:
     volumes:
       - "openclaw_data:/home/node/.openclaw"
       - "openclaw_workspace:/home/node/.openclaw/workspace"
-    ports:
-      - "18789:18789/tcp"
-      - "18790:18790/tcp"
-      - "7681:7681/tcp"
-      - "8080:8080/tcp"
     security_opt:
       - no-new-privileges:true
     logging:
