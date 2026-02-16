@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        UPSTREAM_VERSION: "latest"
-    image: "gateway.openclaw.public.dappnode.eth:0.1.0"
+        UPSTREAM_VERSION: v2026.2.15
+    image: gateway.openclaw.public.dappnode.eth:0.1.0
     container_name: DAppNodePackage-gateway.openclaw.public.dappnode.eth
     restart: unless-stopped
     environment:
@@ -14,27 +14,26 @@ services:
       NODE_ENV: production
       OPENCLAW_STATE_DIR: /home/node/.openclaw
     volumes:
-      - "openclaw_data:/home/node/.openclaw"
-      - "openclaw_workspace:/home/node/.openclaw/workspace"
+      - openclaw_data:/home/node/.openclaw
+      - openclaw_workspace:/home/node/.openclaw/workspace
     security_opt:
       - no-new-privileges:true
     logging:
-      driver: "json-file"
+      driver: json-file
       options:
-        max-size: "10m"
+        max-size: 10m
         max-file: "3"
     command:
-      - "node"
-      - "dist/index.js"
-      - "gateway"
+      - node
+      - dist/index.js
+      - gateway
       - "--bind"
-      - "lan"
+      - lan
       - "--port"
       - "18789"
       - "--allow-unconfigured"
       - "--token"
-      - "${GATEWAY_TOKEN:-openclaw}"
-
+      - ${GATEWAY_TOKEN:-openclaw}
 volumes:
   openclaw_data: {}
   openclaw_workspace: {}
