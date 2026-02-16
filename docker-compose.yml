@@ -39,6 +39,8 @@ services:
       - "--port"
       - "18789"
       - "--allow-unconfigured"
+      - "--token"
+      - "${GATEWAY_TOKEN:-openclaw}"
 
 volumes:
   openclaw_data: {}
