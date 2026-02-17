@@ -1,548 +1,716 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OpenClaw Setup Wizard</title>
-<style>
-  :root {
-    --primary: #667eea;
-    --primary-dark: #5a6fd6;
-    --accent: #764ba2;
-    --bg: #0f1117;
-    --card: #1a1d2e;
-    --card-hover: #222640;
-    --border: #2d3148;
-    --text: #e4e4ed;
-    --text-muted: #8b8fa3;
-    --success: #34d399;
-    --warning: #fbbf24;
-    --error: #f87171;
-    --radius: 12px;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    padding: 2rem 1rem;
-  }
-  .wizard {
-    max-width: 640px;
-    width: 100%;
-  }
-  .header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  .header h1 {
-    font-size: 1.75rem;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 0.25rem;
-  }
-  .header p { color: var(--text-muted); font-size: 0.95rem; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw Setup Wizard</title>
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a6fd6;
+      --accent: #764ba2;
+      --bg: #0f1117;
+      --card: #1a1d2e;
+      --card-hover: #222640;
+      --border: #2d3148;
+      --text: #e4e4ed;
+      --text-muted: #8b8fa3;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --error: #f87171;
+      --radius: 12px;
+    }
 
-  /* Progress bar */
-  .progress {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 2rem;
-  }
-  .progress .bar {
-    flex: 1;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--border);
-    transition: background 0.3s;
-  }
-  .progress .bar.active { background: var(--primary); }
-  .progress .bar.done { background: var(--success); }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  /* Steps */
-  .step { display: none; }
-  .step.active { display: block; }
-  .step h2 { font-size: 1.35rem; margin-bottom: 0.5rem; }
-  .step .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
 
-  /* Cards (provider selection) */
-  .cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 1.5rem;
-  }
-  @media (max-width: 480px) { .cards { grid-template-columns: 1fr; } }
-  .card {
-    background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .card:hover { background: var(--card-hover); border-color: var(--primary); }
-  .card.selected { border-color: var(--primary); background: var(--card-hover); }
-  .card .card-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
-  .card .card-desc { color: var(--text-muted); font-size: 0.8rem; line-height: 1.4; }
-  .card .card-tag {
-    display: inline-block;
-    font-size: 0.7rem;
-    padding: 2px 8px;
-    border-radius: 99px;
-    margin-top: 6px;
-    background: rgba(102,126,234,0.15);
-    color: var(--primary);
-  }
-  .card .card-tag.free { background: rgba(52,211,153,0.15); color: var(--success); }
+    .wizard {
+      max-width: 640px;
+      width: 100%;
+    }
 
-  /* Form inputs */
-  .field { margin-bottom: 1.25rem; }
-  .field label {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: 6px;
-  }
-  .field .hint { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 8px; line-height: 1.4; }
-  .field input, .field select {
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 0.95rem;
-    outline: none;
-    transition: border 0.2s;
-  }
-  .field input:focus, .field select:focus { border-color: var(--primary); }
-  .field input::placeholder { color: var(--text-muted); }
-  .field select option { background: var(--card); color: var(--text); }
-  .field .optional-badge {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-weight: 400;
-    margin-left: 6px;
-  }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
 
-  /* Buttons */
-  .actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 2rem;
-  }
-  .btn {
-    padding: 12px 28px;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    flex: 1;
-  }
-  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-  .btn-secondary {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-  .btn-secondary:hover { background: var(--card-hover); }
+    .header h1 {
+      font-size: 1.75rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
 
-  /* Probe button */
-  .probe-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 0.85rem;
-    cursor: pointer;
-    margin-bottom: 1rem;
-  }
-  .probe-btn:hover { border-color: var(--primary); }
-  .probe-result {
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-    line-height: 1.5;
-  }
-  .probe-result.ok { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--success); }
-  .probe-result.fail { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: var(--error); }
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
 
-  /* Review */
-  .config-preview {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem;
-    font-family: 'SF Mono', 'Fira Code', monospace;
-    font-size: 0.8rem;
-    line-height: 1.6;
-    overflow-x: auto;
-    max-height: 400px;
-    overflow-y: auto;
-    white-space: pre;
-    color: var(--text-muted);
-  }
+    /* Progress bar */
+    .progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 2rem;
+    }
 
-  /* Status banner */
-  .banner {
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    line-height: 1.4;
-  }
-  .banner.info { background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.3); color: var(--primary); }
-  .banner.success { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--success); }
-  .banner.warning { background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3); color: var(--warning); }
+    .progress .bar {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
 
-  /* Success page */
-  .success-icon { font-size: 3rem; text-align: center; margin-bottom: 1rem; }
-  .success-links {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 1.5rem;
-  }
-  .success-links a {
-    display: block;
-    padding: 12px 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: border 0.2s;
-  }
-  .success-links a:hover { border-color: var(--primary); }
-  .success-links a small { color: var(--text-muted); display: block; margin-top: 2px; font-size: 0.8rem; }
-</style>
+    .progress .bar.active {
+      background: var(--primary);
+    }
+
+    .progress .bar.done {
+      background: var(--success);
+    }
+
+    /* Steps */
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .step h2 {
+      font-size: 1.35rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Cards (provider selection) */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 480px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      background: var(--card-hover);
+      border-color: var(--primary);
+    }
+
+    .card.selected {
+      border-color: var(--primary);
+      background: var(--card-hover);
+    }
+
+    .card .card-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .card .card-desc {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .card .card-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-top: 6px;
+      background: rgba(102, 126, 234, 0.15);
+      color: var(--primary);
+    }
+
+    .card .card-tag.free {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--success);
+    }
+
+    /* Form inputs */
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .field .hint {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--primary);
+    }
+
+    .field input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .field select option {
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .field .optional-badge {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-left: 6px;
+    }
+
+    /* Buttons */
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--card-hover);
+    }
+
+    /* Probe button */
+    .probe-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+
+    .probe-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .probe-result {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .probe-result.ok {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--success);
+    }
+
+    .probe-result.fail {
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: var(--error);
+    }
+
+    /* Review */
+    .config-preview {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre;
+      color: var(--text-muted);
+    }
+
+    /* Status banner */
+    .banner {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .banner.info {
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      color: var(--primary);
+    }
+
+    .banner.success {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--success);
+    }
+
+    .banner.warning {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      color: var(--warning);
+    }
+
+    /* Success page */
+    .success-icon {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .success-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 1.5rem;
+    }
+
+    .success-links a {
+      display: block;
+      padding: 12px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: border 0.2s;
+    }
+
+    .success-links a:hover {
+      border-color: var(--primary);
+    }
+
+    .success-links a small {
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+      font-size: 0.8rem;
+    }
+  </style>
 </head>
+
 <body>
-<div class="wizard">
-  <div class="header">
-    <h1>OpenClaw Setup Wizard</h1>
-    <p>Let's get your AI gateway configured in a few steps</p>
-  </div>
+  <div class="wizard">
+    <div class="header">
+      <h1>OpenClaw Setup Wizard</h1>
+      <p>Let's get your AI gateway configured in a few steps</p>
+    </div>
 
-  <div class="progress" id="progress">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-  </div>
+    <div class="progress" id="progress">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
 
-  <div id="existing-config-banner"></div>
+    <div id="existing-config-banner"></div>
 
-  <!-- Step 0: Provider -->
-  <div class="step active" data-step="0">
-    <h2>Choose your AI Provider</h2>
-    <div class="subtitle">Pick one to get started — you can add more later.</div>
-    <div class="cards" id="provider-cards"></div>
-    <div class="actions">
-      <button class="btn btn-primary" id="btn-step0" disabled onclick="goTo(1)">Next</button>
+    <!-- Step 0: Provider -->
+    <div class="step active" data-step="0">
+      <h2>Choose your AI Provider</h2>
+      <div class="subtitle">Pick one to get started — you can add more later.</div>
+      <div class="cards" id="provider-cards"></div>
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-step0" disabled onclick="goTo(1)">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 1: API Key / Model config -->
+    <div class="step" data-step="1">
+      <div id="provider-config"></div>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="goTo(0)">Back</button>
+        <button class="btn btn-primary" id="btn-step1" onclick="goTo(2)">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Messaging + Security -->
+    <div class="step" data-step="2">
+      <h2>Integrations & Security</h2>
+      <div class="subtitle">Optional — skip any field you don't need right now.</div>
+      <div class="field">
+        <label>Telegram Bot Token <span class="optional-badge">optional</span></label>
+        <div class="hint">From <strong>@BotFather</strong> on Telegram.</div>
+        <input type="text" id="telegram-token" placeholder="123456789:ABCdefGHIjklMNO...">
+      </div>
+      <div class="field" id="telegram-users-field" style="display:none">
+        <label>Allowed Telegram User IDs <span class="optional-badge">optional</span></label>
+        <div class="hint">Comma-separated. Use <strong>@userinfobot</strong> to find yours.</div>
+        <input type="text" id="telegram-users" placeholder="123456789,987654321">
+      </div>
+      <div class="field">
+        <label>Discord Bot Token <span class="optional-badge">optional</span></label>
+        <div class="hint">From the Discord Developer Portal.</div>
+        <input type="text" id="discord-token" placeholder="MTIz...">
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="goTo(1)">Back</button>
+        <button class="btn btn-primary" onclick="showReview()">Review</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Review & Save -->
+    <div class="step" data-step="3">
+      <h2>Review & Save</h2>
+      <div class="subtitle">You can re-run this wizard or edit the file later.</div>
+      <div class="config-preview" id="config-preview"></div>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="goTo(2)">Back</button>
+        <button class="btn btn-primary" id="btn-save" onclick="saveConfig()">Save Configuration</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Success -->
+    <div class="step" data-step="4">
+      <div class="success-icon">&#10003;</div>
+      <h2 style="text-align:center">Configuration Saved!</h2>
+      <div class="subtitle" style="text-align:center">
+        The gateway will pick up the new configuration. You may need to restart the package.
+      </div>
+      <div class="success-links">
+        <a id="link-webui" href="http://openclaw.public.dappnode:18789?token=openclaw" target="_blank">
+          Open OpenClaw Web UI
+          <small>Chat with your AI in the browser</small>
+        </a>
+        <a href="http://openclaw.public.dappnode:7681" target="_blank">
+          Open Terminal
+          <small>Run commands inside the container</small>
+        </a>
+        <a href="#" onclick="event.preventDefault(); goTo(0);">
+          Run Wizard Again
+          <small>Reconfigure from scratch</small>
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- Step 1: API Key / Model config -->
-  <div class="step" data-step="1">
-    <div id="provider-config"></div>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="goTo(0)">Back</button>
-      <button class="btn btn-primary" id="btn-step1" onclick="goTo(2)">Next</button>
-    </div>
-  </div>
+  <script>
+    // ---------------------------------------------------------------------------
+    // Model catalogues per provider
+    // ---------------------------------------------------------------------------
+    const PROVIDER_MODELS = {
+      openai: [
+        { id: "gpt-5.2", name: "GPT-5.2", reasoning: false, input: ["text", "image"], contextWindow: 400000, maxTokens: 128000 },
+        { id: "gpt-5.2-pro", name: "GPT-5.2 Pro", reasoning: true, input: ["text", "image"], contextWindow: 400000, maxTokens: 128000 },
+        { id: "gpt-4.1", name: "GPT-4.1", reasoning: false, input: ["text", "image"], contextWindow: 1047576, maxTokens: 32768 },
+        { id: "gpt-4.1-mini", name: "GPT-4.1 Mini", reasoning: false, input: ["text", "image"], contextWindow: 1047576, maxTokens: 32768 },
+        { id: "gpt-4.1-nano", name: "GPT-4.1 Nano", reasoning: false, input: ["text", "image"], contextWindow: 1047576, maxTokens: 32768 },
+        { id: "o4-mini", name: "o4 Mini (Reasoning)", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 100000 },
+        { id: "o3", name: "o3 (Reasoning)", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 100000 },
+        { id: "gpt-4o", name: "GPT-4o", reasoning: false, input: ["text", "image"], contextWindow: 128000, maxTokens: 16384 },
+      ],
+      anthropic: [
+        { id: "claude-opus-4-6", name: "Claude Opus 4.6", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 128000 },
+        { id: "claude-sonnet-4-5-20250929", name: "Claude Sonnet 4.5", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 64000 },
+        { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 64000 },
+      ],
+      google: [
+        { id: "gemini-3-pro-preview", name: "Gemini 3 Pro (Preview)", reasoning: true, input: ["text", "image"], contextWindow: 1048576, maxTokens: 65536 },
+        { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)", reasoning: true, input: ["text", "image"], contextWindow: 1048576, maxTokens: 65536 },
+        { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", reasoning: true, input: ["text", "image"], contextWindow: 1048576, maxTokens: 65536 },
+        { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", reasoning: true, input: ["text", "image"], contextWindow: 1048576, maxTokens: 65536 },
+      ],
+      openrouter: [
+        { id: "openai/gpt-5.2", name: "GPT-5.2", reasoning: false, input: ["text", "image"], contextWindow: 400000, maxTokens: 128000 },
+        { id: "anthropic/claude-opus-4-6", name: "Claude Opus 4.6", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 128000 },
+        { id: "anthropic/claude-sonnet-4-5", name: "Claude Sonnet 4.5", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 128000 },
+        { id: "google/gemini-3-flash-preview", name: "Gemini 3 Flash", reasoning: true, input: ["text", "image"], contextWindow: 1048576, maxTokens: 65536 },
+        { id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro", reasoning: true, input: ["text", "image"], contextWindow: 1048576, maxTokens: 65536 },
+        { id: "meta-llama/llama-4-maverick", name: "Llama 4 Maverick", reasoning: false, input: ["text", "image"], contextWindow: 1048576, maxTokens: 16384 },
+        { id: "deepseek/deepseek-r1-0528", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 163840, maxTokens: 65536 },
+        { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
+      ],
+      groq: [
+        { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text", "image"], contextWindow: 131072, maxTokens: 8192 },
+        { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 65536 },
+        { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
+        { id: "qwen/qwen3-32b", name: "Qwen3 32B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 40960 },
+        { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 131072 },
+      ],
+      deepseek: [
+        { id: "deepseek-chat", name: "DeepSeek V3.2", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 8192 },
+        { id: "deepseek-reasoner", name: "DeepSeek V3.2 (Reasoning)", reasoning: true, input: ["text"], contextWindow: 128000, maxTokens: 64000 },
+      ],
+      together: [
+        { id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", name: "Llama 4 Maverick 17B", reasoning: false, input: ["text", "image"], contextWindow: 1048576, maxTokens: 16384 },
+        { id: "meta-llama/Llama-4-Scout-17B-16E-Instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text", "image"], contextWindow: 524288, maxTokens: 16384 },
+        { id: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "Llama 3.3 70B Turbo", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
+        { id: "Qwen/QwQ-32B", name: "QwQ 32B (Reasoning)", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
+        { id: "deepseek-ai/DeepSeek-R1", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
+      ],
+      mistral: [
+        { id: "mistral-large-2512", name: "Mistral Large 3", reasoning: false, input: ["text", "image"], contextWindow: 256000, maxTokens: 16384 },
+        { id: "devstral-2512", name: "Devstral 2", reasoning: false, input: ["text"], contextWindow: 256000, maxTokens: 16384 },
+        { id: "mistral-small-latest", name: "Mistral Small", reasoning: false, input: ["text", "image"], contextWindow: 128000, maxTokens: 16384 },
+        { id: "codestral-latest", name: "Codestral", reasoning: false, input: ["text"], contextWindow: 256000, maxTokens: 16384 },
+      ],
+      azure: [
+        { id: "gpt-4o", name: "GPT-4o (Azure)", reasoning: false, input: ["text", "image"], contextWindow: 128000, maxTokens: 16384 },
+        { id: "gpt-4o-mini", name: "GPT-4o Mini (Azure)", reasoning: false, input: ["text", "image"], contextWindow: 128000, maxTokens: 16384 },
+      ],
+    };
 
-  <!-- Step 2: Messaging + Security -->
-  <div class="step" data-step="2">
-    <h2>Integrations & Security</h2>
-    <div class="subtitle">Optional — skip any field you don't need right now.</div>
-    <div class="field">
-      <label>Telegram Bot Token <span class="optional-badge">optional</span></label>
-      <div class="hint">From <strong>@BotFather</strong> on Telegram.</div>
-      <input type="text" id="telegram-token" placeholder="123456789:ABCdefGHIjklMNO...">
-    </div>
-    <div class="field" id="telegram-users-field" style="display:none">
-      <label>Allowed Telegram User IDs <span class="optional-badge">optional</span></label>
-      <div class="hint">Comma-separated. Use <strong>@userinfobot</strong> to find yours.</div>
-      <input type="text" id="telegram-users" placeholder="123456789,987654321">
-    </div>
-    <div class="field">
-      <label>Discord Bot Token <span class="optional-badge">optional</span></label>
-      <div class="hint">From the Discord Developer Portal.</div>
-      <input type="text" id="discord-token" placeholder="MTIz...">
-    </div>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="goTo(1)">Back</button>
-      <button class="btn btn-primary" onclick="showReview()">Review</button>
-    </div>
-  </div>
+    const PROVIDERS = [
+      {
+        id: "openai", name: "OpenAI", desc: "GPT-5.2, GPT-4.1, o4-mini", tag: "Most popular", free: false,
+        baseUrl: "https://api.openai.com/v1", api: "openai-responses"
+      },
+      {
+        id: "anthropic", name: "Anthropic", desc: "Claude Opus 4.6, Sonnet 4.5, Haiku 4.5", tag: "Strong reasoning", free: false,
+        baseUrl: "https://api.anthropic.com", api: "anthropic-messages"
+      },
+      {
+        id: "google", name: "Google Gemini", desc: "Gemini 3 Pro, 2.5 Pro & Flash", tag: "Multimodal", free: false,
+        baseUrl: "https://generativelanguage.googleapis.com/v1beta", api: "google-generative-ai"
+      },
+      {
+        id: "ollama", name: "Ollama (Local)", desc: "Run models on your own hardware", tag: "Free", free: true,
+        baseUrl: "", api: "openai-responses"
+      },
+      {
+        id: "openrouter", name: "OpenRouter", desc: "Access many models with one key", tag: "Flexible", free: false,
+        baseUrl: "https://openrouter.ai/api/v1", api: "openai-responses"
+      },
+      {
+        id: "groq", name: "Groq", desc: "Ultra-fast DeepSeek R1, Llama, Qwen", tag: "Free tier", free: true,
+        baseUrl: "https://api.groq.com/openai/v1", api: "openai-responses"
+      },
+      {
+        id: "deepseek", name: "DeepSeek", desc: "Affordable and capable models", tag: "Budget friendly", free: false,
+        baseUrl: "https://api.deepseek.com/v1", api: "openai-responses"
+      },
+      {
+        id: "together", name: "Together AI", desc: "Open-source models in the cloud", tag: "Paid", free: false,
+        baseUrl: "https://api.together.xyz/v1", api: "openai-responses"
+      },
+      {
+        id: "mistral", name: "Mistral AI", desc: "Mistral Large 3, Devstral 2, Codestral", tag: "Paid", free: false,
+        baseUrl: "https://api.mistral.ai/v1", api: "openai-responses"
+      },
+      {
+        id: "azure", name: "Azure OpenAI", desc: "Enterprise Azure-hosted models", tag: "Enterprise", free: false,
+        baseUrl: "", api: "openai-responses"
+      },
+    ];
 
-  <!-- Step 3: Review & Save -->
-  <div class="step" data-step="3">
-    <h2>Review & Save</h2>
-    <div class="subtitle">You can re-run this wizard or edit the file later.</div>
-    <div class="config-preview" id="config-preview"></div>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="goTo(2)">Back</button>
-      <button class="btn btn-primary" id="btn-save" onclick="saveConfig()">Save Configuration</button>
-    </div>
-  </div>
+    let currentStep = 0;
+    let selectedProvider = null;
+    let ollamaProbeResult = null;
+    let existingConfig = null; // loaded config for edit mode
 
-  <!-- Step 4: Success -->
-  <div class="step" data-step="4">
-    <div class="success-icon">&#10003;</div>
-    <h2 style="text-align:center">Configuration Saved!</h2>
-    <div class="subtitle" style="text-align:center">
-      The gateway will pick up the new configuration. You may need to restart the package.
-    </div>
-    <div class="success-links">
-      <a id="link-webui" href="http://gateway.openclaw.public.dappnode:18789" target="_blank">
-        Open OpenClaw Web UI
-        <small>Chat with your AI in the browser</small>
-      </a>
-      <a href="http://gateway.openclaw.public.dappnode:7681" target="_blank">
-        Open Terminal
-        <small>Run commands inside the container</small>
-      </a>
-      <a href="#" onclick="event.preventDefault(); goTo(0);">
-        Run Wizard Again
-        <small>Reconfigure from scratch</small>
-      </a>
-    </div>
-  </div>
-</div>
-
-<script>
-// ---------------------------------------------------------------------------
-// Model catalogues per provider
-// ---------------------------------------------------------------------------
-const PROVIDER_MODELS = {
-  openai: [
-    { id: "gpt-5.2", name: "GPT-5.2", reasoning: false, input: ["text","image"], contextWindow: 400000, maxTokens: 128000 },
-    { id: "gpt-5.2-pro", name: "GPT-5.2 Pro", reasoning: true, input: ["text","image"], contextWindow: 400000, maxTokens: 128000 },
-    { id: "gpt-4.1", name: "GPT-4.1", reasoning: false, input: ["text","image"], contextWindow: 1047576, maxTokens: 32768 },
-    { id: "gpt-4.1-mini", name: "GPT-4.1 Mini", reasoning: false, input: ["text","image"], contextWindow: 1047576, maxTokens: 32768 },
-    { id: "gpt-4.1-nano", name: "GPT-4.1 Nano", reasoning: false, input: ["text","image"], contextWindow: 1047576, maxTokens: 32768 },
-    { id: "o4-mini", name: "o4 Mini (Reasoning)", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 100000 },
-    { id: "o3", name: "o3 (Reasoning)", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 100000 },
-    { id: "gpt-4o", name: "GPT-4o", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 },
-  ],
-  anthropic: [
-    { id: "claude-opus-4-6", name: "Claude Opus 4.6", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 128000 },
-    { id: "claude-sonnet-4-5-20250929", name: "Claude Sonnet 4.5", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 64000 },
-    { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 64000 },
-  ],
-  google: [
-    { id: "gemini-3-pro-preview", name: "Gemini 3 Pro (Preview)", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
-    { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
-    { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
-    { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
-  ],
-  openrouter: [
-    { id: "openai/gpt-5.2", name: "GPT-5.2", reasoning: false, input: ["text","image"], contextWindow: 400000, maxTokens: 128000 },
-    { id: "anthropic/claude-opus-4-6", name: "Claude Opus 4.6", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 128000 },
-    { id: "anthropic/claude-sonnet-4-5", name: "Claude Sonnet 4.5", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 128000 },
-    { id: "google/gemini-3-flash-preview", name: "Gemini 3 Flash", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
-    { id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
-    { id: "meta-llama/llama-4-maverick", name: "Llama 4 Maverick", reasoning: false, input: ["text","image"], contextWindow: 1048576, maxTokens: 16384 },
-    { id: "deepseek/deepseek-r1-0528", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 163840, maxTokens: 65536 },
-    { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
-  ],
-  groq: [
-    { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text","image"], contextWindow: 131072, maxTokens: 8192 },
-    { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 65536 },
-    { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
-    { id: "qwen/qwen3-32b", name: "Qwen3 32B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 40960 },
-    { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 131072 },
-  ],
-  deepseek: [
-    { id: "deepseek-chat", name: "DeepSeek V3.2", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 8192 },
-    { id: "deepseek-reasoner", name: "DeepSeek V3.2 (Reasoning)", reasoning: true, input: ["text"], contextWindow: 128000, maxTokens: 64000 },
-  ],
-  together: [
-    { id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", name: "Llama 4 Maverick 17B", reasoning: false, input: ["text","image"], contextWindow: 1048576, maxTokens: 16384 },
-    { id: "meta-llama/Llama-4-Scout-17B-16E-Instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text","image"], contextWindow: 524288, maxTokens: 16384 },
-    { id: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "Llama 3.3 70B Turbo", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
-    { id: "Qwen/QwQ-32B", name: "QwQ 32B (Reasoning)", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
-    { id: "deepseek-ai/DeepSeek-R1", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
-  ],
-  mistral: [
-    { id: "mistral-large-2512", name: "Mistral Large 3", reasoning: false, input: ["text","image"], contextWindow: 256000, maxTokens: 16384 },
-    { id: "devstral-2512", name: "Devstral 2", reasoning: false, input: ["text"], contextWindow: 256000, maxTokens: 16384 },
-    { id: "mistral-small-latest", name: "Mistral Small", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 },
-    { id: "codestral-latest", name: "Codestral", reasoning: false, input: ["text"], contextWindow: 256000, maxTokens: 16384 },
-  ],
-  azure: [
-    { id: "gpt-4o", name: "GPT-4o (Azure)", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 },
-    { id: "gpt-4o-mini", name: "GPT-4o Mini (Azure)", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 },
-  ],
-};
-
-const PROVIDERS = [
-  { id: "openai", name: "OpenAI", desc: "GPT-5.2, GPT-4.1, o4-mini", tag: "Most popular", free: false,
-    baseUrl: "https://api.openai.com/v1", api: "openai-responses" },
-  { id: "anthropic", name: "Anthropic", desc: "Claude Opus 4.6, Sonnet 4.5, Haiku 4.5", tag: "Strong reasoning", free: false,
-    baseUrl: "https://api.anthropic.com", api: "anthropic-messages" },
-  { id: "google", name: "Google Gemini", desc: "Gemini 3 Pro, 2.5 Pro & Flash", tag: "Multimodal", free: false,
-    baseUrl: "https://generativelanguage.googleapis.com/v1beta", api: "google-generative-ai" },
-  { id: "ollama", name: "Ollama (Local)", desc: "Run models on your own hardware", tag: "Free", free: true,
-    baseUrl: "", api: "openai-responses" },
-  { id: "openrouter", name: "OpenRouter", desc: "Access many models with one key", tag: "Flexible", free: false,
-    baseUrl: "https://openrouter.ai/api/v1", api: "openai-responses" },
-  { id: "groq", name: "Groq", desc: "Ultra-fast DeepSeek R1, Llama, Qwen", tag: "Free tier", free: true,
-    baseUrl: "https://api.groq.com/openai/v1", api: "openai-responses" },
-  { id: "deepseek", name: "DeepSeek", desc: "Affordable and capable models", tag: "Budget friendly", free: false,
-    baseUrl: "https://api.deepseek.com/v1", api: "openai-responses" },
-  { id: "together", name: "Together AI", desc: "Open-source models in the cloud", tag: "Paid", free: false,
-    baseUrl: "https://api.together.xyz/v1", api: "openai-responses" },
-  { id: "mistral", name: "Mistral AI", desc: "Mistral Large 3, Devstral 2, Codestral", tag: "Paid", free: false,
-    baseUrl: "https://api.mistral.ai/v1", api: "openai-responses" },
-  { id: "azure", name: "Azure OpenAI", desc: "Enterprise Azure-hosted models", tag: "Enterprise", free: false,
-    baseUrl: "", api: "openai-responses" },
-];
-
-let currentStep = 0;
-let selectedProvider = null;
-let ollamaProbeResult = null;
-let existingConfig = null; // loaded config for edit mode
-
-// Render provider cards
-const cardsEl = document.getElementById("provider-cards");
-PROVIDERS.forEach(p => {
-  const card = document.createElement("div");
-  card.className = "card";
-  card.dataset.id = p.id;
-  card.innerHTML = `
+    // Render provider cards
+    const cardsEl = document.getElementById("provider-cards");
+    PROVIDERS.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.id = p.id;
+      card.innerHTML = `
     <div class="card-title">${p.name}</div>
     <div class="card-desc">${p.desc}</div>
     <span class="card-tag ${p.free ? 'free' : ''}">${p.tag}</span>
   `;
-  card.onclick = () => selectProviderCard(p.id);
-  cardsEl.appendChild(card);
-});
+      card.onclick = () => selectProviderCard(p.id);
+      cardsEl.appendChild(card);
+    });
 
-function selectProviderCard(providerId) {
-  cardsEl.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
-  const card = cardsEl.querySelector(`.card[data-id="${providerId}"]`);
-  if (card) card.classList.add("selected");
-  selectedProvider = PROVIDERS.find(p => p.id === providerId);
-  document.getElementById("btn-step0").disabled = false;
-}
-
-// Show/hide telegram users when token is entered
-document.getElementById("telegram-token").addEventListener("input", (e) => {
-  document.getElementById("telegram-users-field").style.display = e.target.value.trim() ? "block" : "none";
-});
-
-// ---------------------------------------------------------------------------
-// Load existing config on startup and pre-fill the form
-// ---------------------------------------------------------------------------
-(async () => {
-  try {
-    const resp = await fetch("/api/config");
-    if (!resp.ok) return;
-    existingConfig = await resp.json();
-    document.getElementById("existing-config-banner").innerHTML =
-      '<div class="banner info">Existing configuration found. Your current settings have been loaded — edit any step and save to update.</div>';
-    prefillFromConfig(existingConfig);
-  } catch {}
-})();
-
-function prefillFromConfig(cfg) {
-  // Detect provider from config
-  const providers = cfg.models && cfg.models.providers ? cfg.models.providers : {};
-  const providerIds = Object.keys(providers);
-  if (providerIds.length > 0) {
-    const pid = providerIds[0];
-    selectProviderCard(pid);
-
-    // Store loaded provider details for step 2 pre-fill
-    existingConfig._loadedProvider = pid;
-    existingConfig._loadedApiKey = providers[pid].apiKey || "";
-    existingConfig._loadedBaseUrl = providers[pid].baseUrl || "";
-    const models = providers[pid].models || [];
-    existingConfig._loadedModelId = models.length > 0 ? models[0].id : "";
-  }
-
-  // Telegram
-  if (cfg.channels && cfg.channels.telegram) {
-    const tg = cfg.channels.telegram;
-    if (tg.botToken) {
-      document.getElementById("telegram-token").value = tg.botToken;
-      document.getElementById("telegram-users-field").style.display = "block";
+    function selectProviderCard(providerId) {
+      cardsEl.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+      const card = cardsEl.querySelector(`.card[data-id="${providerId}"]`);
+      if (card) card.classList.add("selected");
+      selectedProvider = PROVIDERS.find(p => p.id === providerId);
+      document.getElementById("btn-step0").disabled = false;
     }
-    if (tg.allowFrom && tg.allowFrom.length > 0) {
-      const users = tg.allowFrom.filter(Boolean).join(", ");
-      if (users) {
-        document.getElementById("telegram-users").value = users;
-        document.getElementById("telegram-users-field").style.display = "block";
+
+    // Show/hide telegram users when token is entered
+    document.getElementById("telegram-token").addEventListener("input", (e) => {
+      document.getElementById("telegram-users-field").style.display = e.target.value.trim() ? "block" : "none";
+    });
+
+    // ---------------------------------------------------------------------------
+    // Load existing config on startup and pre-fill the form
+    // ---------------------------------------------------------------------------
+    (async () => {
+      try {
+        const resp = await fetch("/api/config");
+        if (!resp.ok) return;
+        existingConfig = await resp.json();
+        document.getElementById("existing-config-banner").innerHTML =
+          '<div class="banner info">Existing configuration found. Your current settings have been loaded — edit any step and save to update.</div>';
+        prefillFromConfig(existingConfig);
+      } catch { }
+    })();
+
+    function prefillFromConfig(cfg) {
+      // Detect provider from config
+      const providers = cfg.models && cfg.models.providers ? cfg.models.providers : {};
+      const providerIds = Object.keys(providers);
+      if (providerIds.length > 0) {
+        const pid = providerIds[0];
+        selectProviderCard(pid);
+
+        // Store loaded provider details for step 2 pre-fill
+        existingConfig._loadedProvider = pid;
+        existingConfig._loadedApiKey = providers[pid].apiKey || "";
+        existingConfig._loadedBaseUrl = providers[pid].baseUrl || "";
+        const models = providers[pid].models || [];
+        existingConfig._loadedModelId = models.length > 0 ? models[0].id : "";
       }
-    }
-  }
 
-  // Discord
-  if (cfg.channels && cfg.channels.discord) {
-    const dc = cfg.channels.discord;
-    if (dc.botToken) {
-      document.getElementById("discord-token").value = dc.botToken;
-    }
-  }
+      // Telegram
+      if (cfg.channels && cfg.channels.telegram) {
+        const tg = cfg.channels.telegram;
+        if (tg.botToken) {
+          document.getElementById("telegram-token").value = tg.botToken;
+          document.getElementById("telegram-users-field").style.display = "block";
+        }
+        if (tg.allowFrom && tg.allowFrom.length > 0) {
+          const users = tg.allowFrom.filter(Boolean).join(", ");
+          if (users) {
+            document.getElementById("telegram-users").value = users;
+            document.getElementById("telegram-users-field").style.display = "block";
+          }
+        }
+      }
 
-}
+      // Discord
+      if (cfg.channels && cfg.channels.discord) {
+        const dc = cfg.channels.discord;
+        if (dc.botToken) {
+          document.getElementById("discord-token").value = dc.botToken;
+        }
+      }
 
-function goTo(step) {
-  currentStep = step;
-  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-  document.querySelector(`.step[data-step="${step}"]`).classList.add("active");
-
-  // Update progress bar
-  const bars = document.querySelectorAll(".progress .bar");
-  bars.forEach((bar, i) => {
-    bar.className = "bar";
-    if (i < step) bar.classList.add("done");
-    else if (i === step) bar.classList.add("active");
-  });
-
-  // Render provider config when entering step 1
-  if (step === 1 && selectedProvider) renderProviderConfig();
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function renderProviderConfig() {
-  const container = document.getElementById("provider-config");
-  const p = selectedProvider;
-
-  if (p.id === "ollama") {
-    // Pre-fill values from existing config
-    let ollamaUrl = "";
-    let ollamaModel = "";
-    if (existingConfig && existingConfig._loadedProvider === "ollama") {
-      const rawUrl = existingConfig._loadedBaseUrl || "";
-      ollamaUrl = rawUrl.replace(/\/v1\/?$/, "");
-      ollamaModel = existingConfig._loadedModelId || "";
     }
 
-    container.innerHTML = `
+    function goTo(step) {
+      currentStep = step;
+      document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+      document.querySelector(`.step[data-step="${step}"]`).classList.add("active");
+
+      // Update progress bar
+      const bars = document.querySelectorAll(".progress .bar");
+      bars.forEach((bar, i) => {
+        bar.className = "bar";
+        if (i < step) bar.classList.add("done");
+        else if (i === step) bar.classList.add("active");
+      });
+
+      // Render provider config when entering step 1
+      if (step === 1 && selectedProvider) renderProviderConfig();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderProviderConfig() {
+      const container = document.getElementById("provider-config");
+      const p = selectedProvider;
+
+      if (p.id === "ollama") {
+        // Pre-fill values from existing config
+        let ollamaUrl = "";
+        let ollamaModel = "";
+        if (existingConfig && existingConfig._loadedProvider === "ollama") {
+          const rawUrl = existingConfig._loadedBaseUrl || "";
+          ollamaUrl = rawUrl.replace(/\/v1\/?$/, "");
+          ollamaModel = existingConfig._loadedModelId || "";
+        }
+
+        container.innerHTML = `
       <h2>Configure Ollama</h2>
       <div class="subtitle">Ollama lets you run AI models locally on your DappNode for free.</div>
       <button class="probe-btn" id="probe-btn" onclick="probeOllama()">
@@ -560,18 +728,18 @@ function renderProviderConfig() {
         <input type="text" id="ollama-model" placeholder="llama3" value="${ollamaModel}">
       </div>
     `;
-  } else if (p.id === "azure") {
-    let azureEndpoint = "";
-    let azureKey = "";
-    let azureDeployment = "gpt-4o";
-    if (existingConfig && existingConfig._loadedProvider === "azure") {
-      azureEndpoint = existingConfig._loadedBaseUrl || "";
-      azureKey = existingConfig._loadedApiKey || "";
-      azureDeployment = existingConfig._loadedModelId || "gpt-4o";
-    }
+      } else if (p.id === "azure") {
+        let azureEndpoint = "";
+        let azureKey = "";
+        let azureDeployment = "gpt-4o";
+        if (existingConfig && existingConfig._loadedProvider === "azure") {
+          azureEndpoint = existingConfig._loadedBaseUrl || "";
+          azureKey = existingConfig._loadedApiKey || "";
+          azureDeployment = existingConfig._loadedModelId || "gpt-4o";
+        }
 
-    const models = PROVIDER_MODELS.azure || [];
-    container.innerHTML = `
+        const models = PROVIDER_MODELS.azure || [];
+        container.innerHTML = `
       <h2>Configure ${p.name}</h2>
       <div class="subtitle">${p.desc}</div>
       <div class="field">
@@ -597,33 +765,33 @@ function renderProviderConfig() {
         <input type="text" id="custom-model" placeholder="my-deployment-name">
       </div>
     `;
-    setupCustomModelToggle(azureDeployment);
-  } else {
-    // Cloud providers with model selection
-    const keyLabels = {
-      openai: ["OpenAI API Key", "Get one at platform.openai.com/api-keys"],
-      anthropic: ["Anthropic API Key", "Get one at console.anthropic.com"],
-      google: ["Google AI API Key", "Get one at aistudio.google.com/app/apikey"],
-      openrouter: ["OpenRouter API Key", "Get one at openrouter.ai/keys"],
-      groq: ["Groq API Key", "Get one at console.groq.com (free tier available)"],
-      deepseek: ["DeepSeek API Key", "Get one at platform.deepseek.com"],
-      together: ["Together AI API Key", "Get one at api.together.xyz"],
-      mistral: ["Mistral API Key", "Get one at console.mistral.ai"],
-    };
-    const [label, hint] = keyLabels[p.id] || ["API Key", ""];
-    const models = PROVIDER_MODELS[p.id] || [];
+        setupCustomModelToggle(azureDeployment);
+      } else {
+        // Cloud providers with model selection
+        const keyLabels = {
+          openai: ["OpenAI API Key", "Get one at platform.openai.com/api-keys"],
+          anthropic: ["Anthropic API Key", "Get one at console.anthropic.com"],
+          google: ["Google AI API Key", "Get one at aistudio.google.com/app/apikey"],
+          openrouter: ["OpenRouter API Key", "Get one at openrouter.ai/keys"],
+          groq: ["Groq API Key", "Get one at console.groq.com (free tier available)"],
+          deepseek: ["DeepSeek API Key", "Get one at platform.deepseek.com"],
+          together: ["Together AI API Key", "Get one at api.together.xyz"],
+          mistral: ["Mistral API Key", "Get one at console.mistral.ai"],
+        };
+        const [label, hint] = keyLabels[p.id] || ["API Key", ""];
+        const models = PROVIDER_MODELS[p.id] || [];
 
-    // Pre-fill from existing config
-    let prefillKey = "";
-    let prefillModelId = models.length > 0 ? models[0].id : "";
-    if (existingConfig && existingConfig._loadedProvider === p.id) {
-      prefillKey = existingConfig._loadedApiKey || "";
-      prefillModelId = existingConfig._loadedModelId || prefillModelId;
-    }
+        // Pre-fill from existing config
+        let prefillKey = "";
+        let prefillModelId = models.length > 0 ? models[0].id : "";
+        if (existingConfig && existingConfig._loadedProvider === p.id) {
+          prefillKey = existingConfig._loadedApiKey || "";
+          prefillModelId = existingConfig._loadedModelId || prefillModelId;
+        }
 
-    let modelSelectHtml = "";
-    if (models.length > 0) {
-      modelSelectHtml = `
+        let modelSelectHtml = "";
+        if (models.length > 0) {
+          modelSelectHtml = `
         <div class="field">
           <label>Model</label>
           <div class="hint">Choose which model to use as the primary model.</div>
@@ -638,9 +806,9 @@ function renderProviderConfig() {
           <input type="text" id="custom-model" placeholder="model-id">
         </div>
       `;
-    }
+        }
 
-    container.innerHTML = `
+        container.innerHTML = `
       <h2>Configure ${p.name}</h2>
       <div class="subtitle">${p.desc}. Enter your API key and select a model.</div>
       <div class="field">
@@ -650,238 +818,239 @@ function renderProviderConfig() {
       </div>
       ${modelSelectHtml}
     `;
-    if (models.length > 0) setupCustomModelToggle(prefillModelId);
-  }
-}
+        if (models.length > 0) setupCustomModelToggle(prefillModelId);
+      }
+    }
 
-function setupCustomModelToggle(prefillModelId) {
-  const select = document.getElementById("model-select");
-  const customField = document.getElementById("custom-model-field");
-  if (!select || !customField) return;
+    function setupCustomModelToggle(prefillModelId) {
+      const select = document.getElementById("model-select");
+      const customField = document.getElementById("custom-model-field");
+      if (!select || !customField) return;
 
-  // If the pre-filled model isn't in the dropdown, switch to custom
-  const knownIds = Array.from(select.options).map(o => o.value);
-  if (prefillModelId && !knownIds.includes(prefillModelId)) {
-    select.value = "__custom";
-    customField.style.display = "block";
-    document.getElementById("custom-model").value = prefillModelId;
-  }
+      // If the pre-filled model isn't in the dropdown, switch to custom
+      const knownIds = Array.from(select.options).map(o => o.value);
+      if (prefillModelId && !knownIds.includes(prefillModelId)) {
+        select.value = "__custom";
+        customField.style.display = "block";
+        document.getElementById("custom-model").value = prefillModelId;
+      }
 
-  select.addEventListener("change", () => {
-    customField.style.display = select.value === "__custom" ? "block" : "none";
-  });
-}
+      select.addEventListener("change", () => {
+        customField.style.display = select.value === "__custom" ? "block" : "none";
+      });
+    }
 
-function getSelectedModel() {
-  const select = document.getElementById("model-select");
-  if (!select) return null;
-  if (select.value === "__custom") {
-    const customId = (document.getElementById("custom-model").value || "").trim();
-    if (!customId) return null;
-    return { id: customId, name: customId, reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 16384 };
-  }
-  const p = selectedProvider;
-  const models = PROVIDER_MODELS[p.id] || [];
-  return models.find(m => m.id === select.value) || null;
-}
+    function getSelectedModel() {
+      const select = document.getElementById("model-select");
+      if (!select) return null;
+      if (select.value === "__custom") {
+        const customId = (document.getElementById("custom-model").value || "").trim();
+        if (!customId) return null;
+        return { id: customId, name: customId, reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 16384 };
+      }
+      const p = selectedProvider;
+      const models = PROVIDER_MODELS[p.id] || [];
+      return models.find(m => m.id === select.value) || null;
+    }
 
-async function probeOllama() {
-  const btn = document.getElementById("probe-btn");
-  const icon = document.getElementById("probe-icon");
-  const resultEl = document.getElementById("probe-result");
-  btn.disabled = true;
-  icon.textContent = "\u23F3";
-  resultEl.innerHTML = "";
+    async function probeOllama() {
+      const btn = document.getElementById("probe-btn");
+      const icon = document.getElementById("probe-icon");
+      const resultEl = document.getElementById("probe-result");
+      btn.disabled = true;
+      icon.textContent = "\u23F3";
+      resultEl.innerHTML = "";
 
-  try {
-    const resp = await fetch("/api/ollama/probe");
-    const data = await resp.json();
-    ollamaProbeResult = data;
+      try {
+        const resp = await fetch("/api/ollama/probe");
+        const data = await resp.json();
+        ollamaProbeResult = data;
 
-    if (data.reachable) {
-      resultEl.innerHTML = `<div class="probe-result ok">
+        if (data.reachable) {
+          resultEl.innerHTML = `<div class="probe-result ok">
         <strong>Found Ollama!</strong> at ${data.url}<br>
         ${data.models.length > 0 ? "Available models: " + data.models.join(", ") : "No models pulled yet. Pull a model from the terminal."}
       </div>`;
-      document.getElementById("ollama-url").value = data.url;
-      if (data.models.length > 0) {
-        document.getElementById("ollama-model").value = data.models[0];
-      }
-    } else {
-      resultEl.innerHTML = `<div class="probe-result fail">
+          document.getElementById("ollama-url").value = data.url;
+          if (data.models.length > 0) {
+            document.getElementById("ollama-model").value = data.models[0];
+          }
+        } else {
+          resultEl.innerHTML = `<div class="probe-result fail">
         <strong>No Ollama found.</strong> Make sure an Ollama package is installed and running on your DappNode, or enter the URL manually below.
       </div>`;
-    }
-  } catch {
-    resultEl.innerHTML = `<div class="probe-result fail">Failed to probe. Enter the URL manually below.</div>`;
-  }
-  btn.disabled = false;
-  icon.textContent = "\uD83D\uDD0D";
-}
-
-function buildConfig() {
-  const p = selectedProvider;
-  const config = {
-    meta: {
-      lastTouchedVersion: "2026.2.1",
-      lastTouchedAt: new Date().toISOString()
-    },
-    models: { providers: {} },
-    agents: {
-      defaults: {
-        model: { primary: "" },
-        workspace: "/home/node/.openclaw/workspace",
-        compaction: { mode: "safeguard" },
-        maxConcurrent: 4,
-        subagents: { maxConcurrent: 8 }
+        }
+      } catch {
+        resultEl.innerHTML = `<div class="probe-result fail">Failed to probe. Enter the URL manually below.</div>`;
       }
-    },
-    tools: {
-      profile: "full",
-      exec: { security: "full", ask: "off", timeoutSec: 3600 },
-      elevated: { enabled: true }
-    },
-    commands: {
-      native: "auto",
-      nativeSkills: "auto",
-      bash: true,
-      config: true,
-      debug: true,
-      useAccessGroups: false
-    },
-    gateway: {
-      controlUi: { allowInsecureAuth: true },
-    },
-    plugins: { entries: {} }
-  };
-
-  // Provider config
-  if (p.id === "ollama") {
-    const url = document.getElementById("ollama-url").value.trim() || "http://localhost:11434";
-    const model = document.getElementById("ollama-model").value.trim() || "llama3";
-    config.models.providers.ollama = {
-      baseUrl: url + "/v1",
-      apiKey: "ollama-local",
-      api: "openai-responses",
-      models: [{
-        id: model,
-        name: model,
-        reasoning: false,
-        input: ["text"],
-        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-        contextWindow: 128000,
-        maxTokens: 16384
-      }]
-    };
-    config.agents.defaults.model.primary = `ollama/${model}`;
-  } else if (p.id === "azure") {
-    const endpoint = document.getElementById("azure-endpoint").value.trim();
-    const apiKey = document.getElementById("api-key").value.trim();
-    const model = getSelectedModel();
-    const modelId = model ? model.id : "gpt-4o";
-    config.models.providers.azure = {
-      baseUrl: endpoint,
-      apiKey: apiKey,
-      api: "openai-responses",
-      models: [{
-        id: modelId,
-        name: model ? model.name : modelId,
-        reasoning: model ? model.reasoning : false,
-        input: model ? model.input : ["text", "image"],
-        contextWindow: model ? model.contextWindow : 128000,
-        maxTokens: model ? model.maxTokens : 16384
-      }]
-    };
-    config.agents.defaults.model.primary = `azure/${modelId}`;
-  } else {
-    const apiKey = document.getElementById("api-key").value.trim();
-    const model = getSelectedModel();
-    const providerConfig = {
-      baseUrl: p.baseUrl,
-      apiKey: apiKey,
-      api: p.api,
-    };
-    if (model) {
-      providerConfig.models = [{
-        id: model.id,
-        name: model.name,
-        reasoning: model.reasoning,
-        input: model.input,
-        contextWindow: model.contextWindow,
-        maxTokens: model.maxTokens,
-      }];
-      config.agents.defaults.model.primary = `${p.id}/${model.id}`;
-    }
-    config.models.providers[p.id] = providerConfig;
-  }
-
-  // Messaging channels
-  const telegramToken = document.getElementById("telegram-token").value.trim();
-  const telegramUsers = document.getElementById("telegram-users").value.trim();
-  const discordToken = document.getElementById("discord-token").value.trim();
-
-  if (telegramToken) {
-    config.channels = config.channels || {};
-    config.channels.telegram = {
-      enabled: true,
-      botToken: telegramToken,
-      dmPolicy: "pairing",
-      groupPolicy: "allowlist",
-      groups: { "*": { requireMention: true } },
-      streamMode: "partial",
-    };
-    if (telegramUsers) {
-      config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
-    }
-    config.plugins.entries.telegram = { enabled: true };
-  }
-
-  if (discordToken) {
-    config.channels = config.channels || {};
-    config.channels.discord = {
-      enabled: true,
-      botToken: discordToken,
-      dmPolicy: "pairing",
-      groupPolicy: "allowlist",
-    };
-    config.plugins.entries.discord = { enabled: true };
-  }
-
-  return config;
-}
-
-function showReview() {
-  const config = buildConfig();
-  document.getElementById("config-preview").textContent = JSON.stringify(config, null, 2);
-  goTo(3);
-}
-
-async function saveConfig() {
-  const btn = document.getElementById("btn-save");
-  btn.disabled = true;
-  btn.textContent = "Saving...";
-
-  try {
-    const config = buildConfig();
-    const resp = await fetch("/api/config", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(config, null, 2)
-    });
-    const data = await resp.json();
-    if (resp.ok) {
-      goTo(4);
-    } else {
-      alert("Failed to save: " + (data.error || "Unknown error"));
       btn.disabled = false;
-      btn.textContent = "Save Configuration";
+      icon.textContent = "\uD83D\uDD0D";
     }
-  } catch (err) {
-    alert("Network error: " + err.message);
-    btn.disabled = false;
-    btn.textContent = "Save Configuration";
-  }
-}
-</script>
+
+    function buildConfig() {
+      const p = selectedProvider;
+      const config = {
+        meta: {
+          lastTouchedVersion: "2026.2.1",
+          lastTouchedAt: new Date().toISOString()
+        },
+        models: { providers: {} },
+        agents: {
+          defaults: {
+            model: { primary: "" },
+            workspace: "/home/node/.openclaw/workspace",
+            compaction: { mode: "safeguard" },
+            maxConcurrent: 4,
+            subagents: { maxConcurrent: 8 }
+          }
+        },
+        tools: {
+          profile: "full",
+          exec: { security: "full", ask: "off", timeoutSec: 3600 },
+          elevated: { enabled: true }
+        },
+        commands: {
+          native: "auto",
+          nativeSkills: "auto",
+          bash: true,
+          config: true,
+          debug: true,
+          useAccessGroups: false
+        },
+        gateway: {
+          controlUi: { allowInsecureAuth: true },
+        },
+        plugins: { entries: {} }
+      };
+
+      // Provider config
+      if (p.id === "ollama") {
+        const url = document.getElementById("ollama-url").value.trim() || "http://localhost:11434";
+        const model = document.getElementById("ollama-model").value.trim() || "llama3";
+        config.models.providers.ollama = {
+          baseUrl: url + "/v1",
+          apiKey: "ollama-local",
+          api: "openai-responses",
+          models: [{
+            id: model,
+            name: model,
+            reasoning: false,
+            input: ["text"],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 128000,
+            maxTokens: 16384
+          }]
+        };
+        config.agents.defaults.model.primary = `ollama/${model}`;
+      } else if (p.id === "azure") {
+        const endpoint = document.getElementById("azure-endpoint").value.trim();
+        const apiKey = document.getElementById("api-key").value.trim();
+        const model = getSelectedModel();
+        const modelId = model ? model.id : "gpt-4o";
+        config.models.providers.azure = {
+          baseUrl: endpoint,
+          apiKey: apiKey,
+          api: "openai-responses",
+          models: [{
+            id: modelId,
+            name: model ? model.name : modelId,
+            reasoning: model ? model.reasoning : false,
+            input: model ? model.input : ["text", "image"],
+            contextWindow: model ? model.contextWindow : 128000,
+            maxTokens: model ? model.maxTokens : 16384
+          }]
+        };
+        config.agents.defaults.model.primary = `azure/${modelId}`;
+      } else {
+        const apiKey = document.getElementById("api-key").value.trim();
+        const model = getSelectedModel();
+        const providerConfig = {
+          baseUrl: p.baseUrl,
+          apiKey: apiKey,
+          api: p.api,
+        };
+        if (model) {
+          providerConfig.models = [{
+            id: model.id,
+            name: model.name,
+            reasoning: model.reasoning,
+            input: model.input,
+            contextWindow: model.contextWindow,
+            maxTokens: model.maxTokens,
+          }];
+          config.agents.defaults.model.primary = `${p.id}/${model.id}`;
+        }
+        config.models.providers[p.id] = providerConfig;
+      }
+
+      // Messaging channels
+      const telegramToken = document.getElementById("telegram-token").value.trim();
+      const telegramUsers = document.getElementById("telegram-users").value.trim();
+      const discordToken = document.getElementById("discord-token").value.trim();
+
+      if (telegramToken) {
+        config.channels = config.channels || {};
+        config.channels.telegram = {
+          enabled: true,
+          botToken: telegramToken,
+          dmPolicy: "pairing",
+          groupPolicy: "allowlist",
+          groups: { "*": { requireMention: true } },
+          streamMode: "partial",
+        };
+        if (telegramUsers) {
+          config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        config.plugins.entries.telegram = { enabled: true };
+      }
+
+      if (discordToken) {
+        config.channels = config.channels || {};
+        config.channels.discord = {
+          enabled: true,
+          botToken: discordToken,
+          dmPolicy: "pairing",
+          groupPolicy: "allowlist",
+        };
+        config.plugins.entries.discord = { enabled: true };
+      }
+
+      return config;
+    }
+
+    function showReview() {
+      const config = buildConfig();
+      document.getElementById("config-preview").textContent = JSON.stringify(config, null, 2);
+      goTo(3);
+    }
+
+    async function saveConfig() {
+      const btn = document.getElementById("btn-save");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        const config = buildConfig();
+        const resp = await fetch("/api/config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(config, null, 2)
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          goTo(4);
+        } else {
+          alert("Failed to save: " + (data.error || "Unknown error"));
+          btn.disabled = false;
+          btn.textContent = "Save Configuration";
+        }
+      } catch (err) {
+        alert("Network error: " + err.message);
+        btn.disabled = false;
+        btn.textContent = "Save Configuration";
+      }
+    }
+  </script>
 </body>
+
 </html>

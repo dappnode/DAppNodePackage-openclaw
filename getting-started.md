@@ -6,9 +6,9 @@ Self-hosted AI gateway for DappNode
 
 ## Quick Links
 
-- **[Open Setup Wizard](http://gateway.openclaw.public.dappnode:8080)** — Pick your AI provider, enter your API key, and start chatting in minutes.
-- **[Web UI](http://gateway.openclaw.public.dappnode:18789)** — Chat with AI models in your browser.
-- **[Terminal](http://gateway.openclaw.public.dappnode:7681)** — Shell access inside the container.
+- **[Open Setup Wizard](http://openclaw.public.dappnode:8080)** — Pick your AI provider, enter your API key, and start chatting in minutes.
+- **[Web UI](http://openclaw.public.dappnode:18789)** — Chat with AI models in your browser.
+- **[Terminal](http://openclaw.public.dappnode:7681)** — Shell access inside the container.
 
 ---
 
@@ -30,7 +30,7 @@ Telegram · Discord · Slack · WhatsApp · Matrix · Web UI
 
 ## API Access
 
-OpenClaw exposes an OpenAI-compatible API at `http://gateway.openclaw.public.dappnode:18789/api`. Use your gateway token for authentication.
+OpenClaw exposes an OpenAI-compatible API at `http://openclaw.public.dappnode:18789/api`. Use your gateway token for authentication.
 
 ---
 
