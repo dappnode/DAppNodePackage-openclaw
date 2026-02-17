@@ -723,11 +723,31 @@
         <input type="text" id="ollama-url" placeholder="http://ollama.dappnode:11434" value="${ollamaUrl}">
       </div>
       <div class="field">
-        <label>Model Name</label>
-        <div class="hint">Enter the model to use. Popular choices: llama3, mistral, codellama, qwen3-coder-next:q8_0</div>
-        <input type="text" id="ollama-model" placeholder="llama3" value="${ollamaModel}">
+        <label>Model</label>
+        <div class="hint">Select a model from your Ollama instance, or choose "Custom" to enter a model name manually.</div>
+        <select id="ollama-model-select">
+          <option value="" disabled selected>Run auto-detect first or choose Custom</option>
+          <option value="__custom">Custom model...</option>
+        </select>
+      </div>
+      <div class="field" id="ollama-custom-model-field" style="display:none">
+        <label>Custom Model Name</label>
+        <div class="hint">Enter the model name (e.g. llama3, mistral). If the model is not already downloaded, Ollama will pull it automatically on first use.</div>
+        <input type="text" id="ollama-custom-model" placeholder="llama3" value="">
       </div>
     `;
+        // Setup ollama model dropdown logic
+        const ollamaSelect = document.getElementById("ollama-model-select");
+        const ollamaCustomField = document.getElementById("ollama-custom-model-field");
+        ollamaSelect.addEventListener("change", () => {
+          ollamaCustomField.style.display = ollamaSelect.value === "__custom" ? "block" : "none";
+        });
+        // Pre-fill from existing config
+        if (ollamaModel) {
+          ollamaSelect.value = "__custom";
+          ollamaCustomField.style.display = "block";
+          document.getElementById("ollama-custom-model").value = ollamaModel;
+        }
       } else if (p.id === "azure") {
         let azureEndpoint = "";
         let azureKey = "";
@@ -872,8 +892,16 @@
         ${data.models.length > 0 ? "Available models: " + data.models.join(", ") : "No models pulled yet. Pull a model from the terminal."}
       </div>`;
           document.getElementById("ollama-url").value = data.url;
-          if (data.models.length > 0) {
-            document.getElementById("ollama-model").value = data.models[0];
+          // Populate model dropdown with detected models
+          const ollamaSelect = document.getElementById("ollama-model-select");
+          const ollamaCustomField = document.getElementById("ollama-custom-model-field");
+          if (ollamaSelect && data.models.length > 0) {
+            // Remove the placeholder option, keep custom option
+            ollamaSelect.innerHTML = data.models.map(m =>
+              `<option value="${m}">${m}</option>`
+            ).join("") + `<option value="__custom">Custom model...</option>`;
+            ollamaSelect.value = data.models[0];
+            ollamaCustomField.style.display = "none";
           }
         } else {
           resultEl.innerHTML = `<div class="probe-result fail">
@@ -926,7 +954,10 @@
       // Provider config
       if (p.id === "ollama") {
         const url = document.getElementById("ollama-url").value.trim() || "http://localhost:11434";
-        const model = document.getElementById("ollama-model").value.trim() || "llama3";
+        const ollamaSelect = document.getElementById("ollama-model-select");
+        const model = ollamaSelect.value === "__custom"
+          ? (document.getElementById("ollama-custom-model").value.trim() || "llama3")
+          : (ollamaSelect.value || "llama3");
         config.models.providers.ollama = {
           baseUrl: url + "/v1",
           apiKey: "ollama-local",
