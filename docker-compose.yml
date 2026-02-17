@@ -14,6 +14,7 @@ services:
       TERM: xterm-256color
       NODE_ENV: production
       OPENCLAW_STATE_DIR: /home/node/.openclaw
+      OPENCLAW_GATEWAY_TOKEN: ${GATEWAY_TOKEN:-openclaw}
     volumes:
       - "openclaw_data:/home/node/.openclaw"
       - "openclaw_workspace:/home/node/.openclaw/workspace"
@@ -33,8 +34,6 @@ services:
       - "--port"
       - "18789"
       - "--allow-unconfigured"
-      - "--token"
-      - "${GATEWAY_TOKEN:-openclaw}"
 
 volumes:
   openclaw_data: {}

@@ -290,11 +290,6 @@
       <div class="hint">From the Discord Developer Portal.</div>
       <input type="text" id="discord-token" placeholder="MTIz...">
     </div>
-    <div class="field" style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border);">
-      <label>Gateway Access Token <span class="optional-badge">recommended</span></label>
-      <div class="hint">Protects your gateway. Leave empty for unauthenticated access.</div>
-      <input type="text" id="gateway-token" placeholder="my-secret-token-here">
-    </div>
     <div class="actions">
       <button class="btn btn-secondary" onclick="goTo(1)">Back</button>
       <button class="btn btn-primary" onclick="showReview()">Review</button>
@@ -320,7 +315,7 @@
       The gateway will pick up the new configuration. You may need to restart the package.
     </div>
     <div class="success-links">
-      <a href="http://gateway.openclaw.public.dappnode:18789" target="_blank">
+      <a id="link-webui" href="http://gateway.openclaw.public.dappnode:18789" target="_blank">
         Open OpenClaw Web UI
         <small>Chat with your AI in the browser</small>
       </a>
@@ -491,23 +486,27 @@ function prefillFromConfig(cfg) {
   // Telegram
   if (cfg.channels && cfg.channels.telegram) {
     const tg = cfg.channels.telegram;
-    // We can't recover the bot token from config (it's stored elsewhere), but allowFrom is there
+    if (tg.botToken) {
+      document.getElementById("telegram-token").value = tg.botToken;
+      document.getElementById("telegram-users-field").style.display = "block";
+    }
     if (tg.allowFrom && tg.allowFrom.length > 0) {
       const users = tg.allowFrom.filter(Boolean).join(", ");
       if (users) {
         document.getElementById("telegram-users").value = users;
-        // Show the users field (token might be set externally)
         document.getElementById("telegram-users-field").style.display = "block";
       }
     }
   }
 
-  // Discord - same as telegram, token stored externally
-
-  // Gateway token
-  if (cfg.gateway && cfg.gateway.auth && cfg.gateway.auth.token) {
-    document.getElementById("gateway-token").value = cfg.gateway.auth.token;
+  // Discord
+  if (cfg.channels && cfg.channels.discord) {
+    const dc = cfg.channels.discord;
+    if (dc.botToken) {
+      document.getElementById("discord-token").value = dc.botToken;
+    }
   }
+
 }
 
 function goTo(step) {
@@ -751,7 +750,7 @@ function buildConfig() {
       useAccessGroups: false
     },
     gateway: {
-      controlUi: { enabled: true, allowInsecureAuth: true }
+      controlUi: { allowInsecureAuth: true },
     },
     plugins: { entries: {} }
   };
@@ -824,10 +823,12 @@ function buildConfig() {
   if (telegramToken) {
     config.channels = config.channels || {};
     config.channels.telegram = {
+      enabled: true,
+      botToken: telegramToken,
       dmPolicy: "pairing",
       groupPolicy: "allowlist",
+      groups: { "*": { requireMention: true } },
       streamMode: "partial",
-      actions: { deleteMessage: false }
     };
     if (telegramUsers) {
       config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
@@ -838,16 +839,12 @@ function buildConfig() {
   if (discordToken) {
     config.channels = config.channels || {};
     config.channels.discord = {
+      enabled: true,
+      botToken: discordToken,
       dmPolicy: "pairing",
       groupPolicy: "allowlist",
     };
     config.plugins.entries.discord = { enabled: true };
-  }
-
-  // Gateway token
-  const gatewayToken = document.getElementById("gateway-token").value.trim();
-  if (gatewayToken) {
-    config.gateway.auth = { mode: "token", token: gatewayToken };
   }
 
   return config;

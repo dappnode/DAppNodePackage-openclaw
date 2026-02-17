@@ -28,7 +28,7 @@ ttyd \
     --port 7681 \
     --interface 0.0.0.0 \
     --writable \
-    /bin/bash &
+    /bin/bash -c "cd /home/node/.openclaw && exec /bin/bash -l" &
 TTYD_PID=$!
 echo "ttyd started (PID: ${TTYD_PID})"
 

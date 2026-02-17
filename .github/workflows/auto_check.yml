@@ -4,17 +4,79 @@ on:
   schedule:
     - cron: "00 */4 * * *"
   workflow_dispatch:
-  push:
-    branches:
-      - "master"
 
 jobs:
-  build:
+  bump-upstream:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npx @dappnode/dappnodesdk github-action bump-upstream
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Get current submodule commit
+        id: current
+        run: echo "sha=$(git -C openclaw rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch latest upstream release
+        id: upstream
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
-          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST=$(gh api repos/openclaw/openclaw/releases/latest --jq '.tag_name')
+          echo "tag=$LATEST" >> "$GITHUB_OUTPUT"
+          # Strip leading 'v' if present for the version string
+          VERSION="${LATEST#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update submodule to latest release
+        id: update
+        run: |
+          cd openclaw
+          git fetch --tags origin
+          git checkout ${{ steps.upstream.outputs.tag }}
+          cd ..
+          NEW_SHA=$(git -C openclaw rev-parse HEAD)
+          echo "sha=$NEW_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Check if update is needed
+        id: check
+        run: |
+          if [ "${{ steps.current.outputs.sha }}" = "${{ steps.update.outputs.sha }}" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update upstream version in dappnode_package.json
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          VERSION=${{ steps.upstream.outputs.version }}
+          jq --arg v "$VERSION" '.upstreamVersion = $v' dappnode_package.json > tmp.json && mv tmp.json dappnode_package.json
+
+      - name: Create PR
+        if: steps.check.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ steps.upstream.outputs.version }}
+          BRANCH="bump-upstream/v${VERSION}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if branch already exists on remote
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "Branch $BRANCH already exists, skipping"
+            exit 0
+          fi
+
+          git checkout -b "$BRANCH"
+          git add openclaw dappnode_package.json
+          git commit -m "Bump openclaw upstream to ${VERSION}"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "Bump openclaw upstream to ${VERSION}" \
+            --body "Bumps openclaw submodule to release \`${{ steps.upstream.outputs.tag }}\`." \
+            --base main

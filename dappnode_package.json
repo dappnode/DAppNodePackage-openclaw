@@ -71,7 +71,6 @@
     }
   ],
   "warnings": {
-    "onInstall": "OpenClaw requires API keys from LLM providers (OpenAI, Anthropic, etc.) to function. Configure these in the setup wizard or via environment variables after installation.",
     "onRemove": "Removing this package will delete all your OpenClaw configuration, conversation history, and cached data. Make sure to create a backup first."
   },
   "style": {

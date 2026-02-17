@@ -82,7 +82,6 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "POST" && url.pathname === "/api/config") {
     try {
       const body = await readBody(req);
-      // Validate it's valid JSON
       JSON.parse(body);
       fs.mkdirSync(CONFIG_DIR, { recursive: true });
       fs.writeFileSync(CONFIG_FILE, body, "utf-8");
