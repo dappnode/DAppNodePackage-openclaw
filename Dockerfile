@@ -35,6 +35,9 @@ RUN OPENCLAW_A2UI_SKIP_MISSING=1 pnpm build
 ENV OPENCLAW_PREFER_PNPM=1
 RUN pnpm ui:build
 
+# Make the openclaw CLI available in PATH
+RUN ln -s /app/openclaw.mjs /usr/local/bin/openclaw
+
 ENV NODE_ENV=production
 
 # Install ttyd (web terminal) - static binary from GitHub releases

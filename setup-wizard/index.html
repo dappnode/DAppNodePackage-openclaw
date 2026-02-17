@@ -123,6 +123,7 @@
   }
   .field input:focus, .field select:focus { border-color: var(--primary); }
   .field input::placeholder { color: var(--text-muted); }
+  .field select option { background: var(--card); color: var(--text); }
   .field .optional-badge {
     font-size: 0.75rem;
     color: var(--text-muted);
@@ -247,107 +248,76 @@
     <div class="bar"></div>
     <div class="bar"></div>
     <div class="bar"></div>
-    <div class="bar"></div>
   </div>
 
-  <!-- Step 0: Welcome -->
+  <div id="existing-config-banner"></div>
+
+  <!-- Step 0: Provider -->
   <div class="step active" data-step="0">
-    <h2>Welcome</h2>
-    <div class="subtitle">
-      This wizard will help you create the configuration file for OpenClaw.
-      You'll pick an AI provider, optionally connect messaging apps, and set up security.
-    </div>
-    <div id="existing-config-banner"></div>
-    <div class="actions">
-      <button class="btn btn-primary" onclick="goTo(1)">Get Started</button>
-    </div>
-  </div>
-
-  <!-- Step 1: Provider -->
-  <div class="step" data-step="1">
     <h2>Choose your AI Provider</h2>
-    <div class="subtitle">Which AI service do you want to use? Pick one to get started — you can add more later.</div>
+    <div class="subtitle">Pick one to get started — you can add more later.</div>
     <div class="cards" id="provider-cards"></div>
     <div class="actions">
-      <button class="btn btn-secondary" onclick="goTo(0)">Back</button>
-      <button class="btn btn-primary" id="btn-step1" disabled onclick="goTo(2)">Next</button>
+      <button class="btn btn-primary" id="btn-step0" disabled onclick="goTo(1)">Next</button>
     </div>
   </div>
 
-  <!-- Step 2: API Key / Ollama config -->
-  <div class="step" data-step="2">
+  <!-- Step 1: API Key / Model config -->
+  <div class="step" data-step="1">
     <div id="provider-config"></div>
     <div class="actions">
-      <button class="btn btn-secondary" onclick="goTo(1)">Back</button>
-      <button class="btn btn-primary" id="btn-step2" onclick="goTo(3)">Next</button>
+      <button class="btn btn-secondary" onclick="goTo(0)">Back</button>
+      <button class="btn btn-primary" id="btn-step1" onclick="goTo(2)">Next</button>
     </div>
   </div>
 
-  <!-- Step 3: Messaging (optional) -->
-  <div class="step" data-step="3">
-    <h2>Messaging Integrations</h2>
-    <div class="subtitle">Optionally connect messaging apps so you can chat with your AI from Telegram, Discord, etc. You can skip this and set it up later.</div>
+  <!-- Step 2: Messaging + Security -->
+  <div class="step" data-step="2">
+    <h2>Integrations & Security</h2>
+    <div class="subtitle">Optional — skip any field you don't need right now.</div>
     <div class="field">
       <label>Telegram Bot Token <span class="optional-badge">optional</span></label>
-      <div class="hint">
-        Message <strong>@BotFather</strong> on Telegram, send <code>/newbot</code>, and paste the token here.
-      </div>
+      <div class="hint">From <strong>@BotFather</strong> on Telegram.</div>
       <input type="text" id="telegram-token" placeholder="123456789:ABCdefGHIjklMNO...">
     </div>
     <div class="field" id="telegram-users-field" style="display:none">
       <label>Allowed Telegram User IDs <span class="optional-badge">optional</span></label>
-      <div class="hint">
-        Comma-separated list of user IDs allowed to talk to the bot.
-        Message <strong>@userinfobot</strong> on Telegram to find your ID.
-      </div>
+      <div class="hint">Comma-separated. Use <strong>@userinfobot</strong> to find yours.</div>
       <input type="text" id="telegram-users" placeholder="123456789,987654321">
     </div>
     <div class="field">
       <label>Discord Bot Token <span class="optional-badge">optional</span></label>
-      <div class="hint">
-        Create a bot at the <strong>Discord Developer Portal</strong> and paste the token here.
-      </div>
+      <div class="hint">From the Discord Developer Portal.</div>
       <input type="text" id="discord-token" placeholder="MTIz...">
     </div>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="goTo(2)">Back</button>
-      <button class="btn btn-primary" onclick="goTo(4)">Next</button>
-    </div>
-  </div>
-
-  <!-- Step 4: Security -->
-  <div class="step" data-step="4">
-    <h2>Gateway Security</h2>
-    <div class="subtitle">Set a secret token to protect your gateway. Anyone with this token can access your AI and use your API credits.</div>
-    <div class="field">
+    <div class="field" style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border);">
       <label>Gateway Access Token <span class="optional-badge">recommended</span></label>
-      <div class="hint">Use a strong, random string. Leave empty to allow unauthenticated access (only safe on private networks).</div>
+      <div class="hint">Protects your gateway. Leave empty for unauthenticated access.</div>
       <input type="text" id="gateway-token" placeholder="my-secret-token-here">
     </div>
     <div class="actions">
-      <button class="btn btn-secondary" onclick="goTo(3)">Back</button>
-      <button class="btn btn-primary" onclick="showReview()">Review Configuration</button>
+      <button class="btn btn-secondary" onclick="goTo(1)">Back</button>
+      <button class="btn btn-primary" onclick="showReview()">Review</button>
     </div>
   </div>
 
-  <!-- Step 5: Review & Save -->
-  <div class="step" data-step="5">
+  <!-- Step 3: Review & Save -->
+  <div class="step" data-step="3">
     <h2>Review & Save</h2>
-    <div class="subtitle">Here's the configuration that will be written. You can always re-run this wizard or edit the file directly later.</div>
+    <div class="subtitle">You can re-run this wizard or edit the file later.</div>
     <div class="config-preview" id="config-preview"></div>
     <div class="actions">
-      <button class="btn btn-secondary" onclick="goTo(4)">Back</button>
+      <button class="btn btn-secondary" onclick="goTo(2)">Back</button>
       <button class="btn btn-primary" id="btn-save" onclick="saveConfig()">Save Configuration</button>
     </div>
   </div>
 
-  <!-- Step 6: Success -->
-  <div class="step" data-step="6">
+  <!-- Step 4: Success -->
+  <div class="step" data-step="4">
     <div class="success-icon">&#10003;</div>
     <h2 style="text-align:center">Configuration Saved!</h2>
     <div class="subtitle" style="text-align:center">
-      Your <code>openclaw.json</code> has been written. The gateway will pick up the new configuration.
-      You may need to restart the package from DappNode for changes to take full effect.
+      The gateway will pick up the new configuration. You may need to restart the package.
     </div>
     <div class="success-links">
       <a href="http://gateway.openclaw.public.dappnode:18789" target="_blank">
@@ -367,42 +337,98 @@
 </div>
 
 <script>
+// ---------------------------------------------------------------------------
+// Model catalogues per provider
+// ---------------------------------------------------------------------------
+const PROVIDER_MODELS = {
+  openai: [
+    { id: "gpt-5.2", name: "GPT-5.2", reasoning: false, input: ["text","image"], contextWindow: 400000, maxTokens: 128000 },
+    { id: "gpt-5.2-pro", name: "GPT-5.2 Pro", reasoning: true, input: ["text","image"], contextWindow: 400000, maxTokens: 128000 },
+    { id: "gpt-4.1", name: "GPT-4.1", reasoning: false, input: ["text","image"], contextWindow: 1047576, maxTokens: 32768 },
+    { id: "gpt-4.1-mini", name: "GPT-4.1 Mini", reasoning: false, input: ["text","image"], contextWindow: 1047576, maxTokens: 32768 },
+    { id: "gpt-4.1-nano", name: "GPT-4.1 Nano", reasoning: false, input: ["text","image"], contextWindow: 1047576, maxTokens: 32768 },
+    { id: "o4-mini", name: "o4 Mini (Reasoning)", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 100000 },
+    { id: "o3", name: "o3 (Reasoning)", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 100000 },
+    { id: "gpt-4o", name: "GPT-4o", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 },
+  ],
+  anthropic: [
+    { id: "claude-opus-4-6", name: "Claude Opus 4.6", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 128000 },
+    { id: "claude-sonnet-4-5-20250929", name: "Claude Sonnet 4.5", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 64000 },
+    { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 64000 },
+  ],
+  google: [
+    { id: "gemini-3-pro-preview", name: "Gemini 3 Pro (Preview)", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
+    { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
+    { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
+    { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
+  ],
+  openrouter: [
+    { id: "openai/gpt-5.2", name: "GPT-5.2", reasoning: false, input: ["text","image"], contextWindow: 400000, maxTokens: 128000 },
+    { id: "anthropic/claude-opus-4-6", name: "Claude Opus 4.6", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 128000 },
+    { id: "anthropic/claude-sonnet-4-5", name: "Claude Sonnet 4.5", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 128000 },
+    { id: "google/gemini-3-flash-preview", name: "Gemini 3 Flash", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
+    { id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 },
+    { id: "meta-llama/llama-4-maverick", name: "Llama 4 Maverick", reasoning: false, input: ["text","image"], contextWindow: 1048576, maxTokens: 16384 },
+    { id: "deepseek/deepseek-r1-0528", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 163840, maxTokens: 65536 },
+    { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
+  ],
+  groq: [
+    { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text","image"], contextWindow: 131072, maxTokens: 8192 },
+    { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 65536 },
+    { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
+    { id: "qwen/qwen3-32b", name: "Qwen3 32B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 40960 },
+    { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 131072 },
+  ],
+  deepseek: [
+    { id: "deepseek-chat", name: "DeepSeek V3.2", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 8192 },
+    { id: "deepseek-reasoner", name: "DeepSeek V3.2 (Reasoning)", reasoning: true, input: ["text"], contextWindow: 128000, maxTokens: 64000 },
+  ],
+  together: [
+    { id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", name: "Llama 4 Maverick 17B", reasoning: false, input: ["text","image"], contextWindow: 1048576, maxTokens: 16384 },
+    { id: "meta-llama/Llama-4-Scout-17B-16E-Instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text","image"], contextWindow: 524288, maxTokens: 16384 },
+    { id: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "Llama 3.3 70B Turbo", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
+    { id: "Qwen/QwQ-32B", name: "QwQ 32B (Reasoning)", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
+    { id: "deepseek-ai/DeepSeek-R1", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
+  ],
+  mistral: [
+    { id: "mistral-large-2512", name: "Mistral Large 3", reasoning: false, input: ["text","image"], contextWindow: 256000, maxTokens: 16384 },
+    { id: "devstral-2512", name: "Devstral 2", reasoning: false, input: ["text"], contextWindow: 256000, maxTokens: 16384 },
+    { id: "mistral-small-latest", name: "Mistral Small", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 },
+    { id: "codestral-latest", name: "Codestral", reasoning: false, input: ["text"], contextWindow: 256000, maxTokens: 16384 },
+  ],
+  azure: [
+    { id: "gpt-4o", name: "GPT-4o (Azure)", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 },
+    { id: "gpt-4o-mini", name: "GPT-4o Mini (Azure)", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 },
+  ],
+};
+
 const PROVIDERS = [
-  { id: "openai", name: "OpenAI", desc: "GPT-4, GPT-3.5, DALL-E", tag: "Most popular", free: false,
-    baseUrl: "https://api.openai.com/v1", api: "openai-responses",
-    defaultModel: { id: "gpt-4o", name: "GPT-4o", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 } },
-  { id: "anthropic", name: "Anthropic", desc: "Claude Opus, Sonnet, Haiku", tag: "Strong reasoning", free: false,
-    baseUrl: "https://api.anthropic.com", api: "anthropic-messages",
-    defaultModel: { id: "claude-sonnet-4-5-20250929", name: "Claude Sonnet 4.5", reasoning: true, input: ["text","image"], contextWindow: 200000, maxTokens: 16384 } },
-  { id: "google", name: "Google Gemini", desc: "Gemini 2.5 Pro & Flash", tag: "Multimodal", free: false,
-    baseUrl: "https://generativelanguage.googleapis.com/v1beta", api: "google-generative-ai",
-    defaultModel: { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", reasoning: true, input: ["text","image"], contextWindow: 1048576, maxTokens: 65536 } },
+  { id: "openai", name: "OpenAI", desc: "GPT-5.2, GPT-4.1, o4-mini", tag: "Most popular", free: false,
+    baseUrl: "https://api.openai.com/v1", api: "openai-responses" },
+  { id: "anthropic", name: "Anthropic", desc: "Claude Opus 4.6, Sonnet 4.5, Haiku 4.5", tag: "Strong reasoning", free: false,
+    baseUrl: "https://api.anthropic.com", api: "anthropic-messages" },
+  { id: "google", name: "Google Gemini", desc: "Gemini 3 Pro, 2.5 Pro & Flash", tag: "Multimodal", free: false,
+    baseUrl: "https://generativelanguage.googleapis.com/v1beta", api: "google-generative-ai" },
   { id: "ollama", name: "Ollama (Local)", desc: "Run models on your own hardware", tag: "Free", free: true,
-    baseUrl: "", api: "openai-responses",
-    defaultModel: null },
+    baseUrl: "", api: "openai-responses" },
   { id: "openrouter", name: "OpenRouter", desc: "Access many models with one key", tag: "Flexible", free: false,
-    baseUrl: "https://openrouter.ai/api/v1", api: "openai-responses",
-    defaultModel: { id: "anthropic/claude-sonnet-4-5", name: "Claude Sonnet 4.5 (via OpenRouter)", reasoning: true, input: ["text"], contextWindow: 200000, maxTokens: 16384 } },
-  { id: "groq", name: "Groq", desc: "Ultra-fast open-source models", tag: "Free tier", free: true,
-    baseUrl: "https://api.groq.com/openai/v1", api: "openai-responses",
-    defaultModel: { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 32768 } },
+    baseUrl: "https://openrouter.ai/api/v1", api: "openai-responses" },
+  { id: "groq", name: "Groq", desc: "Ultra-fast DeepSeek R1, Llama, Qwen", tag: "Free tier", free: true,
+    baseUrl: "https://api.groq.com/openai/v1", api: "openai-responses" },
   { id: "deepseek", name: "DeepSeek", desc: "Affordable and capable models", tag: "Budget friendly", free: false,
-    baseUrl: "https://api.deepseek.com/v1", api: "openai-responses",
-    defaultModel: { id: "deepseek-chat", name: "DeepSeek V3", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 8192 } },
+    baseUrl: "https://api.deepseek.com/v1", api: "openai-responses" },
   { id: "together", name: "Together AI", desc: "Open-source models in the cloud", tag: "Paid", free: false,
-    baseUrl: "https://api.together.xyz/v1", api: "openai-responses",
-    defaultModel: { id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", name: "Llama 3.1 70B", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 16384 } },
-  { id: "mistral", name: "Mistral AI", desc: "European AI provider", tag: "Paid", free: false,
-    baseUrl: "https://api.mistral.ai/v1", api: "openai-responses",
-    defaultModel: { id: "mistral-large-latest", name: "Mistral Large", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 } },
+    baseUrl: "https://api.together.xyz/v1", api: "openai-responses" },
+  { id: "mistral", name: "Mistral AI", desc: "Mistral Large 3, Devstral 2, Codestral", tag: "Paid", free: false,
+    baseUrl: "https://api.mistral.ai/v1", api: "openai-responses" },
   { id: "azure", name: "Azure OpenAI", desc: "Enterprise Azure-hosted models", tag: "Enterprise", free: false,
-    baseUrl: "", api: "openai-responses",
-    defaultModel: { id: "gpt-4o", name: "GPT-4o (Azure)", reasoning: false, input: ["text","image"], contextWindow: 128000, maxTokens: 16384 } },
+    baseUrl: "", api: "openai-responses" },
 ];
 
 let currentStep = 0;
 let selectedProvider = null;
 let ollamaProbeResult = null;
+let existingConfig = null; // loaded config for edit mode
 
 // Render provider cards
 const cardsEl = document.getElementById("provider-cards");
@@ -415,30 +441,74 @@ PROVIDERS.forEach(p => {
     <div class="card-desc">${p.desc}</div>
     <span class="card-tag ${p.free ? 'free' : ''}">${p.tag}</span>
   `;
-  card.onclick = () => {
-    cardsEl.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
-    card.classList.add("selected");
-    selectedProvider = p;
-    document.getElementById("btn-step1").disabled = false;
-  };
+  card.onclick = () => selectProviderCard(p.id);
   cardsEl.appendChild(card);
 });
+
+function selectProviderCard(providerId) {
+  cardsEl.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+  const card = cardsEl.querySelector(`.card[data-id="${providerId}"]`);
+  if (card) card.classList.add("selected");
+  selectedProvider = PROVIDERS.find(p => p.id === providerId);
+  document.getElementById("btn-step0").disabled = false;
+}
 
 // Show/hide telegram users when token is entered
 document.getElementById("telegram-token").addEventListener("input", (e) => {
   document.getElementById("telegram-users-field").style.display = e.target.value.trim() ? "block" : "none";
 });
 
-// Check for existing config on load
+// ---------------------------------------------------------------------------
+// Load existing config on startup and pre-fill the form
+// ---------------------------------------------------------------------------
 (async () => {
   try {
     const resp = await fetch("/api/config");
-    if (resp.ok) {
-      document.getElementById("existing-config-banner").innerHTML =
-        '<div class="banner warning">A configuration file already exists. Running the wizard will overwrite it.</div>';
-    }
+    if (!resp.ok) return;
+    existingConfig = await resp.json();
+    document.getElementById("existing-config-banner").innerHTML =
+      '<div class="banner info">Existing configuration found. Your current settings have been loaded — edit any step and save to update.</div>';
+    prefillFromConfig(existingConfig);
   } catch {}
 })();
+
+function prefillFromConfig(cfg) {
+  // Detect provider from config
+  const providers = cfg.models && cfg.models.providers ? cfg.models.providers : {};
+  const providerIds = Object.keys(providers);
+  if (providerIds.length > 0) {
+    const pid = providerIds[0];
+    selectProviderCard(pid);
+
+    // Store loaded provider details for step 2 pre-fill
+    existingConfig._loadedProvider = pid;
+    existingConfig._loadedApiKey = providers[pid].apiKey || "";
+    existingConfig._loadedBaseUrl = providers[pid].baseUrl || "";
+    const models = providers[pid].models || [];
+    existingConfig._loadedModelId = models.length > 0 ? models[0].id : "";
+  }
+
+  // Telegram
+  if (cfg.channels && cfg.channels.telegram) {
+    const tg = cfg.channels.telegram;
+    // We can't recover the bot token from config (it's stored elsewhere), but allowFrom is there
+    if (tg.allowFrom && tg.allowFrom.length > 0) {
+      const users = tg.allowFrom.filter(Boolean).join(", ");
+      if (users) {
+        document.getElementById("telegram-users").value = users;
+        // Show the users field (token might be set externally)
+        document.getElementById("telegram-users-field").style.display = "block";
+      }
+    }
+  }
+
+  // Discord - same as telegram, token stored externally
+
+  // Gateway token
+  if (cfg.gateway && cfg.gateway.auth && cfg.gateway.auth.token) {
+    document.getElementById("gateway-token").value = cfg.gateway.auth.token;
+  }
+}
 
 function goTo(step) {
   currentStep = step;
@@ -453,8 +523,8 @@ function goTo(step) {
     else if (i === step) bar.classList.add("active");
   });
 
-  // Render provider config when entering step 2
-  if (step === 2 && selectedProvider) renderProviderConfig();
+  // Render provider config when entering step 1
+  if (step === 1 && selectedProvider) renderProviderConfig();
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -464,6 +534,15 @@ function renderProviderConfig() {
   const p = selectedProvider;
 
   if (p.id === "ollama") {
+    // Pre-fill values from existing config
+    let ollamaUrl = "";
+    let ollamaModel = "";
+    if (existingConfig && existingConfig._loadedProvider === "ollama") {
+      const rawUrl = existingConfig._loadedBaseUrl || "";
+      ollamaUrl = rawUrl.replace(/\/v1\/?$/, "");
+      ollamaModel = existingConfig._loadedModelId || "";
+    }
+
     container.innerHTML = `
       <h2>Configure Ollama</h2>
       <div class="subtitle">Ollama lets you run AI models locally on your DappNode for free.</div>
@@ -474,35 +553,54 @@ function renderProviderConfig() {
       <div class="field">
         <label>Ollama Server URL</label>
         <div class="hint">If auto-detect doesn't find it, enter the URL manually.</div>
-        <input type="text" id="ollama-url" placeholder="http://ollama.dappnode:11434" value="">
+        <input type="text" id="ollama-url" placeholder="http://ollama.dappnode:11434" value="${ollamaUrl}">
       </div>
       <div class="field">
         <label>Model Name</label>
         <div class="hint">Enter the model to use. Popular choices: llama3, mistral, codellama, qwen3-coder-next:q8_0</div>
-        <input type="text" id="ollama-model" placeholder="llama3" value="">
+        <input type="text" id="ollama-model" placeholder="llama3" value="${ollamaModel}">
       </div>
     `;
   } else if (p.id === "azure") {
+    let azureEndpoint = "";
+    let azureKey = "";
+    let azureDeployment = "gpt-4o";
+    if (existingConfig && existingConfig._loadedProvider === "azure") {
+      azureEndpoint = existingConfig._loadedBaseUrl || "";
+      azureKey = existingConfig._loadedApiKey || "";
+      azureDeployment = existingConfig._loadedModelId || "gpt-4o";
+    }
+
+    const models = PROVIDER_MODELS.azure || [];
     container.innerHTML = `
       <h2>Configure ${p.name}</h2>
       <div class="subtitle">${p.desc}</div>
       <div class="field">
         <label>Azure OpenAI Endpoint</label>
         <div class="hint">Your Azure OpenAI resource endpoint URL.</div>
-        <input type="text" id="azure-endpoint" placeholder="https://your-resource.openai.azure.com/">
+        <input type="text" id="azure-endpoint" placeholder="https://your-resource.openai.azure.com/" value="${azureEndpoint}">
       </div>
       <div class="field">
         <label>API Key</label>
         <div class="hint">Your Azure OpenAI API key from the Azure Portal.</div>
-        <input type="password" id="api-key" placeholder="Paste your API key here">
+        <input type="password" id="api-key" placeholder="Paste your API key here" value="${azureKey}">
       </div>
       <div class="field">
-        <label>Deployment Name</label>
-        <div class="hint">The name of your deployed model (e.g. gpt-4o).</div>
-        <input type="text" id="azure-deployment" placeholder="gpt-4o" value="gpt-4o">
+        <label>Model</label>
+        <div class="hint">Select the deployed model to use.</div>
+        <select id="model-select">
+          ${models.map(m => `<option value="${m.id}" ${m.id === azureDeployment ? 'selected' : ''}>${m.name}</option>`).join("")}
+          <option value="__custom">Custom model...</option>
+        </select>
+      </div>
+      <div class="field" id="custom-model-field" style="display:none">
+        <label>Custom Model / Deployment Name</label>
+        <input type="text" id="custom-model" placeholder="my-deployment-name">
       </div>
     `;
+    setupCustomModelToggle(azureDeployment);
   } else {
+    // Cloud providers with model selection
     const keyLabels = {
       openai: ["OpenAI API Key", "Get one at platform.openai.com/api-keys"],
       anthropic: ["Anthropic API Key", "Get one at console.anthropic.com"],
@@ -514,16 +612,78 @@ function renderProviderConfig() {
       mistral: ["Mistral API Key", "Get one at console.mistral.ai"],
     };
     const [label, hint] = keyLabels[p.id] || ["API Key", ""];
+    const models = PROVIDER_MODELS[p.id] || [];
+
+    // Pre-fill from existing config
+    let prefillKey = "";
+    let prefillModelId = models.length > 0 ? models[0].id : "";
+    if (existingConfig && existingConfig._loadedProvider === p.id) {
+      prefillKey = existingConfig._loadedApiKey || "";
+      prefillModelId = existingConfig._loadedModelId || prefillModelId;
+    }
+
+    let modelSelectHtml = "";
+    if (models.length > 0) {
+      modelSelectHtml = `
+        <div class="field">
+          <label>Model</label>
+          <div class="hint">Choose which model to use as the primary model.</div>
+          <select id="model-select">
+            ${models.map(m => `<option value="${m.id}" ${m.id === prefillModelId ? 'selected' : ''}>${m.name}${m.reasoning ? ' (Reasoning)' : ''}</option>`).join("")}
+            <option value="__custom">Custom model...</option>
+          </select>
+        </div>
+        <div class="field" id="custom-model-field" style="display:none">
+          <label>Custom Model ID</label>
+          <div class="hint">Enter the exact model identifier.</div>
+          <input type="text" id="custom-model" placeholder="model-id">
+        </div>
+      `;
+    }
+
     container.innerHTML = `
       <h2>Configure ${p.name}</h2>
-      <div class="subtitle">${p.desc}. Enter your API key below.</div>
+      <div class="subtitle">${p.desc}. Enter your API key and select a model.</div>
       <div class="field">
         <label>${label}</label>
         <div class="hint">${hint}</div>
-        <input type="password" id="api-key" placeholder="Paste your API key here">
+        <input type="password" id="api-key" placeholder="Paste your API key here" value="${prefillKey}">
       </div>
+      ${modelSelectHtml}
     `;
+    if (models.length > 0) setupCustomModelToggle(prefillModelId);
   }
+}
+
+function setupCustomModelToggle(prefillModelId) {
+  const select = document.getElementById("model-select");
+  const customField = document.getElementById("custom-model-field");
+  if (!select || !customField) return;
+
+  // If the pre-filled model isn't in the dropdown, switch to custom
+  const knownIds = Array.from(select.options).map(o => o.value);
+  if (prefillModelId && !knownIds.includes(prefillModelId)) {
+    select.value = "__custom";
+    customField.style.display = "block";
+    document.getElementById("custom-model").value = prefillModelId;
+  }
+
+  select.addEventListener("change", () => {
+    customField.style.display = select.value === "__custom" ? "block" : "none";
+  });
+}
+
+function getSelectedModel() {
+  const select = document.getElementById("model-select");
+  if (!select) return null;
+  if (select.value === "__custom") {
+    const customId = (document.getElementById("custom-model").value || "").trim();
+    if (!customId) return null;
+    return { id: customId, name: customId, reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 16384 };
+  }
+  const p = selectedProvider;
+  const models = PROVIDER_MODELS[p.id] || [];
+  return models.find(m => m.id === select.value) || null;
 }
 
 async function probeOllama() {
@@ -618,38 +778,40 @@ function buildConfig() {
   } else if (p.id === "azure") {
     const endpoint = document.getElementById("azure-endpoint").value.trim();
     const apiKey = document.getElementById("api-key").value.trim();
-    const deployment = document.getElementById("azure-deployment").value.trim() || "gpt-4o";
+    const model = getSelectedModel();
+    const modelId = model ? model.id : "gpt-4o";
     config.models.providers.azure = {
       baseUrl: endpoint,
       apiKey: apiKey,
       api: "openai-responses",
       models: [{
-        id: deployment,
-        name: "GPT-4o (Azure)",
-        reasoning: false,
-        input: ["text", "image"],
-        contextWindow: 128000,
-        maxTokens: 16384
+        id: modelId,
+        name: model ? model.name : modelId,
+        reasoning: model ? model.reasoning : false,
+        input: model ? model.input : ["text", "image"],
+        contextWindow: model ? model.contextWindow : 128000,
+        maxTokens: model ? model.maxTokens : 16384
       }]
     };
-    config.agents.defaults.model.primary = `azure/${deployment}`;
+    config.agents.defaults.model.primary = `azure/${modelId}`;
   } else {
     const apiKey = document.getElementById("api-key").value.trim();
+    const model = getSelectedModel();
     const providerConfig = {
       baseUrl: p.baseUrl,
       apiKey: apiKey,
       api: p.api,
     };
-    if (p.defaultModel) {
+    if (model) {
       providerConfig.models = [{
-        id: p.defaultModel.id,
-        name: p.defaultModel.name,
-        reasoning: p.defaultModel.reasoning,
-        input: p.defaultModel.input,
-        contextWindow: p.defaultModel.contextWindow,
-        maxTokens: p.defaultModel.maxTokens,
+        id: model.id,
+        name: model.name,
+        reasoning: model.reasoning,
+        input: model.input,
+        contextWindow: model.contextWindow,
+        maxTokens: model.maxTokens,
       }];
-      config.agents.defaults.model.primary = `${p.id}/${p.defaultModel.id}`;
+      config.agents.defaults.model.primary = `${p.id}/${model.id}`;
     }
     config.models.providers[p.id] = providerConfig;
   }
@@ -694,7 +856,7 @@ function buildConfig() {
 function showReview() {
   const config = buildConfig();
   document.getElementById("config-preview").textContent = JSON.stringify(config, null, 2);
-  goTo(5);
+  goTo(3);
 }
 
 async function saveConfig() {
@@ -711,7 +873,7 @@ async function saveConfig() {
     });
     const data = await resp.json();
     if (resp.ok) {
-      goTo(6);
+      goTo(4);
     } else {
       alert("Failed to save: " + (data.error || "Unknown error"));
       btn.disabled = false;

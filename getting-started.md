@@ -1,110 +1,46 @@
-# Getting Started with OpenClaw on DappNode
+# OpenClaw
 
-Welcome to OpenClaw, your self-hosted AI agent gateway!
+Self-hosted AI gateway for DappNode
+
+---
+
+## Quick Links
+
+- **[Open Setup Wizard](http://gateway.openclaw.public.dappnode:8080)** — Pick your AI provider, enter your API key, and start chatting in minutes.
+- **[Web UI](http://gateway.openclaw.public.dappnode:18789)** — Chat with AI models in your browser.
+- **[Terminal](http://gateway.openclaw.public.dappnode:7681)** — Shell access inside the container.
+
+---
 
 ## Quick Start
 
-1. **Run the Setup Wizard**: The easiest way to get started is through the built-in wizard:
-   ```
-   http://gateway.openclaw.public.dappnode:8080
-   ```
-   It will walk you through choosing an AI provider, entering your API key, and optionally connecting messaging apps like Telegram or Discord.
+1. **Run the Setup Wizard** — Click the link above or visit `:8080`. Choose a provider (OpenAI, Anthropic, Ollama, etc.), enter your API key, and pick a model.
+2. **Open the Web UI** — Go to `:18789` and start a conversation with your AI.
+3. **Connect messaging apps** — Optionally add Telegram, Discord, or other bots in the wizard so you can chat from any device.
 
-2. **Access the Web UI**: Once configured, open the main interface:
-   ```
-   http://gateway.openclaw.public.dappnode:18789
-   ```
+> **Using Ollama?** Install an Ollama package on your DappNode first, then the wizard will auto-detect it.
 
-3. **Set Your Gateway Token**: For security, set a gateway access token in the setup wizard or environment variables.
+---
 
-## Features
+## Supported Channels
 
-### Web Interface
-- Chat with AI models directly in your browser
-- Canvas mode for visual interactions
-- Session management and history
+Telegram · Discord · Slack · WhatsApp · Matrix · Web UI
 
-### Terminal Access
-Need to troubleshoot or run commands inside the container? OpenClaw includes a built-in web terminal:
-```
-http://gateway.openclaw.public.dappnode:7681
-```
-This opens a full Bash shell in your browser -- no SSH needed. You can use it to:
-- Check logs and debug issues
-- Inspect configuration files
-- Install additional tools
-- Run one-off commands
+---
 
-You can also access it from the **Terminal** link in your DappNode package dashboard.
+## API Access
 
-### Messaging Integrations
-Configure bots to chat with AI through:
-- **Telegram**: Add your bot token from @BotFather
-- **Discord**: Create a bot at Discord Developer Portal
-- **Slack**: Configure a Slack app with bot tokens
-- **WhatsApp**: Use Twilio for WhatsApp integration
-- **Matrix**: Connect to your Matrix homeserver
+OpenClaw exposes an OpenAI-compatible API at `http://gateway.openclaw.public.dappnode:18789/api`. Use your gateway token for authentication.
 
-### API Access
-OpenClaw exposes an OpenAI-compatible API at:
-```
-http://gateway.openclaw.public.dappnode:18789/api
-```
-
-Use your gateway token for authentication.
-
-## Environment Variables
-
-All configuration is done through environment variables. Access them in DappNode's package config:
-
-| Variable | Description |
-|----------|-------------|
-| `OPENCLAW_GATEWAY_TOKEN` | Secret token for API access |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `ANTHROPIC_API_KEY` | Anthropic Claude API key |
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token |
-| `DISCORD_BOT_TOKEN` | Discord bot token |
-
-See the full list in the DappNode package configuration panel.
-
-## Backup & Restore
-
-Your OpenClaw data is automatically backed up by DappNode. The backup includes:
-- Configuration files
-- Conversation history
-- Session data
+---
 
 ## Troubleshooting
 
-### Gateway not accessible
-- Check that the container is running in DappNode
-- Verify no firewall is blocking ports 18789/18790
-- Check container logs for errors
+| Problem | Solution |
+|---|---|
+| **Gateway not reachable** | Check the container is running. Verify ports 18789/8080 are not blocked. |
+| **API key errors** | Re-enter your key in the wizard. Confirm your provider account has credits. |
+| **Bot not responding** | Verify bot tokens and permissions. Check logs via the terminal. |
+| **Debug from terminal** | Open the web terminal and run: `openclaw doctor` |
 
-### API key errors
-- Verify your API key is correctly entered
-- Check your provider account has available credits
-- Ensure the API key has the required permissions
-
-### Bot not responding
-- Verify bot tokens are correctly configured
-- Check that the bot has proper permissions in the chat platform
-- Review logs for connection errors
-
-### Using the built-in terminal
-If you need to inspect the container directly, open the web terminal at:
-
-```
-http://gateway.openclaw.public.dappnode:7681
-```
-
-From there you can run commands like:
-- `cat /home/node/.openclaw/openclaw.json` -- View the current configuration
-- `ls /home/node/.openclaw/` -- List data files
-- `curl -sf http://localhost:18789/health` -- Test the health endpoint
-
-## Support
-
-- [OpenClaw Documentation](https://docs.openclaw.ai)
-- [GitHub Issues](https://github.com/dappnode/DAppNodePackage-openclaw/issues)
-- [DappNode Discord](https://discord.gg/dappnode)
+---
