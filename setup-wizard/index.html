@@ -586,6 +586,10 @@
         id: "azure", name: "Azure OpenAI", desc: "Enterprise Azure-hosted models", tag: "Enterprise", free: false,
         baseUrl: "", api: "openai-responses"
       },
+      {
+        id: "custom", name: "Custom Provider", desc: "Any OpenAI-compatible API endpoint", tag: "Advanced", free: false,
+        baseUrl: "", api: "openai-completions"
+      },
     ];
 
     let currentStep = 0;
@@ -641,14 +645,21 @@
       const providerIds = Object.keys(providers);
       if (providerIds.length > 0) {
         const pid = providerIds[0];
-        selectProviderCard(pid);
+        const knownProviderIds = PROVIDERS.map(p => p.id);
+        const isKnown = knownProviderIds.includes(pid);
+        const cardId = isKnown ? pid : "custom";
+        selectProviderCard(cardId);
 
         // Store loaded provider details for step 2 pre-fill
-        existingConfig._loadedProvider = pid;
+        existingConfig._loadedProvider = cardId;
         existingConfig._loadedApiKey = providers[pid].apiKey || "";
         existingConfig._loadedBaseUrl = providers[pid].baseUrl || "";
         const models = providers[pid].models || [];
         existingConfig._loadedModelId = models.length > 0 ? models[0].id : "";
+        if (!isKnown) {
+          existingConfig._loadedCustomName = pid;
+          existingConfig._loadedCustomApi = providers[pid].api || "openai-completions";
+        }
       }
 
       // Telegram
@@ -786,6 +797,64 @@
       </div>
     `;
         setupCustomModelToggle(azureDeployment);
+      } else if (p.id === "custom") {
+        let customName = "";
+        let customBaseUrl = "";
+        let customApiKey = "";
+        let customModelId = "";
+        let customApi = "openai-completions";
+        if (existingConfig && existingConfig._loadedProvider === "custom") {
+          customBaseUrl = existingConfig._loadedBaseUrl || "";
+          customApiKey = existingConfig._loadedApiKey || "";
+          customModelId = existingConfig._loadedModelId || "";
+          const provCfg = existingConfig.models && existingConfig.models.providers && existingConfig.models.providers.custom;
+          if (provCfg) customApi = provCfg.api || "openai-completions";
+          customName = existingConfig._loadedCustomName || "";
+        }
+
+        container.innerHTML = `
+      <h2>Configure Custom Provider</h2>
+      <div class="subtitle">Connect to any OpenAI-compatible API endpoint (NVIDIA, Moonshot/Kimi, vLLM, LiteLLM, etc.)</div>
+      <div class="field">
+        <label>Provider Name</label>
+        <div class="hint">A short name for this provider (e.g. "nvidia", "kimi"). Used internally as an identifier.</div>
+        <input type="text" id="custom-provider-name" placeholder="nvidia" value="${customName}">
+      </div>
+      <div class="field">
+        <label>Base URL</label>
+        <div class="hint">The API base URL (e.g. https://integrate.api.nvidia.com/v1)</div>
+        <input type="text" id="custom-base-url" placeholder="https://integrate.api.nvidia.com/v1" value="${customBaseUrl}">
+      </div>
+      <div class="field">
+        <label>API Key</label>
+        <div class="hint">Your API key for this provider.</div>
+        <input type="password" id="api-key" placeholder="Paste your API key here" value="${customApiKey}">
+      </div>
+      <div class="field">
+        <label>Model ID</label>
+        <div class="hint">The exact model identifier (e.g. moonshotai/kimi-k2.5, meta/llama-3.1-70b-instruct)</div>
+        <input type="text" id="custom-model-id" placeholder="moonshotai/kimi-k2.5" value="${customModelId}">
+      </div>
+      <div class="field">
+        <label>API Type</label>
+        <div class="hint">Most custom providers use the OpenAI-compatible completions API.</div>
+        <select id="custom-api-type">
+          <option value="openai-completions" ${customApi === 'openai-completions' ? 'selected' : ''}>OpenAI Completions (most common)</option>
+          <option value="openai-responses" ${customApi === 'openai-responses' ? 'selected' : ''}>OpenAI Responses</option>
+          <option value="anthropic-messages" ${customApi === 'anthropic-messages' ? 'selected' : ''}>Anthropic Messages</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Context Window <span class="optional-badge">optional</span></label>
+        <div class="hint">Max input tokens (default: 128000)</div>
+        <input type="number" id="custom-context-window" placeholder="128000" value="">
+      </div>
+      <div class="field">
+        <label>Max Output Tokens <span class="optional-badge">optional</span></label>
+        <div class="hint">Max tokens the model can generate (default: 16384)</div>
+        <input type="number" id="custom-max-tokens" placeholder="16384" value="">
+      </div>
+    `;
       } else {
         // Cloud providers with model selection
         const keyLabels = {
@@ -992,6 +1061,29 @@
           }]
         };
         config.agents.defaults.model.primary = `azure/${modelId}`;
+      } else if (p.id === "custom") {
+        const providerName = (document.getElementById("custom-provider-name").value.trim() || "custom").toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+        const baseUrl = document.getElementById("custom-base-url").value.trim();
+        const apiKey = document.getElementById("api-key").value.trim();
+        const modelId = document.getElementById("custom-model-id").value.trim() || "default";
+        const apiType = document.getElementById("custom-api-type").value;
+        const contextWindow = parseInt(document.getElementById("custom-context-window").value) || 128000;
+        const maxTokens = parseInt(document.getElementById("custom-max-tokens").value) || 16384;
+
+        config.models.providers[providerName] = {
+          baseUrl: baseUrl,
+          apiKey: apiKey,
+          api: apiType,
+          models: [{
+            id: modelId,
+            name: modelId,
+            reasoning: false,
+            input: ["text"],
+            contextWindow: contextWindow,
+            maxTokens: maxTokens
+          }]
+        };
+        config.agents.defaults.model.primary = `${providerName}/${modelId}`;
       } else {
         const apiKey = document.getElementById("api-key").value.trim();
         const model = getSelectedModel();
