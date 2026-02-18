@@ -1,5 +1,5 @@
 {
-  "name": "openclaw.public.dappnode.eth",
+  "name": "openclaw.dnp.dappnode.eth",
   "version": "0.1.0",
   "upstreamVersion": "2026.2.1",
   "upstreamRepo": "openclaw/openclaw",
@@ -11,7 +11,6 @@
     "linux/amd64",
     "linux/arm64"
   ],
-  "mainService": "gateway",
   "author": "DAppNode Association <admin@dappnode.io>",
   "license": "Apache-2.0",
   "categories": [
@@ -34,9 +33,9 @@
   ],
   "links": {
     "homepage": "https://openclaw.ai",
-    "ui": "http://openclaw.public.dappnode:18789?token=openclaw",
-    "terminal": "http://openclaw.public.dappnode:7681",
-    "setup-wizard": "http://openclaw.public.dappnode:8080",
+    "ui": "http://openclaw.dappnode:18789?token=openclaw",
+    "terminal": "http://openclaw.dappnode:7681",
+    "setup-wizard": "http://openclaw.dappnode:8080",
     "docs": "https://docs.openclaw.ai"
   },
   "repository": {
