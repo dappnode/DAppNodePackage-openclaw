@@ -29,10 +29,6 @@ services:
       - "node"
       - "dist/index.js"
       - "gateway"
-      - "--bind"
-      - "lan"
-      - "--port"
-      - "18789"
       - "--allow-unconfigured"
 
 volumes:

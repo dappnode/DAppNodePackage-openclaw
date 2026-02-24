@@ -471,7 +471,7 @@
           Open Terminal
           <small>Run commands inside the container</small>
         </a>
-        <a href="#" onclick="event.preventDefault(); goTo(0);">
+        <a href="#" onclick="event.preventDefault(); location.reload();">
           Run Wizard Again
           <small>Reconfigure from scratch</small>
         </a>
@@ -1015,7 +1015,13 @@
           useAccessGroups: false
         },
         gateway: {
-          controlUi: { allowInsecureAuth: true },
+          bind: "lan",
+          port: 18789,
+          controlUi: {
+            dangerouslyAllowHostHeaderOriginFallback: true,
+            allowInsecureAuth: true,
+            dangerouslyDisableDeviceAuth: true,
+          },
         },
         plugins: { entries: {} }
       };

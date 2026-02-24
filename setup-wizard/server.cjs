@@ -5,6 +5,16 @@ const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
 
+function deepMerge(base, override) {
+  if (typeof base !== "object" || base === null || Array.isArray(base)) return override;
+  if (typeof override !== "object" || override === null || Array.isArray(override)) return override;
+  const result = Object.assign({}, base);
+  for (const key of Object.keys(override)) {
+    result[key] = deepMerge(base[key], override[key]);
+  }
+  return result;
+}
+
 const PORT = 8080;
 const CONFIG_DIR = process.env.OPENCLAW_STATE_DIR || "/home/node/.openclaw";
 const CONFIG_FILE = path.join(CONFIG_DIR, "openclaw.json");
@@ -78,13 +88,16 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Save config
+  // Save config (deep-merge with existing so non-wizard settings are preserved)
   if (req.method === "POST" && url.pathname === "/api/config") {
     try {
       const body = await readBody(req);
-      JSON.parse(body);
+      const incoming = JSON.parse(body);
+      let existing = {};
+      try { existing = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8")); } catch {}
+      const merged = deepMerge(existing, incoming);
       fs.mkdirSync(CONFIG_DIR, { recursive: true });
-      fs.writeFileSync(CONFIG_FILE, body, "utf-8");
+      fs.writeFileSync(CONFIG_FILE, JSON.stringify(merged, null, 2), "utf-8");
       json(res, 200, { ok: true, path: CONFIG_FILE });
     } catch (err) {
       json(res, 400, { error: err.message });

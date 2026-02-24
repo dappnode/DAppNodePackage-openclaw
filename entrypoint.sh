@@ -8,9 +8,55 @@ OPENCLAW_DIR="${OPENCLAW_STATE_DIR:-/home/node/.openclaw}"
 mkdir -p "$OPENCLAW_DIR/canvas" "$OPENCLAW_DIR/cron" "$OPENCLAW_DIR/workspace" "$OPENCLAW_DIR/sessions"
 
 # ---------------------------------------------------------------------------
-# Config is managed exclusively by the setup wizard (port 8080).
-# The entrypoint does NOT generate openclaw.json.
+# Ensure gateway config has controlUi origin setting (required for non-loopback)
 # ---------------------------------------------------------------------------
+CONFIG_FILE="$OPENCLAW_DIR/openclaw.json"
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Creating default OpenClaw config..."
+    cat > "$CONFIG_FILE" << 'EOF'
+{
+  "gateway": {
+    "bind": "lan",
+    "port": 18789,
+    "controlUi": {
+      "dangerouslyAllowHostHeaderOriginFallback": true,
+      "allowInsecureAuth": true,
+      "dangerouslyDisableDeviceAuth": true
+    }
+  }
+}
+EOF
+else
+    node -e "
+const fs = require('fs');
+const JSON5 = require('/app/node_modules/json5');
+const configPath = '$CONFIG_FILE';
+try {
+  const config = JSON5.parse(fs.readFileSync(configPath, 'utf8'));
+  const cui = ((config.gateway = config.gateway || {}).controlUi = config.gateway.controlUi || {});
+  const gw = config.gateway;
+  let changed = false;
+  if (!('bind' in gw)) { gw.bind = 'lan'; changed = true; }
+  if (!('port' in gw)) { gw.port = 18789; changed = true; }
+  if (!('dangerouslyAllowHostHeaderOriginFallback' in cui) && !('allowedOrigins' in cui)) {
+    cui.dangerouslyAllowHostHeaderOriginFallback = true;
+    changed = true;
+  }
+  if (!('allowInsecureAuth' in cui)) {
+    cui.allowInsecureAuth = true;
+    changed = true;
+  }
+  if (!('dangerouslyDisableDeviceAuth' in cui)) {
+    cui.dangerouslyDisableDeviceAuth = true;
+    changed = true;
+  }
+  if (changed) {
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    console.log('Updated OpenClaw config for DAppNode HTTP deployment');
+  }
+} catch(e) { console.warn('Could not update openclaw.json:', e.message); }
+" || true
+fi
 
 # ---------------------------------------------------------------------------
 # Start setup wizard web UI in the background on port 8080

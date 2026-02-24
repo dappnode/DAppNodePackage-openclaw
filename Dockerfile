@@ -66,4 +66,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Run as root (no-new-privileges prevents privilege escalation via gosu/sudo)
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["node", "dist/index.js", "gateway", "--bind", "lan", "--port", "18789", "--allow-unconfigured"]
+CMD ["node", "dist/index.js", "gateway", "--allow-unconfigured"]
