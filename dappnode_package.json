@@ -14,6 +14,7 @@
   "author": "DAppNode Association <admin@dappnode.io>",
   "license": "Apache-2.0",
   "categories": [
+    "AI",
     "Developer tools",
     "Communications"
   ],
@@ -79,16 +80,6 @@
       "description": "Web-based setup wizard for easy configuration",
       "serviceName": "gateway",
       "port": 8080
-    }
-  ],
-  "globalEnvs": [
-    {
-      "envs": [
-        "ACTIVE"
-      ],
-      "services": [
-        "gateway"
-      ]
     }
   ],
   "warnings": {

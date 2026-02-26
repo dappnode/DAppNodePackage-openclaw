@@ -381,6 +381,48 @@
       margin-top: 2px;
       font-size: 0.8rem;
     }
+
+    /* Mode picker (home step) */
+    .mode-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 1.5rem 0;
+    }
+
+    .mode-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      text-align: left;
+      color: var(--text);
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .mode-card:hover {
+      background: var(--card-hover);
+      border-color: var(--primary);
+    }
+
+    .mode-card .mode-card-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .mode-card .mode-card-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .card-tag.configured {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--success);
+    }
   </style>
 </head>
 
@@ -400,6 +442,22 @@
 
     <div id="existing-config-banner"></div>
 
+    <!-- Step: Home (shown when existing config has a configured provider) -->
+    <div class="step" data-step="home">
+      <h2>Configuration Found</h2>
+      <div class="subtitle" id="home-subtitle">You already have a provider configured. What would you like to do?</div>
+      <div class="mode-cards">
+        <button class="mode-card" onclick="startUpdate()">
+          <div class="mode-card-title">Edit Existing Setup</div>
+          <div class="mode-card-desc">Update your API keys, change the model, or adjust messaging integrations</div>
+        </button>
+        <button class="mode-card" onclick="startAddProvider()">
+          <div class="mode-card-title">&#43; Add Another Provider</div>
+          <div class="mode-card-desc">Add a new AI provider and set it as the default for the agent</div>
+        </button>
+      </div>
+    </div>
+
     <!-- Step 0: Provider -->
     <div class="step active" data-step="0">
       <h2>Choose your AI Provider</h2>
@@ -415,7 +473,7 @@
       <div id="provider-config"></div>
       <div class="actions">
         <button class="btn btn-secondary" onclick="goTo(0)">Back</button>
-        <button class="btn btn-primary" id="btn-step1" onclick="goTo(2)">Next</button>
+        <button class="btn btn-primary" id="btn-step1" onclick="nextFromStep1()">Next</button>
       </div>
     </div>
 
@@ -450,7 +508,7 @@
       <div class="subtitle">You can re-run this wizard or edit the file later.</div>
       <div class="config-preview" id="config-preview"></div>
       <div class="actions">
-        <button class="btn btn-secondary" onclick="goTo(2)">Back</button>
+        <button class="btn btn-secondary" onclick="backFromReview()">Back</button>
         <button class="btn btn-primary" id="btn-save" onclick="saveConfig()">Save Configuration</button>
       </div>
     </div>
@@ -596,6 +654,8 @@
     let selectedProvider = null;
     let ollamaProbeResult = null;
     let existingConfig = null; // loaded config for edit mode
+    let wizardMode = 'update'; // 'update' | 'add-provider'
+    let existingProviderIds = []; // provider IDs already in config
 
     // Render provider cards
     const cardsEl = document.getElementById("provider-cards");
@@ -633,9 +693,24 @@
         const resp = await fetch("/api/config");
         if (!resp.ok) return;
         existingConfig = await resp.json();
-        document.getElementById("existing-config-banner").innerHTML =
-          '<div class="banner info">Existing configuration found. Your current settings have been loaded — edit any step and save to update.</div>';
-        prefillFromConfig(existingConfig);
+        const providers = existingConfig.models && existingConfig.models.providers ? existingConfig.models.providers : {};
+        existingProviderIds = Object.keys(providers);
+
+        if (existingProviderIds.length > 0) {
+          // Show home step so user can choose to edit or add a provider
+          const providerNames = existingProviderIds.map(pid => {
+            const known = PROVIDERS.find(p => p.id === pid);
+            return known ? known.name : pid;
+          });
+          document.getElementById("home-subtitle").textContent =
+            `You already have ${providerNames.join(", ")} configured. What would you like to do?`;
+          goTo("home");
+        } else {
+          // Config exists but no providers yet — just prefill and continue
+          document.getElementById("existing-config-banner").innerHTML =
+            '<div class="banner info">Existing configuration found. Your current settings have been loaded — edit any step and save to update.</div>';
+          prefillFromConfig(existingConfig);
+        }
       } catch { }
     })();
 
@@ -656,6 +731,8 @@
         existingConfig._loadedBaseUrl = providers[pid].baseUrl || "";
         const models = providers[pid].models || [];
         existingConfig._loadedModelId = models.length > 0 ? models[0].id : "";
+        existingConfig._loadedContextWindow = models.length > 0 ? (models[0].contextWindow || null) : null;
+        existingConfig._loadedMaxTokens = models.length > 0 ? (models[0].maxTokens || null) : null;
         if (!isKnown) {
           existingConfig._loadedCustomName = pid;
           existingConfig._loadedCustomApi = providers[pid].api || "openai-completions";
@@ -688,18 +765,82 @@
 
     }
 
+    function startUpdate() {
+      wizardMode = 'update';
+      prefillFromConfig(existingConfig);
+      document.getElementById("existing-config-banner").innerHTML =
+        '<div class="banner info">Editing existing configuration — your current settings have been loaded.</div>';
+      goTo(0);
+    }
+
+    function startAddProvider() {
+      wizardMode = 'add-provider';
+      selectedProvider = null;
+      document.getElementById("btn-step0").disabled = true;
+      // Clear any prior selection
+      cardsEl.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+      // Mark already-configured providers with a badge
+      existingProviderIds.forEach(pid => {
+        const knownProvider = PROVIDERS.find(p => p.id === pid);
+        const cardId = knownProvider ? pid : "custom";
+        const card = cardsEl.querySelector(`.card[data-id="${cardId}"]`);
+        if (card && !card.querySelector(".card-tag.configured")) {
+          const tag = document.createElement("span");
+          tag.className = "card-tag configured";
+          tag.textContent = "Already configured";
+          card.appendChild(tag);
+        }
+      });
+      document.getElementById("existing-config-banner").innerHTML = "";
+      goTo(0);
+    }
+
+    function nextFromStep1() {
+      if (wizardMode === 'add-provider') {
+        showReview();
+      } else {
+        goTo(2);
+      }
+    }
+
+    function backFromReview() {
+      if (wizardMode === 'add-provider') {
+        goTo(1);
+      } else {
+        goTo(2);
+      }
+    }
+
     function goTo(step) {
       currentStep = step;
       document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-      document.querySelector(`.step[data-step="${step}"]`).classList.add("active");
+      const stepEl = document.querySelector(`.step[data-step="${step}"]`);
+      if (stepEl) stepEl.classList.add("active");
 
       // Update progress bar
+      const progressEl = document.getElementById("progress");
       const bars = document.querySelectorAll(".progress .bar");
-      bars.forEach((bar, i) => {
-        bar.className = "bar";
-        if (i < step) bar.classList.add("done");
-        else if (i === step) bar.classList.add("active");
-      });
+      if (step === "home") {
+        progressEl.style.display = "none";
+      } else {
+        progressEl.style.display = "";
+        if (wizardMode === 'add-provider') {
+          // 3-step flow: Select(0) → Configure(1) → Review(3) → Success(4)
+          const progressMap = { 0: 0, 1: 1, 3: 2, 4: 3 };
+          const progressStep = progressMap[step] ?? 0;
+          bars.forEach((bar, i) => {
+            bar.className = "bar";
+            if (i < progressStep) bar.classList.add("done");
+            else if (i === progressStep) bar.classList.add("active");
+          });
+        } else {
+          bars.forEach((bar, i) => {
+            bar.className = "bar";
+            if (i < step) bar.classList.add("done");
+            else if (i === step) bar.classList.add("active");
+          });
+        }
+      }
 
       // Render provider config when entering step 1
       if (step === 1 && selectedProvider) renderProviderConfig();
@@ -803,6 +944,8 @@
         let customApiKey = "";
         let customModelId = "";
         let customApi = "openai-completions";
+        let customContextWindow = "";
+        let customMaxTokens = "";
         if (existingConfig && existingConfig._loadedProvider === "custom") {
           customBaseUrl = existingConfig._loadedBaseUrl || "";
           customApiKey = existingConfig._loadedApiKey || "";
@@ -810,6 +953,8 @@
           const provCfg = existingConfig.models && existingConfig.models.providers && existingConfig.models.providers.custom;
           if (provCfg) customApi = provCfg.api || "openai-completions";
           customName = existingConfig._loadedCustomName || "";
+          customContextWindow = existingConfig._loadedContextWindow ? String(existingConfig._loadedContextWindow) : "";
+          customMaxTokens = existingConfig._loadedMaxTokens ? String(existingConfig._loadedMaxTokens) : "";
         }
 
         container.innerHTML = `
@@ -847,12 +992,12 @@
       <div class="field">
         <label>Context Window <span class="optional-badge">optional</span></label>
         <div class="hint">Max input tokens (default: 128000)</div>
-        <input type="number" id="custom-context-window" placeholder="128000" value="">
+        <input type="number" id="custom-context-window" placeholder="128000" value="${customContextWindow}">
       </div>
       <div class="field">
         <label>Max Output Tokens <span class="optional-badge">optional</span></label>
         <div class="hint">Max tokens the model can generate (default: 16384)</div>
-        <input type="number" id="custom-max-tokens" placeholder="16384" value="">
+        <input type="number" id="custom-max-tokens" placeholder="16384" value="${customMaxTokens}">
       </div>
     `;
       } else {
@@ -1147,8 +1292,80 @@
       return config;
     }
 
+    function buildAddProviderConfig() {
+      // Builds only the new provider + updated default — server deep-merges with existing config
+      const p = selectedProvider;
+      const config = {
+        meta: {
+          lastTouchedVersion: "2026.2.1",
+          lastTouchedAt: new Date().toISOString()
+        },
+        models: { providers: {} },
+        agents: { defaults: { model: { primary: "" } } }
+      };
+
+      if (p.id === "ollama") {
+        const url = document.getElementById("ollama-url").value.trim() || "http://localhost:11434";
+        const ollamaSelect = document.getElementById("ollama-model-select");
+        const model = ollamaSelect.value === "__custom"
+          ? (document.getElementById("ollama-custom-model").value.trim() || "llama3")
+          : (ollamaSelect.value || "llama3");
+        config.models.providers.ollama = {
+          baseUrl: url + "/v1",
+          apiKey: "ollama-local",
+          api: "openai-responses",
+          models: [{ id: model, name: model, reasoning: false, input: ["text"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 128000, maxTokens: 16384 }]
+        };
+        config.agents.defaults.model.primary = `ollama/${model}`;
+      } else if (p.id === "azure") {
+        const endpoint = document.getElementById("azure-endpoint").value.trim();
+        const apiKey = document.getElementById("api-key").value.trim();
+        const model = getSelectedModel();
+        const modelId = model ? model.id : "gpt-4o";
+        config.models.providers.azure = {
+          baseUrl: endpoint,
+          apiKey: apiKey,
+          api: "openai-responses",
+          models: [{ id: modelId, name: model ? model.name : modelId, reasoning: model ? model.reasoning : false, input: model ? model.input : ["text", "image"], contextWindow: model ? model.contextWindow : 128000, maxTokens: model ? model.maxTokens : 16384 }]
+        };
+        config.agents.defaults.model.primary = `azure/${modelId}`;
+      } else if (p.id === "custom") {
+        const providerName = (document.getElementById("custom-provider-name").value.trim() || "custom").toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+        const baseUrl = document.getElementById("custom-base-url").value.trim();
+        const apiKey = document.getElementById("api-key").value.trim();
+        const modelId = document.getElementById("custom-model-id").value.trim() || "default";
+        const apiType = document.getElementById("custom-api-type").value;
+        const contextWindow = parseInt(document.getElementById("custom-context-window").value) || 128000;
+        const maxTokens = parseInt(document.getElementById("custom-max-tokens").value) || 16384;
+        config.models.providers[providerName] = {
+          baseUrl: baseUrl,
+          apiKey: apiKey,
+          api: apiType,
+          models: [{ id: modelId, name: modelId, reasoning: false, input: ["text"], contextWindow: contextWindow, maxTokens: maxTokens }]
+        };
+        config.agents.defaults.model.primary = `${providerName}/${modelId}`;
+      } else {
+        const apiKey = document.getElementById("api-key").value.trim();
+        const model = getSelectedModel();
+        const providerConfig = { baseUrl: p.baseUrl, apiKey: apiKey, api: p.api };
+        if (model) {
+          providerConfig.models = [{ id: model.id, name: model.name, reasoning: model.reasoning, input: model.input, contextWindow: model.contextWindow, maxTokens: model.maxTokens }];
+          config.agents.defaults.model.primary = `${p.id}/${model.id}`;
+        }
+        config.models.providers[p.id] = providerConfig;
+      }
+
+      return config;
+    }
+
     function showReview() {
-      const config = buildConfig();
+      const isAddMode = wizardMode === 'add-provider';
+      const config = isAddMode ? buildAddProviderConfig() : buildConfig();
+      const reviewStep = document.querySelector('.step[data-step="3"]');
+      reviewStep.querySelector('h2').textContent = isAddMode ? 'Review & Add Provider' : 'Review & Save';
+      reviewStep.querySelector('.subtitle').textContent = isAddMode
+        ? 'The new provider will be added to your existing config and set as the default for the agent.'
+        : 'You can re-run this wizard or edit the file later.';
       document.getElementById("config-preview").textContent = JSON.stringify(config, null, 2);
       goTo(3);
     }
@@ -1159,7 +1376,7 @@
       btn.textContent = "Saving...";
 
       try {
-        const config = buildConfig();
+        const config = wizardMode === 'add-provider' ? buildAddProviderConfig() : buildConfig();
         const resp = await fetch("/api/config", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
