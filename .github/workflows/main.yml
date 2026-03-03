@@ -10,6 +10,17 @@ on:
       - "README.md"
 
 jobs:
+  build-test:
+    runs-on: ipfs-dev-gateway
+    name: Build test
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npx @dappnode/dappnodesdk build --provider http://10.200.200.7:5001 --timeout 1h
+
   release:
     name: Release
     runs-on: ipfs-dev-gateway
