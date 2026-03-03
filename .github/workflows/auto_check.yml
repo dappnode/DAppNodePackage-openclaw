@@ -10,59 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-
-      - name: Get current upstream version
-        id: current
-        run: |
-          VERSION=$(jq -r '.upstreamVersion' dappnode_package.json)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Fetch latest npm version
-        id: upstream
-        run: |
-          LATEST=$(npm view openclaw version)
-          echo "version=$LATEST" >> "$GITHUB_OUTPUT"
-
-      - name: Check if update is needed
-        id: check
-        run: |
-          if [ "${{ steps.current.outputs.version }}" = "${{ steps.upstream.outputs.version }}" ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Update upstream version in dappnode_package.json
-        if: steps.check.outputs.changed == 'true'
-        run: |
-          VERSION=${{ steps.upstream.outputs.version }}
-          jq --arg v "$VERSION" '.upstreamVersion = $v' dappnode_package.json > tmp.json && mv tmp.json dappnode_package.json
-
-      - name: Create PR
-        if: steps.check.outputs.changed == 'true'
+          node-version: "22"
+      - run: npx @dappnode/dappnodesdk github-action bump-upstream
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=${{ steps.upstream.outputs.version }}
-          BRANCH="bump-upstream/v${VERSION}"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Check if branch already exists on remote
-          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-            echo "Branch $BRANCH already exists, skipping"
-            exit 0
-          fi
-
-          git checkout -b "$BRANCH"
-          git add dappnode_package.json
-          git commit -m "Bump openclaw upstream to ${VERSION}"
-          git push origin "$BRANCH"
-
-          gh pr create \
-            --title "Bump openclaw upstream to ${VERSION}" \
-            --body "Bumps openclaw npm package to version \`${VERSION}\`." \
-            --base main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
