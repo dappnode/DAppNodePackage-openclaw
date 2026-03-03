@@ -11,38 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true
           fetch-depth: 0
 
-      - name: Get current submodule commit
+      - name: Get current upstream version
         id: current
-        run: echo "sha=$(git -C openclaw rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Fetch latest upstream release
-        id: upstream
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST=$(gh api repos/openclaw/openclaw/releases/latest --jq '.tag_name')
-          echo "tag=$LATEST" >> "$GITHUB_OUTPUT"
-          # Strip leading 'v' if present for the version string
-          VERSION="${LATEST#v}"
+          VERSION=$(jq -r '.upstreamVersion' dappnode_package.json)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Update submodule to latest release
-        id: update
+      - name: Fetch latest npm version
+        id: upstream
         run: |
-          cd openclaw
-          git fetch --tags origin
-          git checkout ${{ steps.upstream.outputs.tag }}
-          cd ..
-          NEW_SHA=$(git -C openclaw rev-parse HEAD)
-          echo "sha=$NEW_SHA" >> "$GITHUB_OUTPUT"
+          LATEST=$(npm view openclaw version)
+          echo "version=$LATEST" >> "$GITHUB_OUTPUT"
 
       - name: Check if update is needed
         id: check
         run: |
-          if [ "${{ steps.current.outputs.sha }}" = "${{ steps.update.outputs.sha }}" ]; then
+          if [ "${{ steps.current.outputs.version }}" = "${{ steps.upstream.outputs.version }}" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -72,11 +58,11 @@ jobs:
           fi
 
           git checkout -b "$BRANCH"
-          git add openclaw dappnode_package.json
+          git add dappnode_package.json
           git commit -m "Bump openclaw upstream to ${VERSION}"
           git push origin "$BRANCH"
 
           gh pr create \
             --title "Bump openclaw upstream to ${VERSION}" \
-            --body "Bumps openclaw submodule to release \`${{ steps.upstream.outputs.tag }}\`." \
+            --body "Bumps openclaw npm package to version \`${VERSION}\`." \
             --base main

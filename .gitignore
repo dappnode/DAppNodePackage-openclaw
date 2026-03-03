@@ -1,3 +1,6 @@
+# Former git submodule (now installed via npm at build time)
+openclaw/
+
 # Build artifacts
 build_*/
 *.xz
