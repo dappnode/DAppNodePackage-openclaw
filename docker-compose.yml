@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        UPSTREAM_VERSION: "latest"
+        UPSTREAM_VERSION: "2026.3.2"
     image: "openclaw.dnp.dappnode.eth:0.1.0"
     container_name: DAppNodePackage-openclaw.dnp.dappnode.eth
     restart: unless-stopped
@@ -26,8 +26,7 @@ services:
         max-size: "10m"
         max-file: "3"
     command:
-      - "node"
-      - "dist/index.js"
+      - "openclaw"
       - "gateway"
       - "--allow-unconfigured"
 

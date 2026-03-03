@@ -2,15 +2,13 @@ ARG UPSTREAM_VERSION="latest"
 
 FROM node:22-bookworm
 
-# Install Bun (required for build scripts) and sudo (needed by openclaw tool executor)
+# Install Bun (required by openclaw at runtime) and sudo (needed by openclaw tool executor)
 RUN curl -fsSL https://bun.sh/install | bash && \
     apt-get update && \
     apt-get install -y --no-install-recommends sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 ENV PATH="/root/.bun/bin:${PATH}"
-
-RUN corepack enable
 
 WORKDIR /app
 
@@ -22,21 +20,11 @@ RUN if [ -n "$OPENCLAW_DOCKER_APT_PACKAGES" ]; then \
       rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*; \
     fi
 
-COPY openclaw/package.json openclaw/pnpm-lock.yaml openclaw/pnpm-workspace.yaml openclaw/.npmrc ./
-COPY openclaw/ui/package.json ./ui/package.json
-COPY openclaw/patches ./patches
-COPY openclaw/scripts ./scripts
+ARG UPSTREAM_VERSION
+RUN npm install -g openclaw@${UPSTREAM_VERSION}
 
-RUN pnpm install --frozen-lockfile
-
-COPY openclaw/ .
-RUN OPENCLAW_A2UI_SKIP_MISSING=1 pnpm build
-# Force pnpm for UI build (Bun may fail on ARM/Synology architectures)
-ENV OPENCLAW_PREFER_PNPM=1
-RUN pnpm ui:build
-
-# Make the openclaw CLI available in PATH
-RUN ln -s /app/openclaw.mjs /usr/local/bin/openclaw
+# Make json5 (openclaw dependency) resolvable by plain require('json5')
+ENV NODE_PATH=/usr/local/lib/node_modules
 
 ENV NODE_ENV=production
 
@@ -66,4 +54,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Run as root (no-new-privileges prevents privilege escalation via gosu/sudo)
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["node", "dist/index.js", "gateway", "--allow-unconfigured"]
+CMD ["openclaw", "gateway", "--allow-unconfigured"]

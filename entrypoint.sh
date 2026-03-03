@@ -29,7 +29,7 @@ EOF
 else
     node -e "
 const fs = require('fs');
-const JSON5 = require('/app/node_modules/json5');
+const JSON5 = require('json5');
 const configPath = '$CONFIG_FILE';
 try {
   const config = JSON5.parse(fs.readFileSync(configPath, 'utf8'));
