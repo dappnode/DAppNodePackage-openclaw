@@ -45,8 +45,24 @@ COPY setup-wizard/ /app/setup-wizard/
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Expose gateway, bridge, terminal, and setup wizard ports
-EXPOSE 18789 18790 7681 8080
+# Install gohttpserver (web-based file manager) - static binary from GitHub releases
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then GHS_ARCH="amd64"; \
+    elif [ "$ARCH" = "arm64" ]; then GHS_ARCH="arm64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    TARBALL="gohttpserver_1.3.0_linux_${GHS_ARCH}.tar.gz" && \
+    curl -fsSL "https://github.com/codeskyblue/gohttpserver/releases/download/1.3.0/${TARBALL}" \
+      -o "/tmp/${TARBALL}" && \
+    EXPECTED=$(curl -fsSL "https://github.com/codeskyblue/gohttpserver/releases/download/1.3.0/gohttpserver_1.3.0_checksums.txt" \
+      | grep "${TARBALL}" | awk '{print $1}') && \
+    ACTUAL=$(sha256sum "/tmp/${TARBALL}" | awk '{print $1}') && \
+    [ "$EXPECTED" = "$ACTUAL" ] || (echo "Checksum mismatch for ${TARBALL}" && exit 1) && \
+    tar -xz -C /usr/local/bin --strip-components=0 -f "/tmp/${TARBALL}" gohttpserver && \
+    chmod +x /usr/local/bin/gohttpserver && \
+    rm "/tmp/${TARBALL}"
+
+# Expose gateway, bridge, terminal, setup wizard, and file manager ports
+EXPOSE 18789 18790 7681 8080 8888
 
 # Health check for DappNode monitoring
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

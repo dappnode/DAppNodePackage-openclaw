@@ -78,6 +78,20 @@ ttyd \
 TTYD_PID=$!
 echo "ttyd started (PID: ${TTYD_PID})"
 
+# ---------------------------------------------------------------------------
+# Start gohttpserver (web-based file manager) in the background on port 8888
+# No application-level auth: access is controlled at the DAppNode network level,
+# consistent with the ttyd terminal which also relies on DAppNode access control.
+# ---------------------------------------------------------------------------
+echo "Starting gohttpserver file manager on port 8888..."
+gohttpserver \
+    --port 8888 \
+    --root "$OPENCLAW_DIR" \
+    --upload \
+    --delete &
+GOHTTPSERVER_PID=$!
+echo "gohttpserver started (PID: ${GOHTTPSERVER_PID})"
+
 # Execute the main command (runs as root; no-new-privileges prevents gosu/sudo)
 if [ -n "$EXTRA_OPTS" ]; then
     exec "$@" $EXTRA_OPTS
