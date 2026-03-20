@@ -36,6 +36,7 @@
     "homepage": "https://openclaw.ai",
     "ui": "http://openclaw.dappnode:18789#token=openclaw",
     "terminal": "http://openclaw.dappnode:7681",
+    "files": "http://openclaw.dappnode:8888",
     "setup-wizard": "http://openclaw.dappnode:8080",
     "docs": "https://docs.openclaw.ai"
   },
@@ -80,6 +81,12 @@
       "description": "Web-based setup wizard for easy configuration",
       "serviceName": "gateway",
       "port": 8080
+    },
+    {
+      "name": "OpenClaw File Manager",
+      "description": "Web-based file manager for browsing and managing OpenClaw data files",
+      "serviceName": "gateway",
+      "port": 8888
     }
   ],
   "warnings": {
