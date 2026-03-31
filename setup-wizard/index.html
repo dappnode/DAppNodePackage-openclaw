@@ -423,6 +423,213 @@
       background: rgba(52, 211, 153, 0.15);
       color: var(--success);
     }
+
+    /* Provider list on home step */
+    .provider-list-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .provider-list-section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+    }
+
+    .provider-list-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .provider-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .provider-list-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .provider-list-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .provider-list-url {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .provider-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+      margin-left: 0.75rem;
+    }
+
+    .provider-action-btn {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .provider-action-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .provider-action-btn.danger:hover {
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .add-provider-btn {
+      display: block;
+      width: 100%;
+      padding: 0.9rem 1.25rem;
+      background: transparent;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      margin-top: 0.75rem;
+    }
+
+    .add-provider-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .model-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.35rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .model-row-name {
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .model-row.model-row-default .model-row-name {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .model-default-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(102, 126, 234, 0.15);
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .set-default-btn {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .set-default-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .set-default-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Channels section on home step */
+    .channels-section {
+      margin-top: 1.5rem;
+    }
+
+    .channels-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+    }
+
+    .channel-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.3rem 0;
+    }
+
+    .channel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .channel-dot.on { background: var(--success); }
+    .channel-dot.off { background: var(--border); }
+
+    .channel-name {
+      font-size: 0.85rem;
+      flex: 1;
+    }
+
+    .channel-status-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .configure-channels-btn {
+      display: block;
+      width: 100%;
+      margin-top: 0.75rem;
+      padding: 7px 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .configure-channels-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
   </style>
 </head>
 
@@ -444,18 +651,9 @@
 
     <!-- Step: Home (shown when existing config has a configured provider) -->
     <div class="step" data-step="home">
-      <h2>Configuration Found</h2>
-      <div class="subtitle" id="home-subtitle">You already have a provider configured. What would you like to do?</div>
-      <div class="mode-cards">
-        <button class="mode-card" onclick="startUpdate()">
-          <div class="mode-card-title">Edit Existing Setup</div>
-          <div class="mode-card-desc">Update your API keys, change the model, or adjust messaging integrations</div>
-        </button>
-        <button class="mode-card" onclick="startAddProvider()">
-          <div class="mode-card-title">&#43; Add Another Provider</div>
-          <div class="mode-card-desc">Add a new AI provider and set it as the default for the agent</div>
-        </button>
-      </div>
+      <h2>Your AI Providers</h2>
+      <div id="home-banner"></div>
+      <div id="home-providers"></div>
     </div>
 
     <!-- Step 0: Provider -->
@@ -496,9 +694,31 @@
         <div class="hint">From the Discord Developer Portal.</div>
         <input type="text" id="discord-token" placeholder="MTIz...">
       </div>
+      <div class="field">
+        <label>WhatsApp <span class="optional-badge">optional</span></label>
+        <div class="hint">Scan the QR code with your phone to link WhatsApp. Open WhatsApp &rarr; <strong>Linked Devices &rarr; Link a Device</strong>, then scan.</div>
+        <div id="whatsapp-status-banner" style="margin-top:0.5rem"></div>
+        <button type="button" class="probe-btn" id="whatsapp-connect-btn" onclick="startWhatsAppLogin()">
+          <span id="whatsapp-btn-icon">&#128241;</span> <span id="whatsapp-btn-label">Connect WhatsApp</span>
+        </button>
+        <div id="whatsapp-qr-area" style="display:none;margin-top:0.75rem">
+          <pre id="whatsapp-qr-output" style="background:var(--card);border:1px solid var(--border);padding:1rem;border-radius:8px;font-size:0.65rem;line-height:1.15;overflow:auto;max-height:360px;white-space:pre;color:var(--text)">Starting…</pre>
+        </div>
+        <div style="margin-top:0.75rem">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:400">
+            <input type="checkbox" id="whatsapp-enabled" style="width:auto;accent-color:var(--primary)">
+            Enable WhatsApp channel in config
+          </label>
+        </div>
+        <div id="whatsapp-allowfrom-field" style="display:none;margin-top:1rem">
+          <label>Allowed Phone Numbers <span class="optional-badge">optional</span></label>
+          <div class="hint">Comma-separated numbers in international format (e.g. <strong>+15551234567</strong>). Only these numbers can message the agent. Leave empty to use <code style="background:var(--card);padding:1px 5px;border-radius:4px">pairing</code> mode (anyone who pairs can chat).</div>
+          <input type="text" id="whatsapp-allow-from" placeholder="+15551234567, +447700900000">
+        </div>
+      </div>
       <div class="actions">
-        <button class="btn btn-secondary" onclick="goTo(1)">Back</button>
-        <button class="btn btn-primary" onclick="showReview()">Review</button>
+        <button class="btn btn-secondary" onclick="backFromStep2()">Back</button>
+        <button class="btn btn-primary" id="btn-step2-next" onclick="nextFromStep2()">Review</button>
       </div>
     </div>
 
@@ -685,6 +905,68 @@
       document.getElementById("telegram-users-field").style.display = e.target.value.trim() ? "block" : "none";
     });
 
+    document.getElementById("whatsapp-enabled").addEventListener("change", (e) => {
+      document.getElementById("whatsapp-allowfrom-field").style.display = e.target.checked ? "block" : "none";
+    });
+
+    // ---------------------------------------------------------------------------
+    // WhatsApp QR login
+    // ---------------------------------------------------------------------------
+    let whatsappEventSource = null;
+
+    async function checkWhatsAppLinked() {
+      try {
+        const resp = await fetch("/api/whatsapp/linked");
+        const data = await resp.json();
+        const banner = document.getElementById("whatsapp-status-banner");
+        const label = document.getElementById("whatsapp-btn-label");
+        if (data.linked) {
+          if (banner) banner.innerHTML = '<div class="probe-result ok" style="margin-bottom:0.5rem"><strong>WhatsApp linked</strong> &mdash; your account is connected.</div>';
+          if (label) label.textContent = "Reconnect WhatsApp";
+          const cb = document.getElementById("whatsapp-enabled");
+          if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event("change")); }
+        } else {
+          if (banner) banner.innerHTML = "";
+          if (label) label.textContent = "Connect WhatsApp";
+        }
+      } catch {}
+    }
+
+    function startWhatsAppLogin() {
+      const qrArea = document.getElementById("whatsapp-qr-area");
+      const qrOutput = document.getElementById("whatsapp-qr-output");
+      const btn = document.getElementById("whatsapp-connect-btn");
+
+      qrArea.style.display = "block";
+      qrOutput.textContent = "Starting WhatsApp login…";
+      btn.disabled = true;
+
+      if (whatsappEventSource) { whatsappEventSource.close(); whatsappEventSource = null; }
+
+      whatsappEventSource = new EventSource("/api/whatsapp/login-stream");
+      let buf = "";
+
+      whatsappEventSource.onmessage = (e) => {
+        const payload = JSON.parse(e.data);
+        if (payload && typeof payload === "object" && payload.done) {
+          whatsappEventSource.close();
+          whatsappEventSource = null;
+          btn.disabled = false;
+          checkWhatsAppLinked();
+          return;
+        }
+        buf += payload;
+        qrOutput.textContent = buf;
+        qrOutput.scrollTop = qrOutput.scrollHeight;
+      };
+
+      whatsappEventSource.onerror = () => {
+        if (whatsappEventSource) { whatsappEventSource.close(); whatsappEventSource = null; }
+        btn.disabled = false;
+        checkWhatsAppLinked();
+      };
+    }
+
     // ---------------------------------------------------------------------------
     // Load existing config on startup and pre-fill the form
     // ---------------------------------------------------------------------------
@@ -697,13 +979,6 @@
         existingProviderIds = Object.keys(providers);
 
         if (existingProviderIds.length > 0) {
-          // Show home step so user can choose to edit or add a provider
-          const providerNames = existingProviderIds.map(pid => {
-            const known = PROVIDERS.find(p => p.id === pid);
-            return known ? known.name : pid;
-          });
-          document.getElementById("home-subtitle").textContent =
-            `You already have ${providerNames.join(", ")} configured. What would you like to do?`;
           goTo("home");
         } else {
           // Config exists but no providers yet — just prefill and continue
@@ -763,6 +1038,16 @@
         }
       }
 
+      // WhatsApp — pre-check and prefill if already enabled in config
+      if (cfg.channels && cfg.channels.whatsapp && cfg.channels.whatsapp.enabled) {
+        const cb = document.getElementById("whatsapp-enabled");
+        if (cb) { cb.checked = true; cb.dispatchEvent(new Event("change")); }
+        const wa = cfg.channels.whatsapp;
+        if (wa.allowFrom && wa.allowFrom.length > 0) {
+          const af = document.getElementById("whatsapp-allow-from");
+          if (af) af.value = wa.allowFrom.join(", ");
+        }
+      }
     }
 
     function startUpdate() {
@@ -803,6 +1088,125 @@
       }
     }
 
+    function backFromStep2() {
+      if (wizardMode === 'channels-only') {
+        goTo('home');
+      } else {
+        goTo(1);
+      }
+    }
+
+    function nextFromStep2() {
+      if (wizardMode === 'channels-only') {
+        saveChannelsOnly();
+      } else {
+        showReview();
+      }
+    }
+
+    function configureChannels() {
+      wizardMode = 'channels-only';
+
+      // Pre-fill from existingConfig
+      if (existingConfig && existingConfig.channels) {
+        const tg = existingConfig.channels.telegram;
+        if (tg && tg.botToken) {
+          document.getElementById("telegram-token").value = tg.botToken;
+          document.getElementById("telegram-users-field").style.display = "block";
+          if (tg.allowFrom && tg.allowFrom.length > 0) {
+            document.getElementById("telegram-users").value = tg.allowFrom.filter(Boolean).join(", ");
+          }
+        }
+        const dc = existingConfig.channels.discord;
+        if (dc && dc.botToken) {
+          document.getElementById("discord-token").value = dc.botToken;
+        }
+      }
+
+      document.getElementById("existing-config-banner").innerHTML = "";
+      goTo(2);
+    }
+
+    function buildChannelsConfig() {
+      const config = { channels: {}, plugins: { entries: {} } };
+      const telegramToken = document.getElementById("telegram-token").value.trim();
+      const telegramUsers = document.getElementById("telegram-users").value.trim();
+      const discordToken = document.getElementById("discord-token").value.trim();
+
+      if (telegramToken) {
+        config.channels.telegram = {
+          enabled: true,
+          botToken: telegramToken,
+          dmPolicy: "pairing",
+          groupPolicy: "allowlist",
+          groups: { "*": { requireMention: true } },
+          streamMode: "partial",
+        };
+        if (telegramUsers) {
+          config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        config.plugins.entries.telegram = { enabled: true };
+      }
+
+      if (discordToken) {
+        config.channels.discord = {
+          enabled: true,
+          botToken: discordToken,
+          dmPolicy: "pairing",
+          groupPolicy: "allowlist",
+        };
+        config.plugins.entries.discord = { enabled: true };
+      }
+
+      const whatsappEnabled = !!(document.getElementById("whatsapp-enabled") && document.getElementById("whatsapp-enabled").checked);
+      if (whatsappEnabled) {
+        const allowFromRaw = (document.getElementById("whatsapp-allow-from").value || "").trim();
+        const allowFrom = allowFromRaw ? allowFromRaw.split(",").map(s => s.trim()).filter(Boolean) : [];
+        config.channels = config.channels || {};
+        config.channels.whatsapp = {
+          enabled: true,
+          dmPolicy: allowFrom.length > 0 ? "allowlist" : "pairing",
+          ...(allowFrom.length > 0 ? { allowFrom } : {}),
+        };
+        config.plugins.entries.whatsapp = { enabled: true };
+      }
+
+      return config;
+    }
+
+    async function saveChannelsOnly() {
+      const btn = document.getElementById("btn-step2-next");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        const config = buildChannelsConfig();
+        const resp = await fetch("/api/config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(config)
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          // Reload existingConfig to reflect merged result
+          try {
+            const cfgResp = await fetch("/api/config");
+            if (cfgResp.ok) existingConfig = await cfgResp.json();
+          } catch {}
+          goTo("home");
+          showHomeBanner("success", "Chat integrations saved.");
+        } else {
+          alert("Failed to save: " + (data.error || "Unknown error"));
+          btn.disabled = false;
+          btn.textContent = "Save";
+        }
+      } catch (err) {
+        alert("Network error: " + err.message);
+        btn.disabled = false;
+        btn.textContent = "Save";
+      }
+    }
+
     function backFromReview() {
       if (wizardMode === 'add-provider') {
         goTo(1);
@@ -820,7 +1224,7 @@
       // Update progress bar
       const progressEl = document.getElementById("progress");
       const bars = document.querySelectorAll(".progress .bar");
-      if (step === "home") {
+      if (step === "home" || (step === 2 && wizardMode === "channels-only")) {
         progressEl.style.display = "none";
       } else {
         progressEl.style.display = "";
@@ -842,8 +1246,16 @@
         }
       }
 
+      // Render existing providers on home step
+      if (step === "home") { renderHomeProviders(); checkWhatsAppLinked(); }
       // Render provider config when entering step 1
       if (step === 1 && selectedProvider) renderProviderConfig();
+      // Check WhatsApp link status when entering step 2
+      if (step === 2) {
+        checkWhatsAppLinked();
+        const btn = document.getElementById("btn-step2-next");
+        if (btn) btn.textContent = wizardMode === "channels-only" ? "Save" : "Review";
+      }
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -1087,6 +1499,218 @@
       return models.find(m => m.id === select.value) || null;
     }
 
+    // ---------------------------------------------------------------------------
+    // Home step: render configured providers + default model picker
+    // ---------------------------------------------------------------------------
+    function renderHomeProviders() {
+      const container = document.getElementById("home-providers");
+      if (!container || !existingConfig) return;
+
+      const providers = (existingConfig.models && existingConfig.models.providers) || {};
+      const providerEntries = Object.entries(providers);
+
+      if (providerEntries.length === 0) {
+        // No providers left — jump straight to setup flow
+        goTo(0);
+        return;
+      }
+
+      const currentDefault = (
+        existingConfig.agents &&
+        existingConfig.agents.defaults &&
+        existingConfig.agents.defaults.model &&
+        existingConfig.agents.defaults.model.primary
+      ) || "";
+
+      let html = '<div class="provider-list-section">';
+
+      for (const [providerId, providerCfg] of providerEntries) {
+        const models = providerCfg.models || [];
+        const displayUrl = (providerCfg.baseUrl || "").replace(/\/v1\/?$/, "");
+        html += `<div class="provider-list-card">`;
+        html += `<div class="provider-list-header">`;
+        html += `<div class="provider-list-meta">`;
+        html += `<span class="provider-list-name">${providerId}</span>`;
+        if (displayUrl) html += `<span class="provider-list-url" title="${displayUrl}">${displayUrl}</span>`;
+        html += `</div>`;
+        html += `<div class="provider-actions">`;
+        html += `<button class="provider-action-btn" onclick="editProvider('${providerId}')">Edit</button>`;
+        html += `<button class="provider-action-btn danger" onclick="removeProvider('${providerId}')">Remove</button>`;
+        html += `</div>`;
+        html += `</div>`;
+
+        for (const model of models) {
+          const modelKey = `${providerId}/${model.id}`;
+          const isDefault = currentDefault === modelKey;
+          html += `<div class="model-row${isDefault ? ' model-row-default' : ''}">`;
+          html += `<span class="model-row-name">${model.name || model.id}</span>`;
+          if (isDefault) {
+            html += `<span class="model-default-badge">Default</span>`;
+          } else {
+            html += `<button class="set-default-btn" onclick="setDefaultModel('${providerId}', '${model.id}')">Set as Default</button>`;
+          }
+          html += `</div>`;
+        }
+
+        html += `</div>`;
+      }
+
+      html += '</div>';
+      html += `<button class="add-provider-btn" onclick="startAddProvider()">+ Add Provider</button>`;
+      html += renderChannelsSection();
+      container.innerHTML = html;
+    }
+
+    function renderChannelsSection() {
+      const tgOn = !!(existingConfig && existingConfig.channels && existingConfig.channels.telegram && existingConfig.channels.telegram.botToken);
+      const dcOn = !!(existingConfig && existingConfig.channels && existingConfig.channels.discord && existingConfig.channels.discord.botToken);
+      const channels = [
+        { name: "Telegram", connected: tgOn },
+        { name: "Discord", connected: dcOn },
+        { name: "WhatsApp", connected: !!(existingConfig && existingConfig.channels && existingConfig.channels.whatsapp && existingConfig.channels.whatsapp.enabled) },
+      ];
+      let html = `<div class="channels-section">`;
+      html += `<div class="provider-list-section-label" style="margin-bottom:0.75rem">Chat Integrations</div>`;
+      html += `<div class="channels-card">`;
+      for (const ch of channels) {
+        html += `<div class="channel-row">`;
+        html += `<span class="channel-dot ${ch.connected ? "on" : "off"}"></span>`;
+        html += `<span class="channel-name">${ch.name}</span>`;
+        html += `<span class="channel-status-text">${ch.connected ? "Connected" : "Not configured"}</span>`;
+        html += `</div>`;
+      }
+      html += `<button class="configure-channels-btn" onclick="configureChannels()">Configure</button>`;
+      html += `</div></div>`;
+      return html;
+    }
+
+    async function setDefaultModel(providerId, modelId) {
+      // Disable all set-default buttons while saving
+      document.querySelectorAll(".set-default-btn").forEach(b => b.disabled = true);
+
+      const modelKey = `${providerId}/${modelId}`;
+      try {
+        const resp = await fetch("/api/config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agents: { defaults: { model: { primary: modelKey } } } })
+        });
+        if (resp.ok) {
+          // Patch local config and re-render
+          if (!existingConfig.agents) existingConfig.agents = {};
+          if (!existingConfig.agents.defaults) existingConfig.agents.defaults = {};
+          if (!existingConfig.agents.defaults.model) existingConfig.agents.defaults.model = {};
+          existingConfig.agents.defaults.model.primary = modelKey;
+          renderHomeProviders();
+          showHomeBanner("success", `Default model set to <strong>${modelKey}</strong>`);
+        } else {
+          const data = await resp.json().catch(() => ({}));
+          showHomeBanner("warning", "Failed to update: " + (data.error || "Unknown error"));
+          document.querySelectorAll(".set-default-btn").forEach(b => b.disabled = false);
+        }
+      } catch (err) {
+        showHomeBanner("warning", "Network error: " + err.message);
+        document.querySelectorAll(".set-default-btn").forEach(b => b.disabled = false);
+      }
+    }
+
+    function editProvider(providerId) {
+      const providers = (existingConfig.models && existingConfig.models.providers) || {};
+      const providerCfg = providers[providerId];
+      if (!providerCfg) return;
+
+      wizardMode = 'update';
+
+      const knownProvider = PROVIDERS.find(p => p.id === providerId);
+      const cardId = knownProvider ? providerId : "custom";
+
+      // Set up _loaded* fields so renderProviderConfig() can pre-fill
+      existingConfig._loadedProvider = cardId;
+      existingConfig._loadedApiKey = providerCfg.apiKey || "";
+      existingConfig._loadedBaseUrl = providerCfg.baseUrl || "";
+      const models = providerCfg.models || [];
+      existingConfig._loadedModelId = models.length > 0 ? models[0].id : "";
+      existingConfig._loadedContextWindow = models.length > 0 ? (models[0].contextWindow || null) : null;
+      existingConfig._loadedMaxTokens = models.length > 0 ? (models[0].maxTokens || null) : null;
+      if (!knownProvider) {
+        existingConfig._loadedCustomName = providerId;
+        existingConfig._loadedCustomApi = providerCfg.api || "openai-completions";
+      }
+
+      selectProviderCard(cardId);
+
+      // Pre-fill messaging channels
+      if (existingConfig.channels && existingConfig.channels.telegram) {
+        const tg = existingConfig.channels.telegram;
+        if (tg.botToken) {
+          document.getElementById("telegram-token").value = tg.botToken;
+          document.getElementById("telegram-users-field").style.display = "block";
+        }
+        if (tg.allowFrom && tg.allowFrom.length > 0) {
+          document.getElementById("telegram-users").value = tg.allowFrom.filter(Boolean).join(", ");
+          document.getElementById("telegram-users-field").style.display = "block";
+        }
+      }
+      if (existingConfig.channels && existingConfig.channels.discord && existingConfig.channels.discord.botToken) {
+        document.getElementById("discord-token").value = existingConfig.channels.discord.botToken;
+      }
+      checkWhatsAppLinked();
+
+      document.getElementById("existing-config-banner").innerHTML =
+        `<div class="banner info">Editing <strong>${providerId}</strong> — update below and save.</div>`;
+
+      goTo(1);
+    }
+
+    async function removeProvider(providerId) {
+      if (!confirm(`Remove provider "${providerId}"? This cannot be undone.`)) return;
+
+      // Build new config without this provider (deep-copy, strip private keys)
+      const newConfig = JSON.parse(JSON.stringify(existingConfig));
+      for (const key of Object.keys(newConfig)) {
+        if (key.startsWith("_")) delete newConfig[key];
+      }
+
+      if (newConfig.models && newConfig.models.providers) {
+        delete newConfig.models.providers[providerId];
+      }
+
+      // Clear default model if it was from the removed provider
+      const primary = newConfig.agents && newConfig.agents.defaults && newConfig.agents.defaults.model && newConfig.agents.defaults.model.primary || "";
+      if (primary.startsWith(providerId + "/")) {
+        newConfig.agents.defaults.model.primary = "";
+      }
+
+      try {
+        const resp = await fetch("/api/config", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newConfig, null, 2)
+        });
+        if (resp.ok) {
+          existingConfig = newConfig;
+          existingProviderIds = Object.keys((newConfig.models && newConfig.models.providers) || {});
+          renderHomeProviders(); // will auto-redirect to step 0 if empty
+          if (existingProviderIds.length > 0) {
+            showHomeBanner("success", `Provider <strong>${providerId}</strong> removed.`);
+          }
+        } else {
+          const data = await resp.json().catch(() => ({}));
+          showHomeBanner("warning", "Failed to remove: " + (data.error || "Unknown error"));
+        }
+      } catch (err) {
+        showHomeBanner("warning", "Network error: " + err.message);
+      }
+    }
+
+    function showHomeBanner(type, message) {
+      const banner = document.getElementById("home-banner");
+      if (!banner) return;
+      const cls = type === "success" ? "success" : "warning";
+      banner.innerHTML = `<div class="banner ${cls}" style="margin-bottom:1rem">${message}</div>`;
+      setTimeout(() => { banner.innerHTML = ""; }, 3500);
+    }
+
     async function probeOllama() {
       const btn = document.getElementById("probe-btn");
       const icon = document.getElementById("probe-icon");
@@ -1289,10 +1913,23 @@
         config.plugins.entries.discord = { enabled: true };
       }
 
+      const whatsappEnabled2 = !!(document.getElementById("whatsapp-enabled") && document.getElementById("whatsapp-enabled").checked);
+      if (whatsappEnabled2) {
+        const allowFromRaw2 = (document.getElementById("whatsapp-allow-from").value || "").trim();
+        const allowFrom2 = allowFromRaw2 ? allowFromRaw2.split(",").map(s => s.trim()).filter(Boolean) : [];
+        config.channels = config.channels || {};
+        config.channels.whatsapp = {
+          enabled: true,
+          dmPolicy: allowFrom2.length > 0 ? "allowlist" : "pairing",
+          ...(allowFrom2.length > 0 ? { allowFrom: allowFrom2 } : {}),
+        };
+        config.plugins.entries.whatsapp = { enabled: true };
+      }
+
       return config;
     }
 
-    function buildAddProviderConfig() {
+function buildAddProviderConfig() {
       // Builds only the new provider + updated default — server deep-merges with existing config
       const p = selectedProvider;
       const config = {
