@@ -702,7 +702,8 @@
           <span id="whatsapp-btn-icon">&#128241;</span> <span id="whatsapp-btn-label">Connect WhatsApp</span>
         </button>
         <div id="whatsapp-qr-area" style="display:none;margin-top:0.75rem">
-          <pre id="whatsapp-qr-output" style="background:var(--card);border:1px solid var(--border);padding:1rem;border-radius:8px;font-size:0.65rem;line-height:1.15;overflow:auto;max-height:360px;white-space:pre;color:var(--text)">Starting…</pre>
+          <canvas id="whatsapp-qr-canvas" style="display:none;border-radius:8px;max-width:100%;background:#fff;padding:8px"></canvas>
+          <pre id="whatsapp-qr-log" style="background:var(--card);border:1px solid var(--border);padding:0.75rem;border-radius:8px;font-size:0.75rem;line-height:1.4;overflow:auto;max-height:180px;white-space:pre-wrap;color:var(--text-muted);margin-top:0.5rem">Waiting…</pre>
         </div>
         <div style="margin-top:0.75rem">
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:400">
@@ -932,32 +933,94 @@
       } catch {}
     }
 
+    // Decode Unicode block characters into QR pixel data and draw on canvas
+    function renderBlockQr(lines, canvas) {
+      const moduleSize = 6;
+      const cols = Math.max(...lines.map(l => [...l].length));
+      const rows = lines.length * 2;
+      canvas.width = cols * moduleSize;
+      canvas.height = rows * moduleSize;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#000000";
+      for (let li = 0; li < lines.length; li++) {
+        const chars = [...lines[li]];
+        for (let ci = 0; ci < chars.length; ci++) {
+          let t = false, b = false;
+          switch (chars[ci]) {
+            case "\u2588": t = true; b = true; break;  // █
+            case "\u2580": t = true; break;             // ▀
+            case "\u2584": b = true; break;             // ▄
+          }
+          if (t) ctx.fillRect(ci * moduleSize, li * 2 * moduleSize, moduleSize, moduleSize);
+          if (b) ctx.fillRect(ci * moduleSize, (li * 2 + 1) * moduleSize, moduleSize, moduleSize);
+        }
+      }
+      canvas.style.display = "block";
+    }
+
+    function tryRenderAsciiQr(text, canvas) {
+      const allLines = text.split("\n");
+      let best = [], cur = [];
+      for (const line of allLines) {
+        const t = line.trimEnd();
+        if (/[\u2588\u2580\u2584]/.test(t) && [...t].length >= 15) {
+          cur.push(t);
+        } else {
+          if (cur.length > best.length) best = cur;
+          cur = [];
+        }
+      }
+      if (cur.length > best.length) best = cur;
+      if (best.length < 8) return false;
+      renderBlockQr(best, canvas);
+      return true;
+    }
+
     function startWhatsAppLogin() {
       const qrArea = document.getElementById("whatsapp-qr-area");
-      const qrOutput = document.getElementById("whatsapp-qr-output");
+      const qrCanvas = document.getElementById("whatsapp-qr-canvas");
+      const qrLog = document.getElementById("whatsapp-qr-log");
       const btn = document.getElementById("whatsapp-connect-btn");
 
       qrArea.style.display = "block";
-      qrOutput.textContent = "Starting WhatsApp login…";
+      qrCanvas.style.display = "none";
+      qrLog.textContent = "Connecting\u2026";
       btn.disabled = true;
 
       if (whatsappEventSource) { whatsappEventSource.close(); whatsappEventSource = null; }
 
       whatsappEventSource = new EventSource("/api/whatsapp/login-stream");
-      let buf = "";
+      let logBuf = "";
+      let qrRendered = false;
 
-      whatsappEventSource.onmessage = (e) => {
-        const payload = JSON.parse(e.data);
-        if (payload && typeof payload === "object" && payload.done) {
+      whatsappEventSource.onmessage = async (e) => {
+        const msg = JSON.parse(e.data);
+        if (msg.type === "qr") {
+          // Raw QR string — render with QRCode.js
+          try {
+            qrCanvas.style.display = "block";
+            await QRCode.toCanvas(qrCanvas, msg.qr, { width: 256, margin: 2, color: { dark: "#000", light: "#fff" } });
+            qrLog.textContent = "Scan with WhatsApp \u2192 Linked Devices \u2192 Link a Device";
+            qrRendered = true;
+          } catch { qrLog.textContent += "\n[raw qr: " + msg.qr + "]"; }
+        } else if (msg.type === "log") {
+          logBuf += msg.data;
+          // Show only non-block-char lines in the status log
+          const statusLines = logBuf.split("\n").filter(l => !/[\u2588\u2580\u2584]/.test(l) && l.trim()).join("\n");
+          if (statusLines) qrLog.textContent = statusLines;
+          // Try to extract and render ASCII art QR to canvas
+          if (!qrRendered) {
+            qrRendered = tryRenderAsciiQr(logBuf, qrCanvas);
+            if (qrRendered) qrLog.textContent = "Scan with WhatsApp \u2192 Linked Devices \u2192 Link a Device";
+          }
+        } else if (msg.type === "done") {
           whatsappEventSource.close();
           whatsappEventSource = null;
           btn.disabled = false;
           checkWhatsAppLinked();
-          return;
         }
-        buf += payload;
-        qrOutput.textContent = buf;
-        qrOutput.scrollTop = qrOutput.scrollHeight;
       };
 
       whatsappEventSource.onerror = () => {
@@ -2034,6 +2097,7 @@ function buildAddProviderConfig() {
       }
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 </body>
 
 </html>

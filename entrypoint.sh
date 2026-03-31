@@ -59,15 +59,11 @@ try {
 fi
 
 # ---------------------------------------------------------------------------
-# Register the bundled WhatsApp plugin against the runtime state dir so
-# `openclaw channels login --channel whatsapp` works without an interactive prompt.
-# printf '\r' selects the pre-highlighted "Use local plugin path" option.
+# Ensure WhatsApp plugin is installed (from npm, no interactive prompts)
 # ---------------------------------------------------------------------------
-WHATSAPP_PLUGIN="/usr/local/lib/node_modules/openclaw/dist/extensions/whatsapp/index.js"
-if [ -f "$WHATSAPP_PLUGIN" ]; then
-    echo "Registering WhatsApp plugin..."
-    printf '\r' | OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw plugins install \
-        --path "$WHATSAPP_PLUGIN" 2>/dev/null || true
+echo "Ensuring WhatsApp plugin is installed..."
+if ! OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw plugins list 2>/dev/null | grep -q "@openclaw/whatsapp"; then
+    OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw plugins install @openclaw/whatsapp || true
 fi
 
 # ---------------------------------------------------------------------------

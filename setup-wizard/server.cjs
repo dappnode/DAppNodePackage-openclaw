@@ -155,35 +155,34 @@ const server = http.createServer(async (req, res) => {
 
     const child = spawn("openclaw", ["channels", "login", "--channel", "whatsapp"], {
       env: { ...process.env, OPENCLAW_STATE_DIR: CONFIG_DIR },
-      stdio: ["pipe", "pipe", "pipe"],
+      stdio: ["ignore", "pipe", "pipe"],
     });
 
-    const send = (text) => {
-      // Strip ANSI escape codes before sending to browser
-      const clean = text
-        .replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "")
-        .replace(/\x1b\][^\x07]*\x07/g, "");
-      res.write(`data: ${JSON.stringify(clean)}\n\n`);
-    };
+    const sendMsg = (obj) => res.write(`data: ${JSON.stringify(obj)}\n\n`);
 
-    // Clack uses raw-mode stdin; auto-confirm the "Use local plugin path" prompt with \r
-    let promptAnswered = false;
-    let buf = "";
+    const cleanAnsi = (text) => text
+      .replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "")
+      .replace(/\x1b\][^\x07]*\x07/g, "")
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n");
+
+    // WhatsApp QR data from baileys: `1@base64,base64,base64` or bare multi-segment base64
+    const QR_PATTERN = /(?:^|\n)(\d+@[A-Za-z0-9+/=,]{40,}|[A-Za-z0-9+/=]{20,}(?:,[A-Za-z0-9+/=]{20,}){2,})/m;
+
     const onData = (chunk) => {
       const text = chunk.toString();
-      buf += text;
-      if (buf.length > 512) buf = buf.slice(-512);
-      if (!promptAnswered && buf.includes("Install WhatsApp plugin")) {
-        promptAnswered = true;
-        child.stdin.write("\r");
+      const match = text.match(QR_PATTERN);
+      if (match) {
+        sendMsg({ type: "qr", qr: match[1].trim() });
+      } else {
+        sendMsg({ type: "log", data: cleanAnsi(text) });
       }
-      send(text);
     };
 
     child.stdout.on("data", onData);
     child.stderr.on("data", onData);
     child.on("close", (code) => {
-      res.write(`data: ${JSON.stringify({ done: true, code })}\n\n`);
+      sendMsg({ type: "done", code });
       res.end();
     });
     req.on("close", () => child.kill());
