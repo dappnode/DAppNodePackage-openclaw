@@ -552,7 +552,7 @@
     }
 
     .set-default-btn {
-      font-size: 0.75rem;
+      font-size: 0.75rem;zq
       padding: 3px 10px;
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -571,6 +571,35 @@
     .set-default-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+
+    /* Multi-agent section on home step */
+    .multi-agent-section {
+      margin-top: 1.5rem;
+    }
+
+    .agent-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .agent-row:first-child {
+      border-top: none;
+    }
+
+    .agent-row-id {
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .agent-row-name {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-left: 0.25rem;
     }
 
     /* Channels section on home step */
@@ -1621,6 +1650,7 @@
       html += '</div>';
       html += `<button class="add-provider-btn" onclick="startAddProvider()">+ Add Provider</button>`;
       html += renderChannelsSection();
+      html += renderMultiAgentSection();
       container.innerHTML = html;
     }
 
@@ -2095,6 +2125,261 @@ function buildAddProviderConfig() {
         btn.disabled = false;
         btn.textContent = "Save Configuration";
       }
+    }
+    // ---------------------------------------------------------------------------
+    // Multi-Agent section
+    // ---------------------------------------------------------------------------
+    function renderMultiAgentSection() {
+      const agentList = (existingConfig && existingConfig.agents && existingConfig.agents.list) || [];
+      const bindings = (existingConfig && existingConfig.bindings) || [];
+      const hasAgents = agentList.length > 0;
+
+      let html = `<div class="multi-agent-section">`;
+      html += `<div class="provider-list-section-label" style="margin-bottom:0.75rem">Multi-Agent</div>`;
+
+      if (!hasAgents) {
+        html += `<button class="add-provider-btn" onclick="enableMultiAgent()">+ Enable Multi-Agent Routing</button>`;
+        html += `<div style="margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);line-height:1.4">Run multiple isolated agents with separate workspaces, identities, and routing rules.</div>`;
+      } else {
+        // Agent list
+        html += `<div class="provider-list-card">`;
+        for (const agent of agentList) {
+          html += `<div class="agent-row">`;
+          html += `<span class="agent-row-id">${agent.id}</span>`;
+          if (agent.default) html += `<span class="model-default-badge" style="margin-left:0.4rem">default</span>`;
+          if (agent.name) html += `<span class="agent-row-name">${agent.name}</span>`;
+          html += `<button class="provider-action-btn danger" style="margin-left:auto" onclick="removeAgent('${agent.id}')">Remove</button>`;
+          html += `</div>`;
+        }
+        html += `</div>`;
+
+        // Add-agent inline form
+        html += `<div id="add-agent-form" style="display:none;margin-top:0.5rem">`;
+        html += `<div class="provider-list-card">`;
+        html += `<div class="field" style="margin-bottom:0.75rem">`;
+        html += `<label style="font-size:0.85rem">Agent ID</label>`;
+        html += `<div class="hint">Lowercase, hyphens allowed (e.g. work, personal, coding)</div>`;
+        html += `<input type="text" id="new-agent-id" placeholder="work">`;
+        html += `</div>`;
+        html += `<div class="field" style="margin-bottom:1rem">`;
+        html += `<label style="font-size:0.85rem">Display Name <span class="optional-badge">optional</span></label>`;
+        html += `<input type="text" id="new-agent-name" placeholder="Work Agent">`;
+        html += `</div>`;
+        html += `<div style="display:flex;gap:8px">`;
+        html += `<button class="btn btn-secondary" style="padding:7px 16px;font-size:0.85rem" onclick="document.getElementById('add-agent-form').style.display='none'">Cancel</button>`;
+        html += `<button class="btn btn-primary" style="padding:7px 16px;font-size:0.85rem" onclick="confirmAddAgent()">Add Agent</button>`;
+        html += `</div></div></div>`;
+
+        html += `<button class="add-provider-btn" style="margin-top:0.5rem" onclick="showAddAgentForm()">+ Add Agent</button>`;
+
+        // Bindings
+        if (bindings.length > 0) {
+          html += `<div class="provider-list-section-label" style="margin-top:1.25rem;margin-bottom:0.5rem">Routing Bindings</div>`;
+          html += `<div class="provider-list-card">`;
+          for (let i = 0; i < bindings.length; i++) {
+            const b = bindings[i];
+            const matchStr = [b.match.channel, b.match.accountId ? `@${b.match.accountId}` : null].filter(Boolean).join(' ');
+            const accCfg = b.match.accountId &&
+              existingConfig.channels &&
+              existingConfig.channels[b.match.channel] &&
+              existingConfig.channels[b.match.channel].accounts &&
+              existingConfig.channels[b.match.channel].accounts[b.match.accountId];
+            const hasToken = !!(accCfg && accCfg.botToken);
+            html += `<div class="agent-row">`;
+            html += `<span class="agent-row-id">${matchStr}</span>`;
+            if (hasToken) html += `<span style="font-size:0.7rem;color:var(--success);margin-left:0.25rem">token set</span>`;
+            html += `<span style="font-size:0.75rem;color:var(--text-muted);margin:0 0.35rem">&rarr;</span>`;
+            html += `<span class="agent-row-name" style="font-size:0.85rem;color:var(--text)">${b.agentId}</span>`;
+            html += `<button class="provider-action-btn danger" style="margin-left:auto" onclick="removeBinding(${i})">Remove</button>`;
+            html += `</div>`;
+          }
+          html += `</div>`;
+        }
+
+        // Add-binding inline form
+        const agentOptions = agentList.map(a => `<option value="${a.id}">${a.id}</option>`).join('');
+        html += `<div id="add-binding-form" style="display:none;margin-top:0.5rem">`;
+        html += `<div class="provider-list-card">`;
+        html += `<div class="field" style="margin-bottom:0.75rem">`;
+        html += `<label style="font-size:0.85rem">Channel</label>`;
+        html += `<select id="new-binding-channel" onchange="onBindingChannelChange()"><option value="telegram">Telegram</option><option value="discord">Discord</option><option value="whatsapp">WhatsApp</option></select>`;
+        html += `</div>`;
+        html += `<div class="field" style="margin-bottom:0.75rem">`;
+        html += `<label style="font-size:0.85rem">Account ID</label>`;
+        html += `<div class="hint">A short identifier for this bot/account (e.g. <strong>workbot</strong>). Used in routing rules.</div>`;
+        html += `<input type="text" id="new-binding-account" placeholder="workbot">`;
+        html += `</div>`;
+        html += `<div class="field" id="new-binding-token-field" style="margin-bottom:0.75rem">`;
+        html += `<label style="font-size:0.85rem">Bot Token <span class="optional-badge">optional</span></label>`;
+        html += `<div class="hint" id="new-binding-token-hint">For Telegram: from <strong>@BotFather</strong>. For Discord: from the Developer Portal.</div>`;
+        html += `<input type="password" id="new-binding-token" placeholder="Paste bot token here">`;
+        html += `</div>`;
+        html += `<div class="field" style="margin-bottom:1rem">`;
+        html += `<label style="font-size:0.85rem">Route to Agent</label>`;
+        html += `<select id="new-binding-agent">${agentOptions}</select>`;
+        html += `</div>`;
+        html += `<div style="display:flex;gap:8px">`;
+        html += `<button class="btn btn-secondary" style="padding:7px 16px;font-size:0.85rem" onclick="document.getElementById('add-binding-form').style.display='none'">Cancel</button>`;
+        html += `<button class="btn btn-primary" style="padding:7px 16px;font-size:0.85rem" onclick="confirmAddBinding()">Add Binding</button>`;
+        html += `</div></div></div>`;
+
+        html += `<button class="add-provider-btn" style="margin-top:0.5rem" onclick="showAddBindingForm()">+ Add Binding</button>`;
+
+        html += `<div style="margin-top:1rem;text-align:right">`;
+        html += `<button class="provider-action-btn danger" onclick="disableMultiAgent()">Disable Multi-Agent</button>`;
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      return html;
+    }
+
+    function showAddAgentForm() {
+      document.getElementById('add-agent-form').style.display = 'block';
+      document.getElementById('new-agent-id').focus();
+    }
+
+    function showAddBindingForm() {
+      document.getElementById('add-binding-form').style.display = 'block';
+      onBindingChannelChange();
+    }
+
+    function onBindingChannelChange() {
+      const channel = document.getElementById('new-binding-channel').value;
+      const tokenField = document.getElementById('new-binding-token-field');
+      const tokenHint = document.getElementById('new-binding-token-hint');
+      if (!tokenField) return;
+      if (channel === 'whatsapp') {
+        tokenField.style.display = 'none';
+      } else {
+        tokenField.style.display = 'block';
+        if (tokenHint) tokenHint.innerHTML = channel === 'telegram'
+          ? 'From <strong>@BotFather</strong> on Telegram.'
+          : 'From the Discord Developer Portal.';
+      }
+    }
+
+    function buildCleanConfig() {
+      const c = JSON.parse(JSON.stringify(existingConfig));
+      for (const k of Object.keys(c)) {
+        if (k.startsWith('_')) delete c[k];
+      }
+      return c;
+    }
+
+    async function saveFullConfig(config, successMsg) {
+      try {
+        const resp = await fetch('/api/config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config, null, 2)
+        });
+        if (resp.ok) {
+          existingConfig = config;
+          renderHomeProviders();
+          showHomeBanner('success', successMsg);
+        } else {
+          const data = await resp.json().catch(() => ({}));
+          showHomeBanner('warning', 'Failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        showHomeBanner('warning', 'Network error: ' + err.message);
+      }
+    }
+
+    async function enableMultiAgent() {
+      const newConfig = buildCleanConfig();
+      if (!newConfig.agents) newConfig.agents = {};
+      const workspace = (newConfig.agents.defaults && newConfig.agents.defaults.workspace) || '/home/node/.openclaw/workspace';
+      newConfig.agents.list = [{ id: 'main', default: true, workspace }];
+      await saveFullConfig(newConfig, 'Multi-agent enabled with default "main" agent.');
+    }
+
+    async function disableMultiAgent() {
+      if (!confirm('Disable multi-agent routing? The agent list and all bindings will be removed.')) return;
+      const newConfig = buildCleanConfig();
+      if (newConfig.agents) delete newConfig.agents.list;
+      delete newConfig.bindings;
+      await saveFullConfig(newConfig, 'Multi-agent disabled.');
+    }
+
+    async function removeAgent(agentId) {
+      const agentList = (existingConfig.agents && existingConfig.agents.list) || [];
+      if (agentList.length <= 1) {
+        return disableMultiAgent();
+      }
+      if (!confirm(`Remove agent "${agentId}"?`)) return;
+      const newConfig = buildCleanConfig();
+      newConfig.agents.list = agentList.filter(a => a.id !== agentId);
+      if (!newConfig.agents.list.find(a => a.default)) {
+        newConfig.agents.list[0].default = true;
+      }
+      if (newConfig.bindings) {
+        newConfig.bindings = newConfig.bindings.filter(b => b.agentId !== agentId);
+        if (newConfig.bindings.length === 0) delete newConfig.bindings;
+      }
+      await saveFullConfig(newConfig, `Agent "${agentId}" removed.`);
+    }
+
+    async function confirmAddAgent() {
+      const raw = (document.getElementById('new-agent-id').value || '').trim();
+      const id = raw.toLowerCase().replace(/[^a-z0-9_-]/g, '-').replace(/^-+|-+$/g, '');
+      if (!id) { alert('Agent ID is required.'); return; }
+      const agentList = (existingConfig.agents && existingConfig.agents.list) || [];
+      if (agentList.find(a => a.id === id)) { alert(`Agent "${id}" already exists.`); return; }
+      const name = (document.getElementById('new-agent-name').value || '').trim();
+      const newAgent = { id, workspace: `/home/node/.openclaw/agents/${id}/workspace` };
+      if (name) newAgent.name = name;
+      const newConfig = buildCleanConfig();
+      newConfig.agents.list = [...agentList, newAgent];
+      await saveFullConfig(newConfig, `Agent "${id}" added.`);
+    }
+
+    async function confirmAddBinding() {
+      const channel = document.getElementById('new-binding-channel').value;
+      const accountId = (document.getElementById('new-binding-account').value || '').trim();
+      const agentId = document.getElementById('new-binding-agent').value;
+      const botToken = ((document.getElementById('new-binding-token') || {}).value || '').trim();
+
+      if (!accountId) { alert('Account ID is required.'); return; }
+
+      const match = { channel, accountId };
+      const newConfig = buildCleanConfig();
+      newConfig.bindings = [...(newConfig.bindings || []), { agentId, match }];
+
+      // Store the bot token under channels.<channel>.accounts.<accountId>
+      if (botToken && channel !== 'whatsapp') {
+        if (!newConfig.channels) newConfig.channels = {};
+        if (!newConfig.channels[channel]) newConfig.channels[channel] = { enabled: true };
+        if (!newConfig.channels[channel].accounts) newConfig.channels[channel].accounts = {};
+        newConfig.channels[channel].accounts[accountId] = { botToken };
+        if (!newConfig.plugins) newConfig.plugins = { entries: {} };
+        if (!newConfig.plugins.entries) newConfig.plugins.entries = {};
+        newConfig.plugins.entries[channel] = { enabled: true };
+      }
+
+      await saveFullConfig(newConfig, 'Binding added.');
+    }
+
+    async function removeBinding(index) {
+      const newConfig = buildCleanConfig();
+      const removed = (newConfig.bindings || [])[index];
+      newConfig.bindings = (newConfig.bindings || []).filter((_, i) => i !== index);
+      if (newConfig.bindings.length === 0) delete newConfig.bindings;
+
+      // Remove the bot token account entry if no other binding uses this accountId on this channel
+      if (removed && removed.match.accountId) {
+        const { channel, accountId } = removed.match;
+        const stillUsed = (newConfig.bindings || []).some(b => b.match.channel === channel && b.match.accountId === accountId);
+        if (!stillUsed && newConfig.channels && newConfig.channels[channel] && newConfig.channels[channel].accounts) {
+          delete newConfig.channels[channel].accounts[accountId];
+          if (Object.keys(newConfig.channels[channel].accounts).length === 0) {
+            delete newConfig.channels[channel].accounts;
+          }
+        }
+      }
+
+      await saveFullConfig(newConfig, 'Binding removed.');
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
