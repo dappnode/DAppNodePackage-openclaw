@@ -32,11 +32,10 @@ EOF
 else
     node -e "
 const fs = require('fs');
-const JSON5 = require('json5');
 const configPath = '$CONFIG_FILE';
 const envToken = process.env.OPENCLAW_GATEWAY_TOKEN || 'openclaw';
 try {
-  const config = JSON5.parse(fs.readFileSync(configPath, 'utf8'));
+  const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   const gw = (config.gateway = config.gateway || {});
   const cui = (gw.controlUi = gw.controlUi || {});
   const auth = (gw.auth = gw.auth || {});
@@ -57,6 +56,12 @@ try {
 } catch(e) { console.warn('Could not update openclaw.json:', e.message); }
 " || true
 fi
+
+# ---------------------------------------------------------------------------
+# Migrate legacy config keys (e.g. discord channel allow → enabled)
+# ---------------------------------------------------------------------------
+echo "Running openclaw doctor --fix to migrate legacy config..."
+OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw doctor --fix || true
 
 # ---------------------------------------------------------------------------
 # Ensure WhatsApp plugin is installed (from npm, no interactive prompts)
