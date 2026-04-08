@@ -1106,7 +1106,7 @@
         }
       }
 
-      // Telegram
+      // Telegram — token lives at channels.telegram.botToken
       if (cfg.channels && cfg.channels.telegram) {
         const tg = cfg.channels.telegram;
         if (tg.botToken) {
@@ -1122,11 +1122,12 @@
         }
       }
 
-      // Discord
+      // Discord — token lives at channels.discord.token (plain string or SecretRef)
       if (cfg.channels && cfg.channels.discord) {
         const dc = cfg.channels.discord;
-        if (dc.botToken) {
-          document.getElementById("discord-token").value = dc.botToken;
+        const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
+        if (dcToken) {
+          document.getElementById("discord-token").value = dcToken;
         }
       }
 
@@ -1210,8 +1211,9 @@
           }
         }
         const dc = existingConfig.channels.discord;
-        if (dc && dc.botToken) {
-          document.getElementById("discord-token").value = dc.botToken;
+        if (dc) {
+          const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
+          if (dcToken) document.getElementById("discord-token").value = dcToken;
         }
       }
 
@@ -1232,7 +1234,7 @@
           dmPolicy: "pairing",
           groupPolicy: "allowlist",
           groups: { "*": { requireMention: true } },
-          streamMode: "partial",
+          streaming: "partial",
         };
         if (telegramUsers) {
           config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
@@ -1243,7 +1245,7 @@
       if (discordToken) {
         config.channels.discord = {
           enabled: true,
-          botToken: discordToken,
+          token: discordToken,
           dmPolicy: "pairing",
           groupPolicy: "allowlist",
         };
@@ -1655,8 +1657,10 @@
     }
 
     function renderChannelsSection() {
-      const tgOn = !!(existingConfig && existingConfig.channels && existingConfig.channels.telegram && existingConfig.channels.telegram.botToken);
-      const dcOn = !!(existingConfig && existingConfig.channels && existingConfig.channels.discord && existingConfig.channels.discord.botToken);
+      const tg = existingConfig && existingConfig.channels && existingConfig.channels.telegram;
+      const tgOn = !!(tg && tg.botToken);
+      const dc = existingConfig && existingConfig.channels && existingConfig.channels.discord;
+      const dcOn = !!(dc && (typeof dc.token === 'string' ? dc.token : dc.botToken));
       const channels = [
         { name: "Telegram", connected: tgOn },
         { name: "Discord", connected: dcOn },
@@ -1744,8 +1748,10 @@
           document.getElementById("telegram-users-field").style.display = "block";
         }
       }
-      if (existingConfig.channels && existingConfig.channels.discord && existingConfig.channels.discord.botToken) {
-        document.getElementById("discord-token").value = existingConfig.channels.discord.botToken;
+      if (existingConfig.channels && existingConfig.channels.discord) {
+        const dc = existingConfig.channels.discord;
+        const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
+        if (dcToken) document.getElementById("discord-token").value = dcToken;
       }
       checkWhatsAppLinked();
 
@@ -1987,7 +1993,7 @@
           dmPolicy: "pairing",
           groupPolicy: "allowlist",
           groups: { "*": { requireMention: true } },
-          streamMode: "partial",
+          streaming: "partial",
         };
         if (telegramUsers) {
           config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
@@ -1999,7 +2005,7 @@
         config.channels = config.channels || {};
         config.channels.discord = {
           enabled: true,
-          botToken: discordToken,
+          token: discordToken,
           dmPolicy: "pairing",
           groupPolicy: "allowlist",
         };
@@ -2184,7 +2190,7 @@ function buildAddProviderConfig() {
               existingConfig.channels[b.match.channel] &&
               existingConfig.channels[b.match.channel].accounts &&
               existingConfig.channels[b.match.channel].accounts[b.match.accountId];
-            const hasToken = !!(accCfg && accCfg.botToken);
+            const hasToken = !!(accCfg && (accCfg.botToken || accCfg.token));
             html += `<div class="agent-row">`;
             html += `<span class="agent-row-id">${matchStr}</span>`;
             if (hasToken) html += `<span style="font-size:0.7rem;color:var(--success);margin-left:0.25rem">token set</span>`;
@@ -2348,11 +2354,12 @@ function buildAddProviderConfig() {
       newConfig.bindings = [...(newConfig.bindings || []), { agentId, match }];
 
       // Store the bot token under channels.<channel>.accounts.<accountId>
+      // Discord uses "token" key; Telegram and others use "botToken"
       if (botToken && channel !== 'whatsapp') {
         if (!newConfig.channels) newConfig.channels = {};
         if (!newConfig.channels[channel]) newConfig.channels[channel] = { enabled: true };
         if (!newConfig.channels[channel].accounts) newConfig.channels[channel].accounts = {};
-        newConfig.channels[channel].accounts[accountId] = { botToken };
+        newConfig.channels[channel].accounts[accountId] = channel === 'discord' ? { token: botToken } : { botToken };
         if (!newConfig.plugins) newConfig.plugins = { entries: {} };
         if (!newConfig.plugins.entries) newConfig.plugins.entries = {};
         newConfig.plugins.entries[channel] = { enabled: true };
