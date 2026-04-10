@@ -166,6 +166,40 @@
       color: var(--success);
     }
 
+    /* Nexus recommended card */
+    .card.recommended {
+      grid-column: 1 / -1;
+      border-color: #00d4aa;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.06) 0%, rgba(102, 126, 234, 0.06) 100%);
+    }
+
+    .card.recommended:hover {
+      border-color: #00d4aa;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.12) 0%, rgba(102, 126, 234, 0.12) 100%);
+    }
+
+    .card.recommended.selected {
+      border-color: #00d4aa;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.12) 0%, rgba(102, 126, 234, 0.12) 100%);
+    }
+
+    .card .card-tag.nexus {
+      background: rgba(0, 212, 170, 0.15);
+      color: #00d4aa;
+    }
+
+    .card.recommended .recommended-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .card.recommended .card-desc {
+      max-width: 420px;
+    }
+
     /* Form inputs */
     .field {
       margin-bottom: 1.25rem;
@@ -552,7 +586,7 @@
     }
 
     .set-default-btn {
-      font-size: 0.75rem;zq
+      font-size: 0.75rem;
       padding: 3px 10px;
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -659,6 +693,99 @@
       border-color: var(--primary);
       color: var(--primary);
     }
+
+    /* Integration cards (step 2) */
+    .integration-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .integration-card.enabled {
+      border-color: var(--primary);
+    }
+
+    .integration-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .integration-header:hover {
+      background: var(--card-hover);
+    }
+
+    .integration-icon {
+      font-size: 1.2rem;
+      width: 26px;
+      text-align: center;
+    }
+
+    .integration-name {
+      flex: 1;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .integration-body {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .integration-body .field:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Toggle switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--border);
+      border-radius: 24px;
+      transition: background 0.2s;
+    }
+
+    .toggle-slider:before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--primary);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
   </style>
 </head>
 
@@ -704,48 +831,81 @@
       </div>
     </div>
 
-    <!-- Step 2: Messaging + Security -->
+    <!-- Step 2: Chat Integrations -->
     <div class="step" data-step="2">
-      <h2>Integrations & Security</h2>
-      <div class="subtitle">Optional — skip any field you don't need right now.</div>
-      <div class="field">
-        <label>Telegram Bot Token <span class="optional-badge">optional</span></label>
-        <div class="hint">From <strong>@BotFather</strong> on Telegram.</div>
-        <input type="text" id="telegram-token" placeholder="123456789:ABCdefGHIjklMNO...">
-      </div>
-      <div class="field" id="telegram-users-field" style="display:none">
-        <label>Allowed Telegram User IDs <span class="optional-badge">optional</span></label>
-        <div class="hint">Comma-separated. Use <strong>@userinfobot</strong> to find yours.</div>
-        <input type="text" id="telegram-users" placeholder="123456789,987654321">
-      </div>
-      <div class="field">
-        <label>Discord Bot Token <span class="optional-badge">optional</span></label>
-        <div class="hint">From the Discord Developer Portal.</div>
-        <input type="text" id="discord-token" placeholder="MTIz...">
-      </div>
-      <div class="field">
-        <label>WhatsApp <span class="optional-badge">optional</span></label>
-        <div class="hint">Scan the QR code with your phone to link WhatsApp. Open WhatsApp &rarr; <strong>Linked Devices &rarr; Link a Device</strong>, then scan.</div>
-        <div id="whatsapp-status-banner" style="margin-top:0.5rem"></div>
-        <button type="button" class="probe-btn" id="whatsapp-connect-btn" onclick="startWhatsAppLogin()">
-          <span id="whatsapp-btn-icon">&#128241;</span> <span id="whatsapp-btn-label">Connect WhatsApp</span>
-        </button>
-        <div id="whatsapp-qr-area" style="display:none;margin-top:0.75rem">
-          <canvas id="whatsapp-qr-canvas" style="display:none;border-radius:8px;max-width:100%;background:#fff;padding:8px"></canvas>
-          <pre id="whatsapp-qr-log" style="background:var(--card);border:1px solid var(--border);padding:0.75rem;border-radius:8px;font-size:0.75rem;line-height:1.4;overflow:auto;max-height:180px;white-space:pre-wrap;color:var(--text-muted);margin-top:0.5rem">Waiting…</pre>
-        </div>
-        <div style="margin-top:0.75rem">
-          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:400">
-            <input type="checkbox" id="whatsapp-enabled" style="width:auto;accent-color:var(--primary)">
-            Enable WhatsApp channel in config
+      <h2>Chat Integrations</h2>
+      <div class="subtitle">Enable the integrations you want. Disable to remove them from config.</div>
+
+      <!-- Telegram -->
+      <div class="integration-card" id="int-telegram">
+        <div class="integration-header" onclick="toggleIntegration('telegram')">
+          <span class="integration-icon">✈️</span>
+          <span class="integration-name">Telegram</span>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="telegram-enabled" onchange="onIntegrationToggle('telegram', this.checked)">
+            <span class="toggle-slider"></span>
           </label>
         </div>
-        <div id="whatsapp-allowfrom-field" style="display:none;margin-top:1rem">
-          <label>Allowed Phone Numbers <span class="optional-badge">optional</span></label>
-          <div class="hint">Comma-separated numbers in international format (e.g. <strong>+15551234567</strong>). Only these numbers can message the agent. Leave empty to use <code style="background:var(--card);padding:1px 5px;border-radius:4px">pairing</code> mode (anyone who pairs can chat).</div>
-          <input type="text" id="whatsapp-allow-from" placeholder="+15551234567, +447700900000">
+        <div class="integration-body" id="int-telegram-body" style="display:none">
+          <div class="field">
+            <label>Bot Token</label>
+            <div class="hint">From <strong>@BotFather</strong> on Telegram.</div>
+            <input type="text" id="telegram-token" placeholder="123456789:ABCdefGHIjklMNO...">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Allowed User IDs <span class="optional-badge">optional</span></label>
+            <div class="hint">Comma-separated. Use <strong>@userinfobot</strong> to find yours.</div>
+            <input type="text" id="telegram-users" placeholder="123456789, 987654321">
+          </div>
         </div>
       </div>
+
+      <!-- Discord -->
+      <div class="integration-card" id="int-discord">
+        <div class="integration-header" onclick="toggleIntegration('discord')">
+          <span class="integration-icon">💬</span>
+          <span class="integration-name">Discord</span>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="discord-enabled" onchange="onIntegrationToggle('discord', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="integration-body" id="int-discord-body" style="display:none">
+          <div class="field" style="margin-bottom:0">
+            <label>Bot Token</label>
+            <div class="hint">From the Discord Developer Portal.</div>
+            <input type="text" id="discord-token" placeholder="MTIz...">
+          </div>
+        </div>
+      </div>
+
+      <!-- WhatsApp -->
+      <div class="integration-card" id="int-whatsapp">
+        <div class="integration-header" onclick="toggleIntegration('whatsapp')">
+          <span class="integration-icon">📱</span>
+          <span class="integration-name">WhatsApp</span>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="whatsapp-enabled" onchange="onIntegrationToggle('whatsapp', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="integration-body" id="int-whatsapp-body" style="display:none">
+          <div id="whatsapp-status-banner" style="margin-bottom:0.75rem"></div>
+          <button type="button" class="probe-btn" id="whatsapp-connect-btn" onclick="startWhatsAppLogin()" style="margin-bottom:0.75rem">
+            <span id="whatsapp-btn-icon">📱</span> <span id="whatsapp-btn-label">Connect WhatsApp</span>
+          </button>
+          <div id="whatsapp-qr-area" style="display:none;margin-bottom:0.75rem">
+            <canvas id="whatsapp-qr-canvas" style="display:none;border-radius:8px;max-width:100%;background:#fff;padding:8px"></canvas>
+            <pre id="whatsapp-qr-log" style="background:var(--bg);border:1px solid var(--border);padding:0.75rem;border-radius:8px;font-size:0.75rem;line-height:1.4;overflow:auto;max-height:180px;white-space:pre-wrap;color:var(--text-muted);margin-top:0.5rem">Waiting…</pre>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Allowed Phone Numbers <span class="optional-badge">optional</span></label>
+            <div class="hint">Comma-separated in international format (e.g. <strong>+15551234567</strong>). Leave empty to allow anyone who pairs.</div>
+            <input type="text" id="whatsapp-allow-from" placeholder="+15551234567, +447700900000">
+          </div>
+        </div>
+      </div>
+
       <div class="actions">
         <button class="btn btn-secondary" onclick="backFromStep2()">Back</button>
         <button class="btn btn-primary" id="btn-step2-next" onclick="nextFromStep2()">Review</button>
@@ -792,6 +952,9 @@
     // Model catalogues per provider
     // ---------------------------------------------------------------------------
     const PROVIDER_MODELS = {
+      nexus: [
+        { id: "minimax/minimax-m2.7", name: "minimax/minimax-m2.7", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 16384 },
+      ],
       openai: [
         { id: "gpt-5.2", name: "GPT-5.2", reasoning: false, input: ["text", "image"], contextWindow: 400000, maxTokens: 128000 },
         { id: "gpt-5.2-pro", name: "GPT-5.2 Pro", reasoning: true, input: ["text", "image"], contextWindow: 400000, maxTokens: 128000 },
@@ -823,23 +986,9 @@
         { id: "deepseek/deepseek-r1-0528", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 163840, maxTokens: 65536 },
         { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
       ],
-      groq: [
-        { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text", "image"], contextWindow: 131072, maxTokens: 8192 },
-        { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 65536 },
-        { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
-        { id: "qwen/qwen3-32b", name: "Qwen3 32B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 40960 },
-        { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 131072 },
-      ],
       deepseek: [
         { id: "deepseek-chat", name: "DeepSeek V3.2", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 8192 },
         { id: "deepseek-reasoner", name: "DeepSeek V3.2 (Reasoning)", reasoning: true, input: ["text"], contextWindow: 128000, maxTokens: 64000 },
-      ],
-      together: [
-        { id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", name: "Llama 4 Maverick 17B", reasoning: false, input: ["text", "image"], contextWindow: 1048576, maxTokens: 16384 },
-        { id: "meta-llama/Llama-4-Scout-17B-16E-Instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text", "image"], contextWindow: 524288, maxTokens: 16384 },
-        { id: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "Llama 3.3 70B Turbo", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
-        { id: "Qwen/QwQ-32B", name: "QwQ 32B (Reasoning)", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
-        { id: "deepseek-ai/DeepSeek-R1", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
       ],
       mistral: [
         { id: "mistral-large-2512", name: "Mistral Large 3", reasoning: false, input: ["text", "image"], contextWindow: 256000, maxTokens: 16384 },
@@ -854,6 +1003,10 @@
     };
 
     const PROVIDERS = [
+      {
+        id: "nexus", name: "DappNode Nexus", desc: "Top AI models through one unified API, filtered by privacy, speed & reasoning. Get 5\u20ac in free credits to start.", tag: "Recommended", free: false,
+        baseUrl: "https://nexus-api.dappnode.com/v1", api: "openai-completions", recommended: true
+      },
       {
         id: "openai", name: "OpenAI", desc: "GPT-5.2, GPT-4.1, o4-mini", tag: "Most popular", free: false,
         baseUrl: "https://api.openai.com/v1", api: "openai-responses"
@@ -875,16 +1028,8 @@
         baseUrl: "https://openrouter.ai/api/v1", api: "openai-responses"
       },
       {
-        id: "groq", name: "Groq", desc: "Ultra-fast DeepSeek R1, Llama, Qwen", tag: "Free tier", free: true,
-        baseUrl: "https://api.groq.com/openai/v1", api: "openai-responses"
-      },
-      {
         id: "deepseek", name: "DeepSeek", desc: "Affordable and capable models", tag: "Budget friendly", free: false,
         baseUrl: "https://api.deepseek.com/v1", api: "openai-responses"
-      },
-      {
-        id: "together", name: "Together AI", desc: "Open-source models in the cloud", tag: "Paid", free: false,
-        baseUrl: "https://api.together.xyz/v1", api: "openai-responses"
       },
       {
         id: "mistral", name: "Mistral AI", desc: "Mistral Large 3, Devstral 2, Codestral", tag: "Paid", free: false,
@@ -911,13 +1056,25 @@
     const cardsEl = document.getElementById("provider-cards");
     PROVIDERS.forEach(p => {
       const card = document.createElement("div");
-      card.className = "card";
+      card.className = p.recommended ? "card recommended" : "card";
       card.dataset.id = p.id;
-      card.innerHTML = `
+      if (p.recommended) {
+        card.innerHTML = `
+    <div class="recommended-row">
+      <div>
+        <div class="card-title">${p.name}</div>
+        <div class="card-desc">${p.desc}</div>
+      </div>
+      <span class="card-tag nexus">${p.tag}</span>
+    </div>
+  `;
+      } else {
+        card.innerHTML = `
     <div class="card-title">${p.name}</div>
     <div class="card-desc">${p.desc}</div>
     <span class="card-tag ${p.free ? 'free' : ''}">${p.tag}</span>
   `;
+      }
       card.onclick = () => selectProviderCard(p.id);
       cardsEl.appendChild(card);
     });
@@ -930,19 +1087,26 @@
       document.getElementById("btn-step0").disabled = false;
     }
 
-    // Show/hide telegram users when token is entered
-    document.getElementById("telegram-token").addEventListener("input", (e) => {
-      document.getElementById("telegram-users-field").style.display = e.target.value.trim() ? "block" : "none";
-    });
+    // ---------------------------------------------------------------------------
+    // Integration card toggle helpers
+    // ---------------------------------------------------------------------------
+    function onIntegrationToggle(name, enabled) {
+      const body = document.getElementById(`int-${name}-body`);
+      const card = document.getElementById(`int-${name}`);
+      if (body) body.style.display = enabled ? "block" : "none";
+      if (card) card.classList.toggle("enabled", enabled);
+    }
 
-    document.getElementById("whatsapp-enabled").addEventListener("change", (e) => {
-      document.getElementById("whatsapp-allowfrom-field").style.display = e.target.checked ? "block" : "none";
-    });
+    function toggleIntegration(name) {
+      const cb = document.getElementById(`${name}-enabled`);
+      if (cb) { cb.checked = !cb.checked; onIntegrationToggle(name, cb.checked); }
+    }
 
     // ---------------------------------------------------------------------------
     // WhatsApp QR login
     // ---------------------------------------------------------------------------
     let whatsappEventSource = null;
+    let whatsappLinkedState = false;
 
     async function checkWhatsAppLinked() {
       try {
@@ -951,13 +1115,20 @@
         const banner = document.getElementById("whatsapp-status-banner");
         const label = document.getElementById("whatsapp-btn-label");
         if (data.linked) {
-          if (banner) banner.innerHTML = '<div class="probe-result ok" style="margin-bottom:0.5rem"><strong>WhatsApp linked</strong> &mdash; your account is connected.</div>';
+          whatsappLinkedState = true;
+          if (banner) banner.innerHTML = '<div class="probe-result ok" style="margin-bottom:0"><strong>WhatsApp linked</strong> &mdash; your account is connected.</div>';
           if (label) label.textContent = "Reconnect WhatsApp";
           const cb = document.getElementById("whatsapp-enabled");
-          if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event("change")); }
+          if (cb && !cb.checked) { cb.checked = true; onIntegrationToggle("whatsapp", true); }
         } else {
+          whatsappLinkedState = false;
           if (banner) banner.innerHTML = "";
           if (label) label.textContent = "Connect WhatsApp";
+        }
+        // Refresh the home-page channels dots if we're on the home step
+        if (currentStep === "home") {
+          const channelsEl = document.querySelector(".channels-section");
+          if (channelsEl) channelsEl.outerHTML = renderChannelsSection();
         }
       } catch {}
     }
@@ -1111,13 +1282,11 @@
         const tg = cfg.channels.telegram;
         if (tg.botToken) {
           document.getElementById("telegram-token").value = tg.botToken;
-          document.getElementById("telegram-users-field").style.display = "block";
         }
         if (tg.allowFrom && tg.allowFrom.length > 0) {
           const users = tg.allowFrom.filter(Boolean).join(", ");
           if (users) {
             document.getElementById("telegram-users").value = users;
-            document.getElementById("telegram-users-field").style.display = "block";
           }
         }
       }
@@ -1200,20 +1369,41 @@
     function configureChannels() {
       wizardMode = 'channels-only';
 
-      // Pre-fill from existingConfig
+      // Reset all toggles to off first
+      ["telegram", "discord", "whatsapp"].forEach(name => {
+        const cb = document.getElementById(`${name}-enabled`);
+        if (cb) { cb.checked = false; onIntegrationToggle(name, false); }
+      });
+
+      // Reset save button (may be disabled from a previous save)
+      const saveBtn = document.getElementById("btn-step2-next");
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = "Save"; }
+
+      // Pre-fill and enable from existingConfig
       if (existingConfig && existingConfig.channels) {
         const tg = existingConfig.channels.telegram;
-        if (tg && tg.botToken) {
-          document.getElementById("telegram-token").value = tg.botToken;
-          document.getElementById("telegram-users-field").style.display = "block";
+        if (tg && (tg.botToken || tg.enabled)) {
+          const cb = document.getElementById("telegram-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("telegram", true); }
+          if (tg.botToken) document.getElementById("telegram-token").value = tg.botToken;
           if (tg.allowFrom && tg.allowFrom.length > 0) {
             document.getElementById("telegram-users").value = tg.allowFrom.filter(Boolean).join(", ");
           }
         }
         const dc = existingConfig.channels.discord;
-        if (dc) {
+        if (dc && (dc.token || dc.botToken || dc.enabled)) {
+          const cb = document.getElementById("discord-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("discord", true); }
           const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
           if (dcToken) document.getElementById("discord-token").value = dcToken;
+        }
+        const wa = existingConfig.channels.whatsapp;
+        if (wa && wa.enabled) {
+          const cb = document.getElementById("whatsapp-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("whatsapp", true); }
+          if (wa.allowFrom && wa.allowFrom.length > 0) {
+            document.getElementById("whatsapp-allow-from").value = wa.allowFrom.filter(Boolean).join(", ");
+          }
         }
       }
 
@@ -1223,40 +1413,45 @@
 
     function buildChannelsConfig() {
       const config = { channels: {}, plugins: { entries: {} } };
-      const telegramToken = document.getElementById("telegram-token").value.trim();
-      const telegramUsers = document.getElementById("telegram-users").value.trim();
-      const discordToken = document.getElementById("discord-token").value.trim();
+      const tgEnabled = !!(document.getElementById("telegram-enabled") && document.getElementById("telegram-enabled").checked);
+      const dcEnabled = !!(document.getElementById("discord-enabled") && document.getElementById("discord-enabled").checked);
+      const waEnabled = !!(document.getElementById("whatsapp-enabled") && document.getElementById("whatsapp-enabled").checked);
 
-      if (telegramToken) {
-        config.channels.telegram = {
-          enabled: true,
-          botToken: telegramToken,
-          dmPolicy: "pairing",
-          groupPolicy: "allowlist",
-          groups: { "*": { requireMention: true } },
-          streaming: "partial",
-        };
-        if (telegramUsers) {
-          config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
+      if (tgEnabled) {
+        const telegramToken = document.getElementById("telegram-token").value.trim();
+        const telegramUsers = document.getElementById("telegram-users").value.trim();
+        if (telegramToken) {
+          config.channels.telegram = {
+            enabled: true,
+            botToken: telegramToken,
+            dmPolicy: "pairing",
+            groupPolicy: "allowlist",
+            groups: { "*": { requireMention: true } },
+            streaming: "partial",
+          };
+          if (telegramUsers) {
+            config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
+          }
+          config.plugins.entries.telegram = { enabled: true };
         }
-        config.plugins.entries.telegram = { enabled: true };
       }
 
-      if (discordToken) {
-        config.channels.discord = {
-          enabled: true,
-          token: discordToken,
-          dmPolicy: "pairing",
-          groupPolicy: "allowlist",
-        };
-        config.plugins.entries.discord = { enabled: true };
+      if (dcEnabled) {
+        const discordToken = document.getElementById("discord-token").value.trim();
+        if (discordToken) {
+          config.channels.discord = {
+            enabled: true,
+            token: discordToken,
+            dmPolicy: "pairing",
+            groupPolicy: "allowlist",
+          };
+          config.plugins.entries.discord = { enabled: true };
+        }
       }
 
-      const whatsappEnabled = !!(document.getElementById("whatsapp-enabled") && document.getElementById("whatsapp-enabled").checked);
-      if (whatsappEnabled) {
+      if (waEnabled) {
         const allowFromRaw = (document.getElementById("whatsapp-allow-from").value || "").trim();
         const allowFrom = allowFromRaw ? allowFromRaw.split(",").map(s => s.trim()).filter(Boolean) : [];
-        config.channels = config.channels || {};
         config.channels.whatsapp = {
           enabled: true,
           dmPolicy: allowFrom.length > 0 ? "allowlist" : "pairing",
@@ -1274,19 +1469,45 @@
       btn.textContent = "Saving...";
 
       try {
-        const config = buildChannelsConfig();
+        // Validate: enabled integrations must have a token
+        const tgEnabled = document.getElementById("telegram-enabled").checked;
+        const dcEnabled = document.getElementById("discord-enabled").checked;
+        if (tgEnabled && !document.getElementById("telegram-token").value.trim()) {
+          alert("Please enter a Telegram Bot Token, or disable Telegram.");
+          btn.disabled = false; btn.textContent = "Save"; return;
+        }
+        if (dcEnabled && !document.getElementById("discord-token").value.trim()) {
+          alert("Please enter a Discord Bot Token, or disable Discord.");
+          btn.disabled = false; btn.textContent = "Save"; return;
+        }
+
+        // Start from full existing config so we can remove disabled channels
+        const config = existingConfig ? JSON.parse(JSON.stringify(existingConfig)) : {};
+        if (!config.channels) config.channels = {};
+        if (!config.plugins) config.plugins = {};
+        if (!config.plugins.entries) config.plugins.entries = {};
+
+        // Apply enabled integrations / remove disabled ones
+        const channelsConfig = buildChannelsConfig();
+        const CHANNEL_NAMES = ["telegram", "discord", "whatsapp"];
+        CHANNEL_NAMES.forEach(name => {
+          if (channelsConfig.channels[name]) {
+            config.channels[name] = channelsConfig.channels[name];
+            config.plugins.entries[name] = { enabled: true };
+          } else {
+            delete config.channels[name];
+            delete config.plugins.entries[name];
+          }
+        });
+
         const resp = await fetch("/api/config", {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(config)
         });
         const data = await resp.json();
         if (resp.ok) {
-          // Reload existingConfig to reflect merged result
-          try {
-            const cfgResp = await fetch("/api/config");
-            if (cfgResp.ok) existingConfig = await cfgResp.json();
-          } catch {}
+          existingConfig = config;
           goTo("home");
           showHomeBanner("success", "Chat integrations saved.");
         } else {
@@ -1358,7 +1579,51 @@
       const container = document.getElementById("provider-config");
       const p = selectedProvider;
 
-      if (p.id === "ollama") {
+      if (p.id === "nexus") {
+        let prefillKey = "";
+        let prefillModelId = "minimax/minimax-m2.7";
+        if (existingConfig && existingConfig._loadedProvider === "nexus") {
+          prefillKey = existingConfig._loadedApiKey || "";
+          prefillModelId = existingConfig._loadedModelId || prefillModelId;
+        }
+        const nexusModels = PROVIDER_MODELS.nexus || [];
+        const modelOptions = nexusModels.map(m =>
+          `<option value="${m.id}" ${m.id === prefillModelId ? 'selected' : ''}>${m.name}</option>`
+        ).join("") + '<option value="__custom">Custom model...</option>';
+
+        container.innerHTML = `
+      <h2>Configure DappNode Nexus</h2>
+      <div class="subtitle">
+        The gateway for AI builders who value privacy. Access top AI models through a single OpenAI-compatible API — filtered by privacy, speed, and reasoning level.
+      </div>
+      <div class="banner info" style="margin-bottom:1.25rem">
+        <strong>Get 5&euro; in free credits</strong> to test private AI models &mdash; no commitment needed.<br>
+        Create your account at <a href="https://nexus.dappnode.com" target="_blank" rel="noopener" style="color:inherit;font-weight:600">nexus.dappnode.com</a>, buy credits or subscribe, then paste your API key below.
+      </div>
+      <div class="field">
+        <label>Nexus API Key</label>
+        <div class="hint">Found in your Nexus account under API keys.</div>
+        <input type="password" id="api-key" placeholder="sk-xxx" value="${prefillKey}">
+      </div>
+      <button class="probe-btn" id="nexus-fetch-btn" onclick="fetchNexusModels()">
+        <span id="nexus-fetch-icon">&#128269;</span> Fetch Available Models
+      </button>
+      <div id="nexus-fetch-result"></div>
+      <div class="field">
+        <label>Model</label>
+        <div class="hint">Enter your API key and click "Fetch Available Models" to see what your subscription includes.</div>
+        <select id="model-select">
+          ${modelOptions}
+        </select>
+      </div>
+      <div class="field" id="custom-model-field" style="display:none">
+        <label>Custom Model ID</label>
+        <div class="hint">Enter the exact model identifier.</div>
+        <input type="text" id="custom-model" placeholder="provider/model-name">
+      </div>
+    `;
+        setupCustomModelToggle(prefillModelId);
+      } else if (p.id === "ollama") {
         // Pre-fill values from existing config
         let ollamaUrl = "";
         let ollamaModel = "";
@@ -1513,9 +1778,7 @@
           anthropic: ["Anthropic API Key", "Get one at console.anthropic.com"],
           google: ["Google AI API Key", "Get one at aistudio.google.com/app/apikey"],
           openrouter: ["OpenRouter API Key", "Get one at openrouter.ai/keys"],
-          groq: ["Groq API Key", "Get one at console.groq.com (free tier available)"],
           deepseek: ["DeepSeek API Key", "Get one at platform.deepseek.com"],
-          together: ["Together AI API Key", "Get one at api.together.xyz"],
           mistral: ["Mistral API Key", "Get one at console.mistral.ai"],
         };
         const [label, hint] = keyLabels[p.id] || ["API Key", ""];
@@ -1658,13 +1921,14 @@
 
     function renderChannelsSection() {
       const tg = existingConfig && existingConfig.channels && existingConfig.channels.telegram;
-      const tgOn = !!(tg && tg.botToken);
+      const tgOn = !!(tg && (tg.botToken || tg.enabled || (tg.accounts && Object.keys(tg.accounts).length > 0)));
       const dc = existingConfig && existingConfig.channels && existingConfig.channels.discord;
-      const dcOn = !!(dc && (typeof dc.token === 'string' ? dc.token : dc.botToken));
+      const dcOn = !!(dc && ((typeof dc.token === 'string' ? dc.token : dc.botToken) || dc.enabled || (dc.accounts && Object.keys(dc.accounts).length > 0)));
+      const waConfig = existingConfig && existingConfig.channels && existingConfig.channels.whatsapp;
       const channels = [
         { name: "Telegram", connected: tgOn },
         { name: "Discord", connected: dcOn },
-        { name: "WhatsApp", connected: !!(existingConfig && existingConfig.channels && existingConfig.channels.whatsapp && existingConfig.channels.whatsapp.enabled) },
+        { name: "WhatsApp", connected: whatsappLinkedState || !!(waConfig && waConfig.enabled) },
       ];
       let html = `<div class="channels-section">`;
       html += `<div class="provider-list-section-label" style="margin-bottom:0.75rem">Chat Integrations</div>`;
@@ -1736,22 +2000,34 @@
 
       selectProviderCard(cardId);
 
-      // Pre-fill messaging channels
-      if (existingConfig.channels && existingConfig.channels.telegram) {
+      // Pre-fill messaging channel toggles
+      ["telegram", "discord", "whatsapp"].forEach(name => {
+        const cb = document.getElementById(`${name}-enabled`);
+        if (cb) { cb.checked = false; onIntegrationToggle(name, false); }
+      });
+      if (existingConfig.channels) {
         const tg = existingConfig.channels.telegram;
-        if (tg.botToken) {
-          document.getElementById("telegram-token").value = tg.botToken;
-          document.getElementById("telegram-users-field").style.display = "block";
+        if (tg && (tg.botToken || tg.enabled)) {
+          const cb = document.getElementById("telegram-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("telegram", true); }
+          if (tg.botToken) document.getElementById("telegram-token").value = tg.botToken;
+          if (tg.allowFrom && tg.allowFrom.length > 0)
+            document.getElementById("telegram-users").value = tg.allowFrom.filter(Boolean).join(", ");
         }
-        if (tg.allowFrom && tg.allowFrom.length > 0) {
-          document.getElementById("telegram-users").value = tg.allowFrom.filter(Boolean).join(", ");
-          document.getElementById("telegram-users-field").style.display = "block";
-        }
-      }
-      if (existingConfig.channels && existingConfig.channels.discord) {
         const dc = existingConfig.channels.discord;
-        const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
-        if (dcToken) document.getElementById("discord-token").value = dcToken;
+        if (dc && (dc.token || dc.botToken || dc.enabled)) {
+          const cb = document.getElementById("discord-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("discord", true); }
+          const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
+          if (dcToken) document.getElementById("discord-token").value = dcToken;
+        }
+        const wa = existingConfig.channels.whatsapp;
+        if (wa && wa.enabled) {
+          const cb = document.getElementById("whatsapp-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("whatsapp", true); }
+          if (wa.allowFrom && wa.allowFrom.length > 0)
+            document.getElementById("whatsapp-allow-from").value = wa.allowFrom.filter(Boolean).join(", ");
+        }
       }
       checkWhatsAppLinked();
 
@@ -1808,6 +2084,69 @@
       const cls = type === "success" ? "success" : "warning";
       banner.innerHTML = `<div class="banner ${cls}" style="margin-bottom:1rem">${message}</div>`;
       setTimeout(() => { banner.innerHTML = ""; }, 3500);
+    }
+
+    async function fetchNexusModels() {
+      const apiKey = (document.getElementById("api-key") || {}).value || "";
+      const btn = document.getElementById("nexus-fetch-btn");
+      const icon = document.getElementById("nexus-fetch-icon");
+      const resultEl = document.getElementById("nexus-fetch-result");
+
+      if (!apiKey) {
+        resultEl.innerHTML = '<div class="probe-result fail">Enter your API key first.</div>';
+        return;
+      }
+
+      btn.disabled = true;
+      icon.textContent = "\u23F3";
+      resultEl.innerHTML = "";
+
+      try {
+        const resp = await fetch(`/api/nexus/models?apiKey=${encodeURIComponent(apiKey)}`);
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          resultEl.innerHTML = `<div class="probe-result fail"><strong>Failed:</strong> ${data.error || "Unknown error"}</div>`;
+          btn.disabled = false;
+          icon.textContent = "\uD83D\uDD0D";
+          return;
+        }
+
+        const models = (data.data || []).map(m => ({
+          id: m.id,
+          name: m.id,
+          reasoning: false,
+          input: ["text"],
+          contextWindow: m.context_length || 128000,
+          maxTokens: 16384,
+        }));
+
+        if (models.length === 0) {
+          resultEl.innerHTML = '<div class="probe-result fail">No models found for this API key.</div>';
+          btn.disabled = false;
+          icon.textContent = "\uD83D\uDD0D";
+          return;
+        }
+
+        // Update the in-memory catalogue so getSelectedModel() can find them
+        PROVIDER_MODELS.nexus = models;
+
+        const select = document.getElementById("model-select");
+        if (select) {
+          select.innerHTML = models.map(m => `<option value="${m.id}">${m.name}</option>`).join("") +
+            '<option value="__custom">Custom model...</option>';
+          select.value = models[0].id;
+          const customField = document.getElementById("custom-model-field");
+          if (customField) customField.style.display = "none";
+        }
+
+        resultEl.innerHTML = `<div class="probe-result ok"><strong>${models.length} model${models.length !== 1 ? 's' : ''} available</strong> — select one below.</div>`;
+      } catch (err) {
+        resultEl.innerHTML = `<div class="probe-result fail">Network error: ${err.message}</div>`;
+      }
+
+      btn.disabled = false;
+      icon.textContent = "\uD83D\uDD0D";
     }
 
     async function probeOllama() {
@@ -1980,49 +2319,11 @@
         config.models.providers[p.id] = providerConfig;
       }
 
-      // Messaging channels
-      const telegramToken = document.getElementById("telegram-token").value.trim();
-      const telegramUsers = document.getElementById("telegram-users").value.trim();
-      const discordToken = document.getElementById("discord-token").value.trim();
-
-      if (telegramToken) {
-        config.channels = config.channels || {};
-        config.channels.telegram = {
-          enabled: true,
-          botToken: telegramToken,
-          dmPolicy: "pairing",
-          groupPolicy: "allowlist",
-          groups: { "*": { requireMention: true } },
-          streaming: "partial",
-        };
-        if (telegramUsers) {
-          config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
-        }
-        config.plugins.entries.telegram = { enabled: true };
-      }
-
-      if (discordToken) {
-        config.channels = config.channels || {};
-        config.channels.discord = {
-          enabled: true,
-          token: discordToken,
-          dmPolicy: "pairing",
-          groupPolicy: "allowlist",
-        };
-        config.plugins.entries.discord = { enabled: true };
-      }
-
-      const whatsappEnabled2 = !!(document.getElementById("whatsapp-enabled") && document.getElementById("whatsapp-enabled").checked);
-      if (whatsappEnabled2) {
-        const allowFromRaw2 = (document.getElementById("whatsapp-allow-from").value || "").trim();
-        const allowFrom2 = allowFromRaw2 ? allowFromRaw2.split(",").map(s => s.trim()).filter(Boolean) : [];
-        config.channels = config.channels || {};
-        config.channels.whatsapp = {
-          enabled: true,
-          dmPolicy: allowFrom2.length > 0 ? "allowlist" : "pairing",
-          ...(allowFrom2.length > 0 ? { allowFrom: allowFrom2 } : {}),
-        };
-        config.plugins.entries.whatsapp = { enabled: true };
+      // Messaging channels — delegate to shared builder
+      const channelsCfg = buildChannelsConfig();
+      if (Object.keys(channelsCfg.channels).length > 0) {
+        config.channels = channelsCfg.channels;
+        Object.assign(config.plugins.entries, channelsCfg.plugins.entries);
       }
 
       return config;

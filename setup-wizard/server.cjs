@@ -124,6 +124,31 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Proxy Nexus model list (avoids CORS from browser)
+  if (req.method === "GET" && url.pathname === "/api/nexus/models") {
+    const apiKey = url.searchParams.get("apiKey") || "";
+    if (!apiKey) {
+      json(res, 400, { error: "apiKey required" });
+      return;
+    }
+    try {
+      const resp = await fetch("https://nexus-api.dappnode.com/v1/models", {
+        headers: { "Authorization": `Bearer ${apiKey}` },
+        signal: AbortSignal.timeout(10000),
+      });
+      const text = await resp.text();
+      if (!resp.ok) {
+        json(res, resp.status, { error: `Nexus API returned ${resp.status}: ${text.slice(0, 200)}` });
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(text);
+    } catch (err) {
+      json(res, 502, { error: err.message });
+    }
+    return;
+  }
+
   // Probe Ollama
   if (req.method === "GET" && url.pathname === "/api/ollama/probe") {
     const result = await probeOllama();
