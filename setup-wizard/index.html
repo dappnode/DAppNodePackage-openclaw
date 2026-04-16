@@ -166,6 +166,40 @@
       color: var(--success);
     }
 
+    /* Nexus recommended card */
+    .card.recommended {
+      grid-column: 1 / -1;
+      border-color: #00d4aa;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.06) 0%, rgba(102, 126, 234, 0.06) 100%);
+    }
+
+    .card.recommended:hover {
+      border-color: #00d4aa;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.12) 0%, rgba(102, 126, 234, 0.12) 100%);
+    }
+
+    .card.recommended.selected {
+      border-color: #00d4aa;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.12) 0%, rgba(102, 126, 234, 0.12) 100%);
+    }
+
+    .card .card-tag.nexus {
+      background: rgba(0, 212, 170, 0.15);
+      color: #00d4aa;
+    }
+
+    .card.recommended .recommended-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .card.recommended .card-desc {
+      max-width: 420px;
+    }
+
     /* Form inputs */
     .field {
       margin-bottom: 1.25rem;
@@ -423,6 +457,335 @@
       background: rgba(52, 211, 153, 0.15);
       color: var(--success);
     }
+
+    /* Provider list on home step */
+    .provider-list-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .provider-list-section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+    }
+
+    .provider-list-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .provider-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .provider-list-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .provider-list-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .provider-list-url {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .provider-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+      margin-left: 0.75rem;
+    }
+
+    .provider-action-btn {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .provider-action-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .provider-action-btn.danger:hover {
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .add-provider-btn {
+      display: block;
+      width: 100%;
+      padding: 0.9rem 1.25rem;
+      background: transparent;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      margin-top: 0.75rem;
+    }
+
+    .add-provider-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .model-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.35rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .model-row-name {
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .model-row.model-row-default .model-row-name {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .model-default-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(102, 126, 234, 0.15);
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .set-default-btn {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .set-default-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .set-default-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Multi-agent section on home step */
+    .multi-agent-section {
+      margin-top: 1.5rem;
+    }
+
+    .agent-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .agent-row:first-child {
+      border-top: none;
+    }
+
+    .agent-row-id {
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .agent-row-name {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-left: 0.25rem;
+    }
+
+    /* Channels section on home step */
+    .channels-section {
+      margin-top: 1.5rem;
+    }
+
+    .channels-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+    }
+
+    .channel-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.3rem 0;
+    }
+
+    .channel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .channel-dot.on { background: var(--success); }
+    .channel-dot.off { background: var(--border); }
+
+    .channel-name {
+      font-size: 0.85rem;
+      flex: 1;
+    }
+
+    .channel-status-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .configure-channels-btn {
+      display: block;
+      width: 100%;
+      margin-top: 0.75rem;
+      padding: 7px 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .configure-channels-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Integration cards (step 2) */
+    .integration-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .integration-card.enabled {
+      border-color: var(--primary);
+    }
+
+    .integration-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .integration-header:hover {
+      background: var(--card-hover);
+    }
+
+    .integration-icon {
+      font-size: 1.2rem;
+      width: 26px;
+      text-align: center;
+    }
+
+    .integration-name {
+      flex: 1;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .integration-body {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .integration-body .field:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Toggle switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--border);
+      border-radius: 24px;
+      transition: background 0.2s;
+    }
+
+    .toggle-slider:before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--primary);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
   </style>
 </head>
 
@@ -444,18 +807,9 @@
 
     <!-- Step: Home (shown when existing config has a configured provider) -->
     <div class="step" data-step="home">
-      <h2>Configuration Found</h2>
-      <div class="subtitle" id="home-subtitle">You already have a provider configured. What would you like to do?</div>
-      <div class="mode-cards">
-        <button class="mode-card" onclick="startUpdate()">
-          <div class="mode-card-title">Edit Existing Setup</div>
-          <div class="mode-card-desc">Update your API keys, change the model, or adjust messaging integrations</div>
-        </button>
-        <button class="mode-card" onclick="startAddProvider()">
-          <div class="mode-card-title">&#43; Add Another Provider</div>
-          <div class="mode-card-desc">Add a new AI provider and set it as the default for the agent</div>
-        </button>
-      </div>
+      <h2>Your AI Providers</h2>
+      <div id="home-banner"></div>
+      <div id="home-providers"></div>
     </div>
 
     <!-- Step 0: Provider -->
@@ -477,28 +831,84 @@
       </div>
     </div>
 
-    <!-- Step 2: Messaging + Security -->
+    <!-- Step 2: Chat Integrations -->
     <div class="step" data-step="2">
-      <h2>Integrations & Security</h2>
-      <div class="subtitle">Optional — skip any field you don't need right now.</div>
-      <div class="field">
-        <label>Telegram Bot Token <span class="optional-badge">optional</span></label>
-        <div class="hint">From <strong>@BotFather</strong> on Telegram.</div>
-        <input type="text" id="telegram-token" placeholder="123456789:ABCdefGHIjklMNO...">
+      <h2>Chat Integrations</h2>
+      <div class="subtitle">Enable the integrations you want. Disable to remove them from config.</div>
+
+      <!-- Telegram -->
+      <div class="integration-card" id="int-telegram">
+        <div class="integration-header" onclick="toggleIntegration('telegram')">
+          <span class="integration-icon">✈️</span>
+          <span class="integration-name">Telegram</span>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="telegram-enabled" onchange="onIntegrationToggle('telegram', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="integration-body" id="int-telegram-body" style="display:none">
+          <div class="field">
+            <label>Bot Token</label>
+            <div class="hint">From <strong>@BotFather</strong> on Telegram.</div>
+            <input type="text" id="telegram-token" placeholder="123456789:ABCdefGHIjklMNO...">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Allowed User IDs <span class="optional-badge">optional</span></label>
+            <div class="hint">Comma-separated. Use <strong>@userinfobot</strong> to find yours.</div>
+            <input type="text" id="telegram-users" placeholder="123456789, 987654321">
+          </div>
+        </div>
       </div>
-      <div class="field" id="telegram-users-field" style="display:none">
-        <label>Allowed Telegram User IDs <span class="optional-badge">optional</span></label>
-        <div class="hint">Comma-separated. Use <strong>@userinfobot</strong> to find yours.</div>
-        <input type="text" id="telegram-users" placeholder="123456789,987654321">
+
+      <!-- Discord -->
+      <div class="integration-card" id="int-discord">
+        <div class="integration-header" onclick="toggleIntegration('discord')">
+          <span class="integration-icon">💬</span>
+          <span class="integration-name">Discord</span>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="discord-enabled" onchange="onIntegrationToggle('discord', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="integration-body" id="int-discord-body" style="display:none">
+          <div class="field" style="margin-bottom:0">
+            <label>Bot Token</label>
+            <div class="hint">From the Discord Developer Portal.</div>
+            <input type="text" id="discord-token" placeholder="MTIz...">
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <label>Discord Bot Token <span class="optional-badge">optional</span></label>
-        <div class="hint">From the Discord Developer Portal.</div>
-        <input type="text" id="discord-token" placeholder="MTIz...">
+
+      <!-- WhatsApp -->
+      <div class="integration-card" id="int-whatsapp">
+        <div class="integration-header" onclick="toggleIntegration('whatsapp')">
+          <span class="integration-icon">📱</span>
+          <span class="integration-name">WhatsApp</span>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="whatsapp-enabled" onchange="onIntegrationToggle('whatsapp', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="integration-body" id="int-whatsapp-body" style="display:none">
+          <div id="whatsapp-status-banner" style="margin-bottom:0.75rem"></div>
+          <button type="button" class="probe-btn" id="whatsapp-connect-btn" onclick="startWhatsAppLogin()" style="margin-bottom:0.75rem">
+            <span id="whatsapp-btn-icon">📱</span> <span id="whatsapp-btn-label">Connect WhatsApp</span>
+          </button>
+          <div id="whatsapp-qr-area" style="display:none;margin-bottom:0.75rem">
+            <canvas id="whatsapp-qr-canvas" style="display:none;border-radius:8px;max-width:100%;background:#fff;padding:8px"></canvas>
+            <pre id="whatsapp-qr-log" style="background:var(--bg);border:1px solid var(--border);padding:0.75rem;border-radius:8px;font-size:0.75rem;line-height:1.4;overflow:auto;max-height:180px;white-space:pre-wrap;color:var(--text-muted);margin-top:0.5rem">Waiting…</pre>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Allowed Phone Numbers <span class="optional-badge">optional</span></label>
+            <div class="hint">Comma-separated in international format (e.g. <strong>+15551234567</strong>). Leave empty to allow anyone who pairs.</div>
+            <input type="text" id="whatsapp-allow-from" placeholder="+15551234567, +447700900000">
+          </div>
+        </div>
       </div>
+
       <div class="actions">
-        <button class="btn btn-secondary" onclick="goTo(1)">Back</button>
-        <button class="btn btn-primary" onclick="showReview()">Review</button>
+        <button class="btn btn-secondary" onclick="backFromStep2()">Back</button>
+        <button class="btn btn-primary" id="btn-step2-next" onclick="nextFromStep2()">Review</button>
       </div>
     </div>
 
@@ -542,6 +952,9 @@
     // Model catalogues per provider
     // ---------------------------------------------------------------------------
     const PROVIDER_MODELS = {
+      nexus: [
+        { id: "minimax/minimax-m2.7", name: "minimax/minimax-m2.7", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 16384 },
+      ],
       openai: [
         { id: "gpt-5.2", name: "GPT-5.2", reasoning: false, input: ["text", "image"], contextWindow: 400000, maxTokens: 128000 },
         { id: "gpt-5.2-pro", name: "GPT-5.2 Pro", reasoning: true, input: ["text", "image"], contextWindow: 400000, maxTokens: 128000 },
@@ -573,23 +986,9 @@
         { id: "deepseek/deepseek-r1-0528", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 163840, maxTokens: 65536 },
         { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
       ],
-      groq: [
-        { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text", "image"], contextWindow: 131072, maxTokens: 8192 },
-        { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 65536 },
-        { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
-        { id: "qwen/qwen3-32b", name: "Qwen3 32B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 40960 },
-        { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 131072 },
-      ],
       deepseek: [
         { id: "deepseek-chat", name: "DeepSeek V3.2", reasoning: false, input: ["text"], contextWindow: 128000, maxTokens: 8192 },
         { id: "deepseek-reasoner", name: "DeepSeek V3.2 (Reasoning)", reasoning: true, input: ["text"], contextWindow: 128000, maxTokens: 64000 },
-      ],
-      together: [
-        { id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", name: "Llama 4 Maverick 17B", reasoning: false, input: ["text", "image"], contextWindow: 1048576, maxTokens: 16384 },
-        { id: "meta-llama/Llama-4-Scout-17B-16E-Instruct", name: "Llama 4 Scout 17B", reasoning: false, input: ["text", "image"], contextWindow: 524288, maxTokens: 16384 },
-        { id: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "Llama 3.3 70B Turbo", reasoning: false, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
-        { id: "Qwen/QwQ-32B", name: "QwQ 32B (Reasoning)", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 32768 },
-        { id: "deepseek-ai/DeepSeek-R1", name: "DeepSeek R1", reasoning: true, input: ["text"], contextWindow: 131072, maxTokens: 16384 },
       ],
       mistral: [
         { id: "mistral-large-2512", name: "Mistral Large 3", reasoning: false, input: ["text", "image"], contextWindow: 256000, maxTokens: 16384 },
@@ -604,6 +1003,10 @@
     };
 
     const PROVIDERS = [
+      {
+        id: "nexus", name: "DappNode Nexus", desc: "Top AI models through one unified API, filtered by privacy, speed & reasoning. Get 5\u20ac in free credits to start.", tag: "Recommended", free: false,
+        baseUrl: "https://nexus-api.dappnode.com/v1", api: "openai-completions", recommended: true
+      },
       {
         id: "openai", name: "OpenAI", desc: "GPT-5.2, GPT-4.1, o4-mini", tag: "Most popular", free: false,
         baseUrl: "https://api.openai.com/v1", api: "openai-responses"
@@ -625,16 +1028,8 @@
         baseUrl: "https://openrouter.ai/api/v1", api: "openai-responses"
       },
       {
-        id: "groq", name: "Groq", desc: "Ultra-fast DeepSeek R1, Llama, Qwen", tag: "Free tier", free: true,
-        baseUrl: "https://api.groq.com/openai/v1", api: "openai-responses"
-      },
-      {
         id: "deepseek", name: "DeepSeek", desc: "Affordable and capable models", tag: "Budget friendly", free: false,
         baseUrl: "https://api.deepseek.com/v1", api: "openai-responses"
-      },
-      {
-        id: "together", name: "Together AI", desc: "Open-source models in the cloud", tag: "Paid", free: false,
-        baseUrl: "https://api.together.xyz/v1", api: "openai-responses"
       },
       {
         id: "mistral", name: "Mistral AI", desc: "Mistral Large 3, Devstral 2, Codestral", tag: "Paid", free: false,
@@ -661,13 +1056,25 @@
     const cardsEl = document.getElementById("provider-cards");
     PROVIDERS.forEach(p => {
       const card = document.createElement("div");
-      card.className = "card";
+      card.className = p.recommended ? "card recommended" : "card";
       card.dataset.id = p.id;
-      card.innerHTML = `
+      if (p.recommended) {
+        card.innerHTML = `
+    <div class="recommended-row">
+      <div>
+        <div class="card-title">${p.name}</div>
+        <div class="card-desc">${p.desc}</div>
+      </div>
+      <span class="card-tag nexus">${p.tag}</span>
+    </div>
+  `;
+      } else {
+        card.innerHTML = `
     <div class="card-title">${p.name}</div>
     <div class="card-desc">${p.desc}</div>
     <span class="card-tag ${p.free ? 'free' : ''}">${p.tag}</span>
   `;
+      }
       card.onclick = () => selectProviderCard(p.id);
       cardsEl.appendChild(card);
     });
@@ -680,10 +1087,148 @@
       document.getElementById("btn-step0").disabled = false;
     }
 
-    // Show/hide telegram users when token is entered
-    document.getElementById("telegram-token").addEventListener("input", (e) => {
-      document.getElementById("telegram-users-field").style.display = e.target.value.trim() ? "block" : "none";
-    });
+    // ---------------------------------------------------------------------------
+    // Integration card toggle helpers
+    // ---------------------------------------------------------------------------
+    function onIntegrationToggle(name, enabled) {
+      const body = document.getElementById(`int-${name}-body`);
+      const card = document.getElementById(`int-${name}`);
+      if (body) body.style.display = enabled ? "block" : "none";
+      if (card) card.classList.toggle("enabled", enabled);
+    }
+
+    function toggleIntegration(name) {
+      const cb = document.getElementById(`${name}-enabled`);
+      if (cb) { cb.checked = !cb.checked; onIntegrationToggle(name, cb.checked); }
+    }
+
+    // ---------------------------------------------------------------------------
+    // WhatsApp QR login
+    // ---------------------------------------------------------------------------
+    let whatsappEventSource = null;
+    let whatsappLinkedState = false;
+
+    async function checkWhatsAppLinked() {
+      try {
+        const resp = await fetch("/api/whatsapp/linked");
+        const data = await resp.json();
+        const banner = document.getElementById("whatsapp-status-banner");
+        const label = document.getElementById("whatsapp-btn-label");
+        if (data.linked) {
+          whatsappLinkedState = true;
+          if (banner) banner.innerHTML = '<div class="probe-result ok" style="margin-bottom:0"><strong>WhatsApp linked</strong> &mdash; your account is connected.</div>';
+          if (label) label.textContent = "Reconnect WhatsApp";
+          const cb = document.getElementById("whatsapp-enabled");
+          if (cb && !cb.checked) { cb.checked = true; onIntegrationToggle("whatsapp", true); }
+        } else {
+          whatsappLinkedState = false;
+          if (banner) banner.innerHTML = "";
+          if (label) label.textContent = "Connect WhatsApp";
+        }
+        // Refresh the home-page channels dots if we're on the home step
+        if (currentStep === "home") {
+          const channelsEl = document.querySelector(".channels-section");
+          if (channelsEl) channelsEl.outerHTML = renderChannelsSection();
+        }
+      } catch {}
+    }
+
+    // Decode Unicode block characters into QR pixel data and draw on canvas
+    function renderBlockQr(lines, canvas) {
+      const moduleSize = 6;
+      const cols = Math.max(...lines.map(l => [...l].length));
+      const rows = lines.length * 2;
+      canvas.width = cols * moduleSize;
+      canvas.height = rows * moduleSize;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#000000";
+      for (let li = 0; li < lines.length; li++) {
+        const chars = [...lines[li]];
+        for (let ci = 0; ci < chars.length; ci++) {
+          let t = false, b = false;
+          switch (chars[ci]) {
+            case "\u2588": t = true; b = true; break;  // █
+            case "\u2580": t = true; break;             // ▀
+            case "\u2584": b = true; break;             // ▄
+          }
+          if (t) ctx.fillRect(ci * moduleSize, li * 2 * moduleSize, moduleSize, moduleSize);
+          if (b) ctx.fillRect(ci * moduleSize, (li * 2 + 1) * moduleSize, moduleSize, moduleSize);
+        }
+      }
+      canvas.style.display = "block";
+    }
+
+    function tryRenderAsciiQr(text, canvas) {
+      const allLines = text.split("\n");
+      let best = [], cur = [];
+      for (const line of allLines) {
+        const t = line.trimEnd();
+        if (/[\u2588\u2580\u2584]/.test(t) && [...t].length >= 15) {
+          cur.push(t);
+        } else {
+          if (cur.length > best.length) best = cur;
+          cur = [];
+        }
+      }
+      if (cur.length > best.length) best = cur;
+      if (best.length < 8) return false;
+      renderBlockQr(best, canvas);
+      return true;
+    }
+
+    function startWhatsAppLogin() {
+      const qrArea = document.getElementById("whatsapp-qr-area");
+      const qrCanvas = document.getElementById("whatsapp-qr-canvas");
+      const qrLog = document.getElementById("whatsapp-qr-log");
+      const btn = document.getElementById("whatsapp-connect-btn");
+
+      qrArea.style.display = "block";
+      qrCanvas.style.display = "none";
+      qrLog.textContent = "Connecting\u2026";
+      btn.disabled = true;
+
+      if (whatsappEventSource) { whatsappEventSource.close(); whatsappEventSource = null; }
+
+      whatsappEventSource = new EventSource("/api/whatsapp/login-stream");
+      let logBuf = "";
+      let qrRendered = false;
+
+      whatsappEventSource.onmessage = async (e) => {
+        const msg = JSON.parse(e.data);
+        if (msg.type === "qr") {
+          // Raw QR string — render with QRCode.js
+          try {
+            qrCanvas.style.display = "block";
+            await QRCode.toCanvas(qrCanvas, msg.qr, { width: 256, margin: 2, color: { dark: "#000", light: "#fff" } });
+            qrLog.textContent = "Scan with WhatsApp \u2192 Linked Devices \u2192 Link a Device";
+            qrRendered = true;
+          } catch { qrLog.textContent += "\n[raw qr: " + msg.qr + "]"; }
+        } else if (msg.type === "log") {
+          logBuf += msg.data;
+          // Show only non-block-char lines in the status log
+          const statusLines = logBuf.split("\n").filter(l => !/[\u2588\u2580\u2584]/.test(l) && l.trim()).join("\n");
+          if (statusLines) qrLog.textContent = statusLines;
+          // Try to extract and render ASCII art QR to canvas
+          if (!qrRendered) {
+            qrRendered = tryRenderAsciiQr(logBuf, qrCanvas);
+            if (qrRendered) qrLog.textContent = "Scan with WhatsApp \u2192 Linked Devices \u2192 Link a Device";
+          }
+        } else if (msg.type === "done") {
+          whatsappEventSource.close();
+          whatsappEventSource = null;
+          btn.disabled = false;
+          checkWhatsAppLinked();
+        }
+      };
+
+      whatsappEventSource.onerror = () => {
+        if (whatsappEventSource) { whatsappEventSource.close(); whatsappEventSource = null; }
+        btn.disabled = false;
+        checkWhatsAppLinked();
+      };
+    }
 
     // ---------------------------------------------------------------------------
     // Load existing config on startup and pre-fill the form
@@ -697,13 +1242,6 @@
         existingProviderIds = Object.keys(providers);
 
         if (existingProviderIds.length > 0) {
-          // Show home step so user can choose to edit or add a provider
-          const providerNames = existingProviderIds.map(pid => {
-            const known = PROVIDERS.find(p => p.id === pid);
-            return known ? known.name : pid;
-          });
-          document.getElementById("home-subtitle").textContent =
-            `You already have ${providerNames.join(", ")} configured. What would you like to do?`;
           goTo("home");
         } else {
           // Config exists but no providers yet — just prefill and continue
@@ -739,30 +1277,39 @@
         }
       }
 
-      // Telegram
+      // Telegram — token lives at channels.telegram.botToken
       if (cfg.channels && cfg.channels.telegram) {
         const tg = cfg.channels.telegram;
         if (tg.botToken) {
           document.getElementById("telegram-token").value = tg.botToken;
-          document.getElementById("telegram-users-field").style.display = "block";
         }
         if (tg.allowFrom && tg.allowFrom.length > 0) {
           const users = tg.allowFrom.filter(Boolean).join(", ");
           if (users) {
             document.getElementById("telegram-users").value = users;
-            document.getElementById("telegram-users-field").style.display = "block";
           }
         }
       }
 
-      // Discord
+      // Discord — token lives at channels.discord.token (plain string or SecretRef)
       if (cfg.channels && cfg.channels.discord) {
         const dc = cfg.channels.discord;
-        if (dc.botToken) {
-          document.getElementById("discord-token").value = dc.botToken;
+        const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
+        if (dcToken) {
+          document.getElementById("discord-token").value = dcToken;
         }
       }
 
+      // WhatsApp — pre-check and prefill if already enabled in config
+      if (cfg.channels && cfg.channels.whatsapp && cfg.channels.whatsapp.enabled) {
+        const cb = document.getElementById("whatsapp-enabled");
+        if (cb) { cb.checked = true; cb.dispatchEvent(new Event("change")); }
+        const wa = cfg.channels.whatsapp;
+        if (wa.allowFrom && wa.allowFrom.length > 0) {
+          const af = document.getElementById("whatsapp-allow-from");
+          if (af) af.value = wa.allowFrom.join(", ");
+        }
+      }
     }
 
     function startUpdate() {
@@ -803,6 +1350,178 @@
       }
     }
 
+    function backFromStep2() {
+      if (wizardMode === 'channels-only') {
+        goTo('home');
+      } else {
+        goTo(1);
+      }
+    }
+
+    function nextFromStep2() {
+      if (wizardMode === 'channels-only') {
+        saveChannelsOnly();
+      } else {
+        showReview();
+      }
+    }
+
+    function configureChannels() {
+      wizardMode = 'channels-only';
+
+      // Reset all toggles to off first
+      ["telegram", "discord", "whatsapp"].forEach(name => {
+        const cb = document.getElementById(`${name}-enabled`);
+        if (cb) { cb.checked = false; onIntegrationToggle(name, false); }
+      });
+
+      // Reset save button (may be disabled from a previous save)
+      const saveBtn = document.getElementById("btn-step2-next");
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = "Save"; }
+
+      // Pre-fill and enable from existingConfig
+      if (existingConfig && existingConfig.channels) {
+        const tg = existingConfig.channels.telegram;
+        if (tg && (tg.botToken || tg.enabled)) {
+          const cb = document.getElementById("telegram-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("telegram", true); }
+          if (tg.botToken) document.getElementById("telegram-token").value = tg.botToken;
+          if (tg.allowFrom && tg.allowFrom.length > 0) {
+            document.getElementById("telegram-users").value = tg.allowFrom.filter(Boolean).join(", ");
+          }
+        }
+        const dc = existingConfig.channels.discord;
+        if (dc && (dc.token || dc.botToken || dc.enabled)) {
+          const cb = document.getElementById("discord-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("discord", true); }
+          const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
+          if (dcToken) document.getElementById("discord-token").value = dcToken;
+        }
+        const wa = existingConfig.channels.whatsapp;
+        if (wa && wa.enabled) {
+          const cb = document.getElementById("whatsapp-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("whatsapp", true); }
+          if (wa.allowFrom && wa.allowFrom.length > 0) {
+            document.getElementById("whatsapp-allow-from").value = wa.allowFrom.filter(Boolean).join(", ");
+          }
+        }
+      }
+
+      document.getElementById("existing-config-banner").innerHTML = "";
+      goTo(2);
+    }
+
+    function buildChannelsConfig() {
+      const config = { channels: {}, plugins: { entries: {} } };
+      const tgEnabled = !!(document.getElementById("telegram-enabled") && document.getElementById("telegram-enabled").checked);
+      const dcEnabled = !!(document.getElementById("discord-enabled") && document.getElementById("discord-enabled").checked);
+      const waEnabled = !!(document.getElementById("whatsapp-enabled") && document.getElementById("whatsapp-enabled").checked);
+
+      if (tgEnabled) {
+        const telegramToken = document.getElementById("telegram-token").value.trim();
+        const telegramUsers = document.getElementById("telegram-users").value.trim();
+        if (telegramToken) {
+          config.channels.telegram = {
+            enabled: true,
+            botToken: telegramToken,
+            dmPolicy: "pairing",
+            groupPolicy: "allowlist",
+            groups: { "*": { requireMention: true } },
+            streaming: "partial",
+          };
+          if (telegramUsers) {
+            config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
+          }
+          config.plugins.entries.telegram = { enabled: true };
+        }
+      }
+
+      if (dcEnabled) {
+        const discordToken = document.getElementById("discord-token").value.trim();
+        if (discordToken) {
+          config.channels.discord = {
+            enabled: true,
+            token: discordToken,
+            dmPolicy: "pairing",
+            groupPolicy: "allowlist",
+          };
+          config.plugins.entries.discord = { enabled: true };
+        }
+      }
+
+      if (waEnabled) {
+        const allowFromRaw = (document.getElementById("whatsapp-allow-from").value || "").trim();
+        const allowFrom = allowFromRaw ? allowFromRaw.split(",").map(s => s.trim()).filter(Boolean) : [];
+        config.channels.whatsapp = {
+          enabled: true,
+          dmPolicy: allowFrom.length > 0 ? "allowlist" : "pairing",
+          ...(allowFrom.length > 0 ? { allowFrom } : {}),
+        };
+        config.plugins.entries.whatsapp = { enabled: true };
+      }
+
+      return config;
+    }
+
+    async function saveChannelsOnly() {
+      const btn = document.getElementById("btn-step2-next");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        // Validate: enabled integrations must have a token
+        const tgEnabled = document.getElementById("telegram-enabled").checked;
+        const dcEnabled = document.getElementById("discord-enabled").checked;
+        if (tgEnabled && !document.getElementById("telegram-token").value.trim()) {
+          alert("Please enter a Telegram Bot Token, or disable Telegram.");
+          btn.disabled = false; btn.textContent = "Save"; return;
+        }
+        if (dcEnabled && !document.getElementById("discord-token").value.trim()) {
+          alert("Please enter a Discord Bot Token, or disable Discord.");
+          btn.disabled = false; btn.textContent = "Save"; return;
+        }
+
+        // Start from full existing config so we can remove disabled channels
+        const config = existingConfig ? JSON.parse(JSON.stringify(existingConfig)) : {};
+        if (!config.channels) config.channels = {};
+        if (!config.plugins) config.plugins = {};
+        if (!config.plugins.entries) config.plugins.entries = {};
+
+        // Apply enabled integrations / remove disabled ones
+        const channelsConfig = buildChannelsConfig();
+        const CHANNEL_NAMES = ["telegram", "discord", "whatsapp"];
+        CHANNEL_NAMES.forEach(name => {
+          if (channelsConfig.channels[name]) {
+            config.channels[name] = channelsConfig.channels[name];
+            config.plugins.entries[name] = { enabled: true };
+          } else {
+            delete config.channels[name];
+            delete config.plugins.entries[name];
+          }
+        });
+
+        const resp = await fetch("/api/config", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(config)
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          existingConfig = config;
+          goTo("home");
+          showHomeBanner("success", "Chat integrations saved.");
+        } else {
+          alert("Failed to save: " + (data.error || "Unknown error"));
+          btn.disabled = false;
+          btn.textContent = "Save";
+        }
+      } catch (err) {
+        alert("Network error: " + err.message);
+        btn.disabled = false;
+        btn.textContent = "Save";
+      }
+    }
+
     function backFromReview() {
       if (wizardMode === 'add-provider') {
         goTo(1);
@@ -820,7 +1539,7 @@
       // Update progress bar
       const progressEl = document.getElementById("progress");
       const bars = document.querySelectorAll(".progress .bar");
-      if (step === "home") {
+      if (step === "home" || (step === 2 && wizardMode === "channels-only")) {
         progressEl.style.display = "none";
       } else {
         progressEl.style.display = "";
@@ -842,8 +1561,16 @@
         }
       }
 
+      // Render existing providers on home step
+      if (step === "home") { renderHomeProviders(); checkWhatsAppLinked(); }
       // Render provider config when entering step 1
       if (step === 1 && selectedProvider) renderProviderConfig();
+      // Check WhatsApp link status when entering step 2
+      if (step === 2) {
+        checkWhatsAppLinked();
+        const btn = document.getElementById("btn-step2-next");
+        if (btn) btn.textContent = wizardMode === "channels-only" ? "Save" : "Review";
+      }
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -852,7 +1579,51 @@
       const container = document.getElementById("provider-config");
       const p = selectedProvider;
 
-      if (p.id === "ollama") {
+      if (p.id === "nexus") {
+        let prefillKey = "";
+        let prefillModelId = "minimax/minimax-m2.7";
+        if (existingConfig && existingConfig._loadedProvider === "nexus") {
+          prefillKey = existingConfig._loadedApiKey || "";
+          prefillModelId = existingConfig._loadedModelId || prefillModelId;
+        }
+        const nexusModels = PROVIDER_MODELS.nexus || [];
+        const modelOptions = nexusModels.map(m =>
+          `<option value="${m.id}" ${m.id === prefillModelId ? 'selected' : ''}>${m.name}</option>`
+        ).join("") + '<option value="__custom">Custom model...</option>';
+
+        container.innerHTML = `
+      <h2>Configure DappNode Nexus</h2>
+      <div class="subtitle">
+        The gateway for AI builders who value privacy. Access top AI models through a single OpenAI-compatible API — filtered by privacy, speed, and reasoning level.
+      </div>
+      <div class="banner info" style="margin-bottom:1.25rem">
+        <strong>Get 5&euro; in free credits</strong> to test private AI models &mdash; no commitment needed.<br>
+        Create your account at <a href="https://nexus.dappnode.com" target="_blank" rel="noopener" style="color:inherit;font-weight:600">nexus.dappnode.com</a>, buy credits or subscribe, then paste your API key below.
+      </div>
+      <div class="field">
+        <label>Nexus API Key</label>
+        <div class="hint">Found in your Nexus account under API keys.</div>
+        <input type="password" id="api-key" placeholder="sk-xxx" value="${prefillKey}">
+      </div>
+      <button class="probe-btn" id="nexus-fetch-btn" onclick="fetchNexusModels()">
+        <span id="nexus-fetch-icon">&#128269;</span> Fetch Available Models
+      </button>
+      <div id="nexus-fetch-result"></div>
+      <div class="field">
+        <label>Model</label>
+        <div class="hint">Enter your API key and click "Fetch Available Models" to see what your subscription includes.</div>
+        <select id="model-select">
+          ${modelOptions}
+        </select>
+      </div>
+      <div class="field" id="custom-model-field" style="display:none">
+        <label>Custom Model ID</label>
+        <div class="hint">Enter the exact model identifier.</div>
+        <input type="text" id="custom-model" placeholder="provider/model-name">
+      </div>
+    `;
+        setupCustomModelToggle(prefillModelId);
+      } else if (p.id === "ollama") {
         // Pre-fill values from existing config
         let ollamaUrl = "";
         let ollamaModel = "";
@@ -1007,9 +1778,7 @@
           anthropic: ["Anthropic API Key", "Get one at console.anthropic.com"],
           google: ["Google AI API Key", "Get one at aistudio.google.com/app/apikey"],
           openrouter: ["OpenRouter API Key", "Get one at openrouter.ai/keys"],
-          groq: ["Groq API Key", "Get one at console.groq.com (free tier available)"],
           deepseek: ["DeepSeek API Key", "Get one at platform.deepseek.com"],
-          together: ["Together AI API Key", "Get one at api.together.xyz"],
           mistral: ["Mistral API Key", "Get one at console.mistral.ai"],
         };
         const [label, hint] = keyLabels[p.id] || ["API Key", ""];
@@ -1085,6 +1854,300 @@
       const p = selectedProvider;
       const models = PROVIDER_MODELS[p.id] || [];
       return models.find(m => m.id === select.value) || null;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Home step: render configured providers + default model picker
+    // ---------------------------------------------------------------------------
+    function renderHomeProviders() {
+      const container = document.getElementById("home-providers");
+      if (!container || !existingConfig) return;
+
+      const providers = (existingConfig.models && existingConfig.models.providers) || {};
+      const providerEntries = Object.entries(providers);
+
+      if (providerEntries.length === 0) {
+        // No providers left — jump straight to setup flow
+        goTo(0);
+        return;
+      }
+
+      const currentDefault = (
+        existingConfig.agents &&
+        existingConfig.agents.defaults &&
+        existingConfig.agents.defaults.model &&
+        existingConfig.agents.defaults.model.primary
+      ) || "";
+
+      let html = '<div class="provider-list-section">';
+
+      for (const [providerId, providerCfg] of providerEntries) {
+        const models = providerCfg.models || [];
+        const displayUrl = (providerCfg.baseUrl || "").replace(/\/v1\/?$/, "");
+        html += `<div class="provider-list-card">`;
+        html += `<div class="provider-list-header">`;
+        html += `<div class="provider-list-meta">`;
+        html += `<span class="provider-list-name">${providerId}</span>`;
+        if (displayUrl) html += `<span class="provider-list-url" title="${displayUrl}">${displayUrl}</span>`;
+        html += `</div>`;
+        html += `<div class="provider-actions">`;
+        html += `<button class="provider-action-btn" onclick="editProvider('${providerId}')">Edit</button>`;
+        html += `<button class="provider-action-btn danger" onclick="removeProvider('${providerId}')">Remove</button>`;
+        html += `</div>`;
+        html += `</div>`;
+
+        for (const model of models) {
+          const modelKey = `${providerId}/${model.id}`;
+          const isDefault = currentDefault === modelKey;
+          html += `<div class="model-row${isDefault ? ' model-row-default' : ''}">`;
+          html += `<span class="model-row-name">${model.name || model.id}</span>`;
+          if (isDefault) {
+            html += `<span class="model-default-badge">Default</span>`;
+          } else {
+            html += `<button class="set-default-btn" onclick="setDefaultModel('${providerId}', '${model.id}')">Set as Default</button>`;
+          }
+          html += `</div>`;
+        }
+
+        html += `</div>`;
+      }
+
+      html += '</div>';
+      html += `<button class="add-provider-btn" onclick="startAddProvider()">+ Add Provider</button>`;
+      html += renderChannelsSection();
+      html += renderMultiAgentSection();
+      container.innerHTML = html;
+    }
+
+    function renderChannelsSection() {
+      const tg = existingConfig && existingConfig.channels && existingConfig.channels.telegram;
+      const tgOn = !!(tg && (tg.botToken || tg.enabled || (tg.accounts && Object.keys(tg.accounts).length > 0)));
+      const dc = existingConfig && existingConfig.channels && existingConfig.channels.discord;
+      const dcOn = !!(dc && ((typeof dc.token === 'string' ? dc.token : dc.botToken) || dc.enabled || (dc.accounts && Object.keys(dc.accounts).length > 0)));
+      const wa = existingConfig && existingConfig.channels && existingConfig.channels.whatsapp;
+      const waOn = !!(whatsappLinkedState || (wa && wa.accounts && Object.keys(wa.accounts).length > 0));
+      const channels = [
+        { name: "Telegram", connected: tgOn },
+        { name: "Discord", connected: dcOn },
+        { name: "WhatsApp", connected: waOn },
+      ];
+      let html = `<div class="channels-section">`;
+      html += `<div class="provider-list-section-label" style="margin-bottom:0.75rem">Chat Integrations</div>`;
+      html += `<div class="channels-card">`;
+      for (const ch of channels) {
+        html += `<div class="channel-row">`;
+        html += `<span class="channel-dot ${ch.connected ? "on" : "off"}"></span>`;
+        html += `<span class="channel-name">${ch.name}</span>`;
+        html += `<span class="channel-status-text">${ch.connected ? "Connected" : "Not configured"}</span>`;
+        html += `</div>`;
+      }
+      html += `<button class="configure-channels-btn" onclick="configureChannels()">Configure</button>`;
+      html += `</div></div>`;
+      return html;
+    }
+
+    async function setDefaultModel(providerId, modelId) {
+      // Disable all set-default buttons while saving
+      document.querySelectorAll(".set-default-btn").forEach(b => b.disabled = true);
+
+      const modelKey = `${providerId}/${modelId}`;
+      try {
+        const resp = await fetch("/api/config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agents: { defaults: { model: { primary: modelKey } } } })
+        });
+        if (resp.ok) {
+          // Patch local config and re-render
+          if (!existingConfig.agents) existingConfig.agents = {};
+          if (!existingConfig.agents.defaults) existingConfig.agents.defaults = {};
+          if (!existingConfig.agents.defaults.model) existingConfig.agents.defaults.model = {};
+          existingConfig.agents.defaults.model.primary = modelKey;
+          renderHomeProviders();
+          showHomeBanner("success", `Default model set to <strong>${modelKey}</strong>`);
+        } else {
+          const data = await resp.json().catch(() => ({}));
+          showHomeBanner("warning", "Failed to update: " + (data.error || "Unknown error"));
+          document.querySelectorAll(".set-default-btn").forEach(b => b.disabled = false);
+        }
+      } catch (err) {
+        showHomeBanner("warning", "Network error: " + err.message);
+        document.querySelectorAll(".set-default-btn").forEach(b => b.disabled = false);
+      }
+    }
+
+    function editProvider(providerId) {
+      const providers = (existingConfig.models && existingConfig.models.providers) || {};
+      const providerCfg = providers[providerId];
+      if (!providerCfg) return;
+
+      wizardMode = 'update';
+
+      const knownProvider = PROVIDERS.find(p => p.id === providerId);
+      const cardId = knownProvider ? providerId : "custom";
+
+      // Set up _loaded* fields so renderProviderConfig() can pre-fill
+      existingConfig._loadedProvider = cardId;
+      existingConfig._loadedApiKey = providerCfg.apiKey || "";
+      existingConfig._loadedBaseUrl = providerCfg.baseUrl || "";
+      const models = providerCfg.models || [];
+      existingConfig._loadedModelId = models.length > 0 ? models[0].id : "";
+      existingConfig._loadedContextWindow = models.length > 0 ? (models[0].contextWindow || null) : null;
+      existingConfig._loadedMaxTokens = models.length > 0 ? (models[0].maxTokens || null) : null;
+      if (!knownProvider) {
+        existingConfig._loadedCustomName = providerId;
+        existingConfig._loadedCustomApi = providerCfg.api || "openai-completions";
+      }
+
+      selectProviderCard(cardId);
+
+      // Pre-fill messaging channel toggles
+      ["telegram", "discord", "whatsapp"].forEach(name => {
+        const cb = document.getElementById(`${name}-enabled`);
+        if (cb) { cb.checked = false; onIntegrationToggle(name, false); }
+      });
+      if (existingConfig.channels) {
+        const tg = existingConfig.channels.telegram;
+        if (tg && (tg.botToken || tg.enabled)) {
+          const cb = document.getElementById("telegram-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("telegram", true); }
+          if (tg.botToken) document.getElementById("telegram-token").value = tg.botToken;
+          if (tg.allowFrom && tg.allowFrom.length > 0)
+            document.getElementById("telegram-users").value = tg.allowFrom.filter(Boolean).join(", ");
+        }
+        const dc = existingConfig.channels.discord;
+        if (dc && (dc.token || dc.botToken || dc.enabled)) {
+          const cb = document.getElementById("discord-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("discord", true); }
+          const dcToken = typeof dc.token === 'string' ? dc.token : dc.botToken;
+          if (dcToken) document.getElementById("discord-token").value = dcToken;
+        }
+        const wa = existingConfig.channels.whatsapp;
+        if (wa && wa.enabled) {
+          const cb = document.getElementById("whatsapp-enabled");
+          if (cb) { cb.checked = true; onIntegrationToggle("whatsapp", true); }
+          if (wa.allowFrom && wa.allowFrom.length > 0)
+            document.getElementById("whatsapp-allow-from").value = wa.allowFrom.filter(Boolean).join(", ");
+        }
+      }
+      checkWhatsAppLinked();
+
+      document.getElementById("existing-config-banner").innerHTML =
+        `<div class="banner info">Editing <strong>${providerId}</strong> — update below and save.</div>`;
+
+      goTo(1);
+    }
+
+    async function removeProvider(providerId) {
+      if (!confirm(`Remove provider "${providerId}"? This cannot be undone.`)) return;
+
+      // Build new config without this provider (deep-copy, strip private keys)
+      const newConfig = JSON.parse(JSON.stringify(existingConfig));
+      for (const key of Object.keys(newConfig)) {
+        if (key.startsWith("_")) delete newConfig[key];
+      }
+
+      if (newConfig.models && newConfig.models.providers) {
+        delete newConfig.models.providers[providerId];
+      }
+
+      // Clear default model if it was from the removed provider
+      const primary = newConfig.agents && newConfig.agents.defaults && newConfig.agents.defaults.model && newConfig.agents.defaults.model.primary || "";
+      if (primary.startsWith(providerId + "/")) {
+        newConfig.agents.defaults.model.primary = "";
+      }
+
+      try {
+        const resp = await fetch("/api/config", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newConfig, null, 2)
+        });
+        if (resp.ok) {
+          existingConfig = newConfig;
+          existingProviderIds = Object.keys((newConfig.models && newConfig.models.providers) || {});
+          renderHomeProviders(); // will auto-redirect to step 0 if empty
+          if (existingProviderIds.length > 0) {
+            showHomeBanner("success", `Provider <strong>${providerId}</strong> removed.`);
+          }
+        } else {
+          const data = await resp.json().catch(() => ({}));
+          showHomeBanner("warning", "Failed to remove: " + (data.error || "Unknown error"));
+        }
+      } catch (err) {
+        showHomeBanner("warning", "Network error: " + err.message);
+      }
+    }
+
+    function showHomeBanner(type, message) {
+      const banner = document.getElementById("home-banner");
+      if (!banner) return;
+      const cls = type === "success" ? "success" : "warning";
+      banner.innerHTML = `<div class="banner ${cls}" style="margin-bottom:1rem">${message}</div>`;
+      setTimeout(() => { banner.innerHTML = ""; }, 3500);
+    }
+
+    async function fetchNexusModels() {
+      const apiKey = (document.getElementById("api-key") || {}).value || "";
+      const btn = document.getElementById("nexus-fetch-btn");
+      const icon = document.getElementById("nexus-fetch-icon");
+      const resultEl = document.getElementById("nexus-fetch-result");
+
+      if (!apiKey) {
+        resultEl.innerHTML = '<div class="probe-result fail">Enter your API key first.</div>';
+        return;
+      }
+
+      btn.disabled = true;
+      icon.textContent = "\u23F3";
+      resultEl.innerHTML = "";
+
+      try {
+        const resp = await fetch(`/api/nexus/models?apiKey=${encodeURIComponent(apiKey)}`);
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          resultEl.innerHTML = `<div class="probe-result fail"><strong>Failed:</strong> ${data.error || "Unknown error"}</div>`;
+          btn.disabled = false;
+          icon.textContent = "\uD83D\uDD0D";
+          return;
+        }
+
+        const models = (data.data || []).map(m => ({
+          id: m.id,
+          name: m.id,
+          reasoning: false,
+          input: ["text"],
+          contextWindow: m.context_length || 128000,
+          maxTokens: 16384,
+        }));
+
+        if (models.length === 0) {
+          resultEl.innerHTML = '<div class="probe-result fail">No models found for this API key.</div>';
+          btn.disabled = false;
+          icon.textContent = "\uD83D\uDD0D";
+          return;
+        }
+
+        // Update the in-memory catalogue so getSelectedModel() can find them
+        PROVIDER_MODELS.nexus = models;
+
+        const select = document.getElementById("model-select");
+        if (select) {
+          select.innerHTML = models.map(m => `<option value="${m.id}">${m.name}</option>`).join("") +
+            '<option value="__custom">Custom model...</option>';
+          select.value = models[0].id;
+          const customField = document.getElementById("custom-model-field");
+          if (customField) customField.style.display = "none";
+        }
+
+        resultEl.innerHTML = `<div class="probe-result ok"><strong>${models.length} model${models.length !== 1 ? 's' : ''} available</strong> — select one below.</div>`;
+      } catch (err) {
+        resultEl.innerHTML = `<div class="probe-result fail">Network error: ${err.message}</div>`;
+      }
+
+      btn.disabled = false;
+      icon.textContent = "\uD83D\uDD0D";
     }
 
     async function probeOllama() {
@@ -1257,42 +2320,17 @@
         config.models.providers[p.id] = providerConfig;
       }
 
-      // Messaging channels
-      const telegramToken = document.getElementById("telegram-token").value.trim();
-      const telegramUsers = document.getElementById("telegram-users").value.trim();
-      const discordToken = document.getElementById("discord-token").value.trim();
-
-      if (telegramToken) {
-        config.channels = config.channels || {};
-        config.channels.telegram = {
-          enabled: true,
-          botToken: telegramToken,
-          dmPolicy: "pairing",
-          groupPolicy: "allowlist",
-          groups: { "*": { requireMention: true } },
-          streamMode: "partial",
-        };
-        if (telegramUsers) {
-          config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
-        }
-        config.plugins.entries.telegram = { enabled: true };
-      }
-
-      if (discordToken) {
-        config.channels = config.channels || {};
-        config.channels.discord = {
-          enabled: true,
-          botToken: discordToken,
-          dmPolicy: "pairing",
-          groupPolicy: "allowlist",
-        };
-        config.plugins.entries.discord = { enabled: true };
+      // Messaging channels — delegate to shared builder
+      const channelsCfg = buildChannelsConfig();
+      if (Object.keys(channelsCfg.channels).length > 0) {
+        config.channels = channelsCfg.channels;
+        Object.assign(config.plugins.entries, channelsCfg.plugins.entries);
       }
 
       return config;
     }
 
-    function buildAddProviderConfig() {
+function buildAddProviderConfig() {
       // Builds only the new provider + updated default — server deep-merges with existing config
       const p = selectedProvider;
       const config = {
@@ -1396,7 +2434,264 @@
         btn.textContent = "Save Configuration";
       }
     }
+    // ---------------------------------------------------------------------------
+    // Multi-Agent section
+    // ---------------------------------------------------------------------------
+    function renderMultiAgentSection() {
+      const agentList = (existingConfig && existingConfig.agents && existingConfig.agents.list) || [];
+      const bindings = (existingConfig && existingConfig.bindings) || [];
+      const hasAgents = agentList.length > 0;
+
+      let html = `<div class="multi-agent-section">`;
+      html += `<div class="provider-list-section-label" style="margin-bottom:0.75rem">Multi-Agent</div>`;
+
+      if (!hasAgents) {
+        html += `<button class="add-provider-btn" onclick="enableMultiAgent()">+ Enable Multi-Agent Routing</button>`;
+        html += `<div style="margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);line-height:1.4">Run multiple isolated agents with separate workspaces, identities, and routing rules.</div>`;
+      } else {
+        // Agent list
+        html += `<div class="provider-list-card">`;
+        for (const agent of agentList) {
+          html += `<div class="agent-row">`;
+          html += `<span class="agent-row-id">${agent.id}</span>`;
+          if (agent.default) html += `<span class="model-default-badge" style="margin-left:0.4rem">default</span>`;
+          if (agent.name) html += `<span class="agent-row-name">${agent.name}</span>`;
+          html += `<button class="provider-action-btn danger" style="margin-left:auto" onclick="removeAgent('${agent.id}')">Remove</button>`;
+          html += `</div>`;
+        }
+        html += `</div>`;
+
+        // Add-agent inline form
+        html += `<div id="add-agent-form" style="display:none;margin-top:0.5rem">`;
+        html += `<div class="provider-list-card">`;
+        html += `<div class="field" style="margin-bottom:0.75rem">`;
+        html += `<label style="font-size:0.85rem">Agent ID</label>`;
+        html += `<div class="hint">Lowercase, hyphens allowed (e.g. work, personal, coding)</div>`;
+        html += `<input type="text" id="new-agent-id" placeholder="work">`;
+        html += `</div>`;
+        html += `<div class="field" style="margin-bottom:1rem">`;
+        html += `<label style="font-size:0.85rem">Display Name <span class="optional-badge">optional</span></label>`;
+        html += `<input type="text" id="new-agent-name" placeholder="Work Agent">`;
+        html += `</div>`;
+        html += `<div style="display:flex;gap:8px">`;
+        html += `<button class="btn btn-secondary" style="padding:7px 16px;font-size:0.85rem" onclick="document.getElementById('add-agent-form').style.display='none'">Cancel</button>`;
+        html += `<button class="btn btn-primary" style="padding:7px 16px;font-size:0.85rem" onclick="confirmAddAgent()">Add Agent</button>`;
+        html += `</div></div></div>`;
+
+        html += `<button class="add-provider-btn" style="margin-top:0.5rem" onclick="showAddAgentForm()">+ Add Agent</button>`;
+
+        // Bindings
+        if (bindings.length > 0) {
+          html += `<div class="provider-list-section-label" style="margin-top:1.25rem;margin-bottom:0.5rem">Routing Bindings</div>`;
+          html += `<div class="provider-list-card">`;
+          for (let i = 0; i < bindings.length; i++) {
+            const b = bindings[i];
+            const matchStr = [b.match.channel, b.match.accountId ? `@${b.match.accountId}` : null].filter(Boolean).join(' ');
+            const accCfg = b.match.accountId &&
+              existingConfig.channels &&
+              existingConfig.channels[b.match.channel] &&
+              existingConfig.channels[b.match.channel].accounts &&
+              existingConfig.channels[b.match.channel].accounts[b.match.accountId];
+            const hasToken = !!(accCfg && (accCfg.botToken || accCfg.token));
+            html += `<div class="agent-row">`;
+            html += `<span class="agent-row-id">${matchStr}</span>`;
+            if (hasToken) html += `<span style="font-size:0.7rem;color:var(--success);margin-left:0.25rem">token set</span>`;
+            html += `<span style="font-size:0.75rem;color:var(--text-muted);margin:0 0.35rem">&rarr;</span>`;
+            html += `<span class="agent-row-name" style="font-size:0.85rem;color:var(--text)">${b.agentId}</span>`;
+            html += `<button class="provider-action-btn danger" style="margin-left:auto" onclick="removeBinding(${i})">Remove</button>`;
+            html += `</div>`;
+          }
+          html += `</div>`;
+        }
+
+        // Add-binding inline form
+        const agentOptions = agentList.map(a => `<option value="${a.id}">${a.id}</option>`).join('');
+        html += `<div id="add-binding-form" style="display:none;margin-top:0.5rem">`;
+        html += `<div class="provider-list-card">`;
+        html += `<div class="field" style="margin-bottom:0.75rem">`;
+        html += `<label style="font-size:0.85rem">Channel</label>`;
+        html += `<select id="new-binding-channel" onchange="onBindingChannelChange()"><option value="telegram">Telegram</option><option value="discord">Discord</option><option value="whatsapp">WhatsApp</option></select>`;
+        html += `</div>`;
+        html += `<div class="field" style="margin-bottom:0.75rem">`;
+        html += `<label style="font-size:0.85rem">Account ID</label>`;
+        html += `<div class="hint">A short identifier for this bot/account (e.g. <strong>workbot</strong>). Used in routing rules.</div>`;
+        html += `<input type="text" id="new-binding-account" placeholder="workbot">`;
+        html += `</div>`;
+        html += `<div class="field" id="new-binding-token-field" style="margin-bottom:0.75rem">`;
+        html += `<label style="font-size:0.85rem">Bot Token <span class="optional-badge">optional</span></label>`;
+        html += `<div class="hint" id="new-binding-token-hint">For Telegram: from <strong>@BotFather</strong>. For Discord: from the Developer Portal.</div>`;
+        html += `<input type="password" id="new-binding-token" placeholder="Paste bot token here">`;
+        html += `</div>`;
+        html += `<div class="field" style="margin-bottom:1rem">`;
+        html += `<label style="font-size:0.85rem">Route to Agent</label>`;
+        html += `<select id="new-binding-agent">${agentOptions}</select>`;
+        html += `</div>`;
+        html += `<div style="display:flex;gap:8px">`;
+        html += `<button class="btn btn-secondary" style="padding:7px 16px;font-size:0.85rem" onclick="document.getElementById('add-binding-form').style.display='none'">Cancel</button>`;
+        html += `<button class="btn btn-primary" style="padding:7px 16px;font-size:0.85rem" onclick="confirmAddBinding()">Add Binding</button>`;
+        html += `</div></div></div>`;
+
+        html += `<button class="add-provider-btn" style="margin-top:0.5rem" onclick="showAddBindingForm()">+ Add Binding</button>`;
+
+        html += `<div style="margin-top:1rem;text-align:right">`;
+        html += `<button class="provider-action-btn danger" onclick="disableMultiAgent()">Disable Multi-Agent</button>`;
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      return html;
+    }
+
+    function showAddAgentForm() {
+      document.getElementById('add-agent-form').style.display = 'block';
+      document.getElementById('new-agent-id').focus();
+    }
+
+    function showAddBindingForm() {
+      document.getElementById('add-binding-form').style.display = 'block';
+      onBindingChannelChange();
+    }
+
+    function onBindingChannelChange() {
+      const channel = document.getElementById('new-binding-channel').value;
+      const tokenField = document.getElementById('new-binding-token-field');
+      const tokenHint = document.getElementById('new-binding-token-hint');
+      if (!tokenField) return;
+      if (channel === 'whatsapp') {
+        tokenField.style.display = 'none';
+      } else {
+        tokenField.style.display = 'block';
+        if (tokenHint) tokenHint.innerHTML = channel === 'telegram'
+          ? 'From <strong>@BotFather</strong> on Telegram.'
+          : 'From the Discord Developer Portal.';
+      }
+    }
+
+    function buildCleanConfig() {
+      const c = JSON.parse(JSON.stringify(existingConfig));
+      for (const k of Object.keys(c)) {
+        if (k.startsWith('_')) delete c[k];
+      }
+      return c;
+    }
+
+    async function saveFullConfig(config, successMsg) {
+      try {
+        const resp = await fetch('/api/config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config, null, 2)
+        });
+        if (resp.ok) {
+          existingConfig = config;
+          renderHomeProviders();
+          showHomeBanner('success', successMsg);
+        } else {
+          const data = await resp.json().catch(() => ({}));
+          showHomeBanner('warning', 'Failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        showHomeBanner('warning', 'Network error: ' + err.message);
+      }
+    }
+
+    async function enableMultiAgent() {
+      const newConfig = buildCleanConfig();
+      if (!newConfig.agents) newConfig.agents = {};
+      const workspace = (newConfig.agents.defaults && newConfig.agents.defaults.workspace) || '/home/node/.openclaw/workspace';
+      newConfig.agents.list = [{ id: 'main', default: true, workspace }];
+      await saveFullConfig(newConfig, 'Multi-agent enabled with default "main" agent.');
+    }
+
+    async function disableMultiAgent() {
+      if (!confirm('Disable multi-agent routing? The agent list and all bindings will be removed.')) return;
+      const newConfig = buildCleanConfig();
+      if (newConfig.agents) delete newConfig.agents.list;
+      delete newConfig.bindings;
+      await saveFullConfig(newConfig, 'Multi-agent disabled.');
+    }
+
+    async function removeAgent(agentId) {
+      const agentList = (existingConfig.agents && existingConfig.agents.list) || [];
+      if (agentList.length <= 1) {
+        return disableMultiAgent();
+      }
+      if (!confirm(`Remove agent "${agentId}"?`)) return;
+      const newConfig = buildCleanConfig();
+      newConfig.agents.list = agentList.filter(a => a.id !== agentId);
+      if (!newConfig.agents.list.find(a => a.default)) {
+        newConfig.agents.list[0].default = true;
+      }
+      if (newConfig.bindings) {
+        newConfig.bindings = newConfig.bindings.filter(b => b.agentId !== agentId);
+        if (newConfig.bindings.length === 0) delete newConfig.bindings;
+      }
+      await saveFullConfig(newConfig, `Agent "${agentId}" removed.`);
+    }
+
+    async function confirmAddAgent() {
+      const raw = (document.getElementById('new-agent-id').value || '').trim();
+      const id = raw.toLowerCase().replace(/[^a-z0-9_-]/g, '-').replace(/^-+|-+$/g, '');
+      if (!id) { alert('Agent ID is required.'); return; }
+      const agentList = (existingConfig.agents && existingConfig.agents.list) || [];
+      if (agentList.find(a => a.id === id)) { alert(`Agent "${id}" already exists.`); return; }
+      const name = (document.getElementById('new-agent-name').value || '').trim();
+      const newAgent = { id, workspace: `/home/node/.openclaw/agents/${id}/workspace` };
+      if (name) newAgent.name = name;
+      const newConfig = buildCleanConfig();
+      newConfig.agents.list = [...agentList, newAgent];
+      await saveFullConfig(newConfig, `Agent "${id}" added.`);
+    }
+
+    async function confirmAddBinding() {
+      const channel = document.getElementById('new-binding-channel').value;
+      const accountId = (document.getElementById('new-binding-account').value || '').trim();
+      const agentId = document.getElementById('new-binding-agent').value;
+      const botToken = ((document.getElementById('new-binding-token') || {}).value || '').trim();
+
+      if (!accountId) { alert('Account ID is required.'); return; }
+
+      const match = { channel, accountId };
+      const newConfig = buildCleanConfig();
+      newConfig.bindings = [...(newConfig.bindings || []), { agentId, match }];
+
+      // Store the bot token under channels.<channel>.accounts.<accountId>
+      // Discord uses "token" key; Telegram and others use "botToken"
+      if (botToken && channel !== 'whatsapp') {
+        if (!newConfig.channels) newConfig.channels = {};
+        if (!newConfig.channels[channel]) newConfig.channels[channel] = { enabled: true };
+        if (!newConfig.channels[channel].accounts) newConfig.channels[channel].accounts = {};
+        newConfig.channels[channel].accounts[accountId] = channel === 'discord' ? { token: botToken } : { botToken };
+        if (!newConfig.plugins) newConfig.plugins = { entries: {} };
+        if (!newConfig.plugins.entries) newConfig.plugins.entries = {};
+        newConfig.plugins.entries[channel] = { enabled: true };
+      }
+
+      await saveFullConfig(newConfig, 'Binding added.');
+    }
+
+    async function removeBinding(index) {
+      const newConfig = buildCleanConfig();
+      const removed = (newConfig.bindings || [])[index];
+      newConfig.bindings = (newConfig.bindings || []).filter((_, i) => i !== index);
+      if (newConfig.bindings.length === 0) delete newConfig.bindings;
+
+      // Remove the bot token account entry if no other binding uses this accountId on this channel
+      if (removed && removed.match.accountId) {
+        const { channel, accountId } = removed.match;
+        const stillUsed = (newConfig.bindings || []).some(b => b.match.channel === channel && b.match.accountId === accountId);
+        if (!stillUsed && newConfig.channels && newConfig.channels[channel] && newConfig.channels[channel].accounts) {
+          delete newConfig.channels[channel].accounts[accountId];
+          if (Object.keys(newConfig.channels[channel].accounts).length === 0) {
+            delete newConfig.channels[channel].accounts;
+          }
+        }
+      }
+
+      await saveFullConfig(newConfig, 'Binding removed.');
+    }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 </body>
 
 </html>
