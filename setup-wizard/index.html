@@ -1924,11 +1924,12 @@
       const tgOn = !!(tg && (tg.botToken || tg.enabled || (tg.accounts && Object.keys(tg.accounts).length > 0)));
       const dc = existingConfig && existingConfig.channels && existingConfig.channels.discord;
       const dcOn = !!(dc && ((typeof dc.token === 'string' ? dc.token : dc.botToken) || dc.enabled || (dc.accounts && Object.keys(dc.accounts).length > 0)));
-      const waConfig = existingConfig && existingConfig.channels && existingConfig.channels.whatsapp;
+      const wa = existingConfig && existingConfig.channels && existingConfig.channels.whatsapp;
+      const waOn = !!(whatsappLinkedState || (wa && wa.accounts && Object.keys(wa.accounts).length > 0));
       const channels = [
         { name: "Telegram", connected: tgOn },
         { name: "Discord", connected: dcOn },
-        { name: "WhatsApp", connected: whatsappLinkedState || !!(waConfig && waConfig.enabled) },
+        { name: "WhatsApp", connected: waOn },
       ];
       let html = `<div class="channels-section">`;
       html += `<div class="provider-list-section-label" style="margin-bottom:0.75rem">Chat Integrations</div>`;
