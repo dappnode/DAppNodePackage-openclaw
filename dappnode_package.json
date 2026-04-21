@@ -1,23 +1,16 @@
 {
   "name": "openclaw.dnp.dappnode.eth",
   "version": "0.1.1",
-  "upstreamVersion": "v2026.4.14",
+  "upstreamVersion": "v2026.4.20",
   "upstreamRepo": "openclaw/openclaw",
   "upstreamArg": "UPSTREAM_VERSION",
   "shortDescription": "Personal AI assistant gateway with multi-LLM support",
   "description": "OpenClaw is a powerful, self-hosted AI agent gateway that runs on your own devices. It provides a unified interface for interacting with multiple LLM providers (OpenAI, Anthropic Claude, Google Gemini, local models via Ollama). Features include:\n\n- **Web UI & API**: Full-featured web interface at port 18789\n- **Multi-Channel Messaging**: WhatsApp, Telegram, Slack, Discord, Matrix, and more\n- **Agent Orchestration**: Claude AI integration with tool use and autonomous agents\n- **Code Execution**: Sandboxed environment for running code\n- **Canvas UI**: Visual interactions and image generation\n- **Voice Support**: Text-to-speech and speech-to-text capabilities\n\nRun your own AI infrastructure with full control over your data and API keys.",
   "type": "service",
-  "architectures": [
-    "linux/amd64",
-    "linux/arm64"
-  ],
+  "architectures": ["linux/amd64", "linux/arm64"],
   "author": "DAppNode Association <admin@dappnode.io>",
   "license": "Apache-2.0",
-  "categories": [
-    "AI",
-    "Developer tools",
-    "Communications"
-  ],
+  "categories": ["AI", "Developer tools", "Communications"],
   "keywords": [
     "ai",
     "llm",
