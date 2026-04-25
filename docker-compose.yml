@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        UPSTREAM_VERSION: v2026.4.21
+        UPSTREAM_VERSION: v2026.4.24
     image: openclaw.dnp.dappnode.eth:0.1.0
     container_name: DAppNodePackage-openclaw.dnp.dappnode.eth
     restart: unless-stopped
