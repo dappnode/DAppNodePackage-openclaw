@@ -1,7 +1,7 @@
 {
   "name": "openclaw.dnp.dappnode.eth",
   "version": "0.1.2",
-  "upstreamVersion": "v2026.5.20",
+  "upstreamVersion": "v2026.5.26",
   "upstreamRepo": "openclaw/openclaw",
   "upstreamArg": "UPSTREAM_VERSION",
   "shortDescription": "Personal AI assistant gateway with multi-LLM support",
