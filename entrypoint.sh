@@ -52,24 +52,74 @@ try {
   if (!('dangerouslyDisableDeviceAuth' in cui)) { cui.dangerouslyDisableDeviceAuth = true; changed = true; }
   if (auth.token !== envToken) { auth.token = envToken; changed = true; }
 
+  function isObject(value) {
+    return value && typeof value === 'object' && !Array.isArray(value);
+  }
+
+  function migrateTelegramStreaming(entry) {
+    if (!isObject(entry)) return false;
+    let entryChanged = false;
+    const legacyStreaming = entry.streaming;
+    const streaming = isObject(legacyStreaming) ? legacyStreaming : {};
+
+    if ('streaming' in entry && !isObject(legacyStreaming)) {
+      if (typeof legacyStreaming === 'boolean') {
+        streaming.mode = legacyStreaming ? 'partial' : 'off';
+      } else if (legacyStreaming != null) {
+        streaming.mode = String(legacyStreaming);
+      }
+      entry.streaming = streaming;
+      entryChanged = true;
+    }
+    if ('streamMode' in entry) {
+      if (!streaming.mode) streaming.mode = entry.streamMode;
+      delete entry.streamMode;
+      entryChanged = true;
+    }
+    if ('chunkMode' in entry) {
+      if (!('chunkMode' in streaming)) streaming.chunkMode = entry.chunkMode;
+      delete entry.chunkMode;
+      entryChanged = true;
+    }
+    if ('draftChunk' in entry) {
+      const preview = isObject(streaming.preview) ? streaming.preview : {};
+      if (!('chunk' in preview)) preview.chunk = entry.draftChunk;
+      streaming.preview = preview;
+      delete entry.draftChunk;
+      entryChanged = true;
+    }
+    if ('blockStreaming' in entry) {
+      const block = isObject(streaming.block) ? streaming.block : {};
+      if (!('enabled' in block)) block.enabled = entry.blockStreaming;
+      streaming.block = block;
+      delete entry.blockStreaming;
+      entryChanged = true;
+    }
+    if ('blockStreamingCoalesce' in entry) {
+      const block = isObject(streaming.block) ? streaming.block : {};
+      if (!('coalesce' in block)) block.coalesce = entry.blockStreamingCoalesce;
+      streaming.block = block;
+      delete entry.blockStreamingCoalesce;
+      entryChanged = true;
+    }
+    if (entryChanged) entry.streaming = streaming;
+    return entryChanged;
+  }
+
   // Migrate legacy channel keys that openclaw doctor --fix cannot fully resolve in one pass:
-  //   streamMode (string) → streaming (string)
-  //   streaming (boolean) → streaming (string: true→\"partial\", false→\"off\")
+  //   Telegram streamMode / scalar streaming / flat chunk keys → streaming.{mode,chunkMode,preview.chunk,block.*}
   //   discord.botToken → discord.token  (Telegram keeps botToken; Discord uses token)
   //   discord guild channel: allow (bool) → enabled (bool)
   const channels = config.channels || {};
   for (const [chName, ch] of Object.entries(channels)) {
     if (!ch || typeof ch !== 'object') continue;
-    // streamMode → streaming string
-    if ('streamMode' in ch) {
-      ch.streaming = ch.streamMode;
-      delete ch.streamMode;
-      changed = true;
-    }
-    // boolean streaming → string
-    if (typeof ch.streaming === 'boolean') {
-      ch.streaming = ch.streaming ? 'partial' : 'off';
-      changed = true;
+    if (chName === 'telegram') {
+      if (migrateTelegramStreaming(ch)) changed = true;
+      if (ch.accounts && typeof ch.accounts === 'object') {
+        for (const account of Object.values(ch.accounts)) {
+          if (migrateTelegramStreaming(account)) changed = true;
+        }
+      }
     }
     // Discord: botToken is not valid — migrate to token (plain string)
     if (chName === 'discord' && 'botToken' in ch) {
@@ -104,6 +154,17 @@ fi
 # ---------------------------------------------------------------------------
 # Run doctor --fix for any remaining migrations not handled above
 # ---------------------------------------------------------------------------
+echo "Pruning stale OpenClaw session entries..."
+MAIN_SESSION_STORE="$OPENCLAW_DIR/agents/main/sessions/sessions.json"
+mkdir -p "$(dirname "$MAIN_SESSION_STORE")"
+OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw sessions cleanup --store "$MAIN_SESSION_STORE" --enforce --fix-missing || true
+if [ -d "$OPENCLAW_DIR/agents" ]; then
+    find "$OPENCLAW_DIR/agents" -mindepth 3 -maxdepth 3 -path "*/sessions/sessions.json" -print | while IFS= read -r SESSION_STORE; do
+        [ "$SESSION_STORE" = "$MAIN_SESSION_STORE" ] && continue
+        OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw sessions cleanup --store "$SESSION_STORE" --enforce --fix-missing || true
+    done
+fi
+
 echo "Running openclaw doctor --fix..."
 OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw doctor --fix || true
 
