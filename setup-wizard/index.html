@@ -336,6 +336,48 @@
       color: var(--error);
     }
 
+    .nexus-auth-panel {
+      background: rgba(102, 126, 234, 0.08);
+      border: 1px solid rgba(102, 126, 234, 0.28);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .nexus-auth-panel .btn {
+      width: 100%;
+    }
+
+    .nexus-auth-note {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin-top: 0.75rem;
+    }
+
+    .nexus-auth-result {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
+    .nexus-auth-result.ok {
+      display: block;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--success);
+    }
+
+    .nexus-auth-result.fail {
+      display: block;
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: var(--error);
+    }
+
     /* Review */
     .config-preview {
       background: var(--card);
@@ -1236,20 +1278,24 @@
     (async () => {
       try {
         const resp = await fetch("/api/config");
-        if (!resp.ok) return;
-        existingConfig = await resp.json();
-        const providers = existingConfig.models && existingConfig.models.providers ? existingConfig.models.providers : {};
-        existingProviderIds = Object.keys(providers);
+        if (resp.ok) {
+          existingConfig = await resp.json();
+          const providers = existingConfig.models && existingConfig.models.providers ? existingConfig.models.providers : {};
+          existingProviderIds = Object.keys(providers);
 
-        if (existingProviderIds.length > 0) {
-          goTo("home");
-        } else {
-          // Config exists but no providers yet — just prefill and continue
-          document.getElementById("existing-config-banner").innerHTML =
-            '<div class="banner info">Existing configuration found. Your current settings have been loaded — edit any step and save to update.</div>';
-          prefillFromConfig(existingConfig);
+          if (existingProviderIds.length > 0) {
+            goTo("home");
+          } else {
+            // Config exists but no providers yet — just prefill and continue
+            document.getElementById("existing-config-banner").innerHTML =
+              '<div class="banner info">Existing configuration found. Your current settings have been loaded — edit any step and save to update.</div>';
+            prefillFromConfig(existingConfig);
+          }
         }
       } catch { }
+      finally {
+        await handleNexusAuthRedirect();
+      }
     })();
 
     function prefillFromConfig(cfg) {
@@ -1427,7 +1473,7 @@
             dmPolicy: "pairing",
             groupPolicy: "allowlist",
             groups: { "*": { requireMention: true } },
-            streaming: "partial",
+            streaming: { mode: "partial" },
           };
           if (telegramUsers) {
             config.channels.telegram.allowFrom = telegramUsers.split(",").map(s => s.trim()).filter(Boolean);
@@ -1596,13 +1642,18 @@
       <div class="subtitle">
         The gateway for AI builders who value privacy. Access top AI models through a single OpenAI-compatible API — filtered by privacy, speed, and reasoning level.
       </div>
+      <div class="nexus-auth-panel">
+        <button class="btn btn-primary" id="nexus-login-btn" onclick="startNexusLogin()">Login with Nexus &amp; create API key</button>
+        <div class="nexus-auth-note">Creates a Nexus API key for this OpenClaw instance and fills it below. <a href="https://nexus.dappnode.com/api-keys" target="_blank" rel="noopener" style="color:var(--primary)">Manage your keys</a>.</div>
+        <div class="nexus-auth-result" id="nexus-auth-result"></div>
+      </div>
       <div class="banner info" style="margin-bottom:1.25rem">
         <strong>Get 5&euro; in free credits</strong> to test private AI models &mdash; no commitment needed.<br>
-        Create your account at <a href="https://nexus.dappnode.com" target="_blank" rel="noopener" style="color:inherit;font-weight:600">nexus.dappnode.com</a>, buy credits or subscribe, then paste your API key below.
+        Create your account at <a href="https://nexus.dappnode.com" target="_blank" rel="noopener" style="color:inherit;font-weight:600">nexus.dappnode.com</a>, buy credits or subscribe, then use the login above or paste your API key below.
       </div>
       <div class="field">
         <label>Nexus API Key</label>
-        <div class="hint">Found in your Nexus account under API keys.</div>
+        <div class="hint">Use Nexus login above, or paste a key from your Nexus account under API keys.</div>
         <input type="password" id="api-key" placeholder="sk-xxx" value="${prefillKey}">
       </div>
       <button class="probe-btn" id="nexus-fetch-btn" onclick="fetchNexusModels()">
@@ -2094,22 +2145,22 @@
       const resultEl = document.getElementById("nexus-fetch-result");
 
       if (!apiKey) {
-        resultEl.innerHTML = '<div class="probe-result fail">Enter your API key first.</div>';
+        if (resultEl) resultEl.innerHTML = '<div class="probe-result fail">Enter your API key first.</div>';
         return;
       }
 
-      btn.disabled = true;
-      icon.textContent = "\u23F3";
-      resultEl.innerHTML = "";
+      if (btn) btn.disabled = true;
+      if (icon) icon.textContent = "\u23F3";
+      if (resultEl) resultEl.innerHTML = "";
 
       try {
         const resp = await fetch(`/api/nexus/models?apiKey=${encodeURIComponent(apiKey)}`);
         const data = await resp.json();
 
         if (!resp.ok) {
-          resultEl.innerHTML = `<div class="probe-result fail"><strong>Failed:</strong> ${data.error || "Unknown error"}</div>`;
-          btn.disabled = false;
-          icon.textContent = "\uD83D\uDD0D";
+          if (resultEl) resultEl.innerHTML = `<div class="probe-result fail"><strong>Failed:</strong> ${data.error || "Unknown error"}</div>`;
+          if (btn) btn.disabled = false;
+          if (icon) icon.textContent = "\uD83D\uDD0D";
           return;
         }
 
@@ -2123,9 +2174,9 @@
         }));
 
         if (models.length === 0) {
-          resultEl.innerHTML = '<div class="probe-result fail">No models found for this API key.</div>';
-          btn.disabled = false;
-          icon.textContent = "\uD83D\uDD0D";
+          if (resultEl) resultEl.innerHTML = '<div class="probe-result fail">No models found for this API key.</div>';
+          if (btn) btn.disabled = false;
+          if (icon) icon.textContent = "\uD83D\uDD0D";
           return;
         }
 
@@ -2134,20 +2185,101 @@
 
         const select = document.getElementById("model-select");
         if (select) {
+          const currentModel = select.value === "__custom"
+            ? (document.getElementById("custom-model") || {}).value
+            : select.value;
           select.innerHTML = models.map(m => `<option value="${m.id}">${m.name}</option>`).join("") +
             '<option value="__custom">Custom model...</option>';
-          select.value = models[0].id;
+          select.value = models.some(m => m.id === currentModel) ? currentModel : models[0].id;
           const customField = document.getElementById("custom-model-field");
           if (customField) customField.style.display = "none";
         }
 
-        resultEl.innerHTML = `<div class="probe-result ok"><strong>${models.length} model${models.length !== 1 ? 's' : ''} available</strong> — select one below.</div>`;
+        if (resultEl) resultEl.innerHTML = `<div class="probe-result ok"><strong>${models.length} model${models.length !== 1 ? 's' : ''} available</strong> — select one below.</div>`;
       } catch (err) {
-        resultEl.innerHTML = `<div class="probe-result fail">Network error: ${err.message}</div>`;
+        if (resultEl) resultEl.innerHTML = `<div class="probe-result fail">Network error: ${err.message}</div>`;
       }
 
-      btn.disabled = false;
-      icon.textContent = "\uD83D\uDD0D";
+      if (btn) btn.disabled = false;
+      if (icon) icon.textContent = "\uD83D\uDD0D";
+    }
+
+    function showNexusAuthResult(kind, message) {
+      const el = document.getElementById("nexus-auth-result");
+      if (!el) return;
+      el.textContent = message;
+      el.className = "nexus-auth-result " + (kind === "ok" ? "ok" : "fail");
+    }
+
+    function removeNexusAuthParams() {
+      const next = new URL(window.location.href);
+      for (const key of ["nexus_auth", "nexus_message", "nexus_result", "nexus_mode"]) {
+        next.searchParams.delete(key);
+      }
+      window.history.replaceState(null, "", next.pathname + next.search + next.hash);
+    }
+
+    function startNexusLogin() {
+      const btn = document.getElementById("nexus-login-btn");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Opening Nexus login...";
+      }
+      const current = new URL(window.location.href);
+      for (const key of ["nexus_auth", "nexus_message", "nexus_result", "nexus_mode"]) {
+        current.searchParams.delete(key);
+      }
+      current.searchParams.set("nexus_mode", wizardMode === "add-provider" ? "add-provider" : "update");
+      const returnTo = current.pathname + current.search + current.hash;
+      window.location.href = "/nexus/auth/start?returnTo=" + encodeURIComponent(returnTo || "/");
+    }
+
+    async function handleNexusAuthRedirect() {
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get("nexus_auth");
+      if (!status) return;
+
+      wizardMode = params.get("nexus_mode") === "add-provider" ? "add-provider" : "update";
+      if (existingConfig && existingConfig.models && existingConfig.models.providers && existingConfig.models.providers.nexus) {
+        const providerCfg = existingConfig.models.providers.nexus;
+        const models = providerCfg.models || [];
+        existingConfig._loadedProvider = "nexus";
+        existingConfig._loadedApiKey = providerCfg.apiKey || "";
+        existingConfig._loadedModelId = models.length > 0 ? models[0].id : "";
+      }
+      selectProviderCard("nexus");
+      goTo(1);
+
+      try {
+        if (status === "error") {
+          showNexusAuthResult("fail", params.get("nexus_message") || "Nexus login failed. Please try again.");
+          return;
+        }
+
+        const resultId = params.get("nexus_result");
+        if (!resultId) {
+          showNexusAuthResult("fail", "Nexus login finished without an API key result. Please try again.");
+          return;
+        }
+
+        showNexusAuthResult("ok", "Creating Nexus API key...");
+        const resp = await fetch("/api/nexus/auth/result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: resultId }),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) throw new Error(data.error || "Could not retrieve the generated Nexus API key");
+
+        const input = document.getElementById("api-key");
+        if (input) input.value = data.apiKey || "";
+        await fetchNexusModels();
+        showNexusAuthResult("ok", "Nexus API key created. Choose a model and continue.");
+      } catch (err) {
+        showNexusAuthResult("fail", err.message || "Nexus login failed. Please try again.");
+      } finally {
+        removeNexusAuthParams();
+      }
     }
 
     async function probeOllama() {
