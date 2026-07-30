@@ -28,6 +28,23 @@ ENV NODE_PATH=/usr/local/lib/node_modules
 
 ENV NODE_ENV=production
 
+# Install wacli (WhatsApp CLI) for the default OpenClaw wacli skill.
+ARG WACLI_VERSION="0.15.0"
+RUN ARCH=$(dpkg --print-architecture) && \
+    case "$ARCH" in \
+      amd64|arm64) WACLI_ARCH="$ARCH" ;; \
+      *) echo "Unsupported architecture: $ARCH" && exit 1 ;; \
+    esac && \
+    TARBALL="wacli_${WACLI_VERSION}_linux_${WACLI_ARCH}.tar.gz" && \
+    BASE_URL="https://github.com/openclaw/wacli/releases/download/v${WACLI_VERSION}" && \
+    curl -fsSL "${BASE_URL}/${TARBALL}" -o "/tmp/${TARBALL}" && \
+    curl -fsSL "${BASE_URL}/checksums.txt" -o /tmp/wacli_checksums.txt && \
+    grep "  ${TARBALL}$" /tmp/wacli_checksums.txt > /tmp/wacli_checksum.txt && \
+    (cd /tmp && sha256sum -c wacli_checksum.txt) && \
+    tar -xz -C /usr/local/bin -f "/tmp/${TARBALL}" wacli && \
+    chmod +x /usr/local/bin/wacli && \
+    rm "/tmp/${TARBALL}" /tmp/wacli_checksums.txt /tmp/wacli_checksum.txt
+
 # Install ttyd (web terminal) - static binary from GitHub releases
 # ttyd is not available in bookworm repos, so we download the pre-built binary
 RUN ARCH=$(dpkg --print-architecture) && \

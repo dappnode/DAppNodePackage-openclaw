@@ -104,6 +104,17 @@ fi
 # ---------------------------------------------------------------------------
 # Run doctor --fix for any remaining migrations not handled above
 # ---------------------------------------------------------------------------
+echo "Pruning stale OpenClaw session entries..."
+MAIN_SESSION_STORE="$OPENCLAW_DIR/agents/main/sessions/sessions.json"
+mkdir -p "$(dirname "$MAIN_SESSION_STORE")"
+OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw sessions cleanup --store "$MAIN_SESSION_STORE" --enforce --fix-missing || true
+if [ -d "$OPENCLAW_DIR/agents" ]; then
+    find "$OPENCLAW_DIR/agents" -mindepth 3 -maxdepth 3 -path "*/sessions/sessions.json" -print | while IFS= read -r SESSION_STORE; do
+        [ "$SESSION_STORE" = "$MAIN_SESSION_STORE" ] && continue
+        OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw sessions cleanup --store "$SESSION_STORE" --enforce --fix-missing || true
+    done
+fi
+
 echo "Running openclaw doctor --fix..."
 OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw doctor --fix || true
 
