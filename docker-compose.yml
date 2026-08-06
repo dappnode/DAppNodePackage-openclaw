@@ -15,6 +15,7 @@ services:
       NODE_ENV: production
       OPENCLAW_STATE_DIR: /home/node/.openclaw
       OPENCLAW_GATEWAY_TOKEN: openclaw
+      BRAVE_API_KEY:
     volumes:
       - openclaw_data:/home/node/.openclaw
       - openclaw_workspace:/home/node/.openclaw/workspace
