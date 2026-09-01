@@ -91,8 +91,8 @@
   "type": "service",
   "upstreamArg": "UPSTREAM_VERSION",
   "upstreamRepo": "openclaw/openclaw",
-  "upstreamVersion": "2026.7.1",
-  "version": "0.1.4",
+  "upstreamVersion": "2026.8.2",
+  "version": "0.1.5",
   "warnings": {
     "onRemove": "Removing this package will delete all your OpenClaw configuration, conversation history, and cached data. Make sure to create a backup first."
   }
