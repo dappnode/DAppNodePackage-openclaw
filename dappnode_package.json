@@ -91,12 +91,12 @@
   "type": "service",
   "upstream": [
     {
+      "arg": "UPSTREAM_VERSION",
       "repo": "openclaw/openclaw",
-      "version": "2026.7.1",
-      "arg": "UPSTREAM_VERSION"
+      "version": "2026.11.3"
     }
   ],
-  "version": "0.1.4",
+  "version": "0.1.5",
   "warnings": {
     "onRemove": "Removing this package will delete all your OpenClaw configuration, conversation history, and cached data. Make sure to create a backup first."
   }
