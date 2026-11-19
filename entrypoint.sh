@@ -16,12 +16,11 @@ if [ ! -f "$CONFIG_FILE" ]; then
     cat > "$CONFIG_FILE" << EOF
 {
   "gateway": {
+    "mode": "local",
     "port": 18789,
     "bind": "lan",
     "controlUi": {
-      "dangerouslyAllowHostHeaderOriginFallback": true,
-      "allowInsecureAuth": true,
-      "dangerouslyDisableDeviceAuth": true
+      "dangerouslyAllowHostHeaderOriginFallback": true
     },
     "auth": {
       "token": "${OPENCLAW_GATEWAY_TOKEN:-openclaw}"
@@ -42,14 +41,19 @@ try {
   let changed = false;
 
   // DAppNode gateway settings
+  if (!gw.mode) { gw.mode = 'local'; changed = true; }
   if (gw.port !== 18789) { gw.port = 18789; changed = true; }
   if (gw.bind !== 'lan') { gw.bind = 'lan'; changed = true; }
   if (!('dangerouslyAllowHostHeaderOriginFallback' in cui) && !('allowedOrigins' in cui)) {
     cui.dangerouslyAllowHostHeaderOriginFallback = true;
     changed = true;
   }
-  if (!('allowInsecureAuth' in cui)) { cui.allowInsecureAuth = true; changed = true; }
-  if (!('dangerouslyDisableDeviceAuth' in cui)) { cui.dangerouslyDisableDeviceAuth = true; changed = true; }
+  // Removed upstream: allowInsecureAuth is now an unknown key (makes the whole config
+  // invalid) and dangerouslyDisableDeviceAuth is inert. Control UI browsers pair
+  // through the device flow, which works over plain HTTP.
+  for (const key of ['allowInsecureAuth', 'dangerouslyDisableDeviceAuth']) {
+    if (key in cui) { delete cui[key]; changed = true; }
+  }
   if (auth.token !== envToken) { auth.token = envToken; changed = true; }
 
   function isObject(value) {
@@ -172,7 +176,7 @@ OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw doctor --fix || true
 # Ensure WhatsApp plugin is installed (from npm, no interactive prompts)
 # ---------------------------------------------------------------------------
 echo "Ensuring WhatsApp plugin is installed..."
-if ! OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw plugins list 2>/dev/null | grep -q "@openclaw/whatsapp"; then
+if [ ! -d "$OPENCLAW_DIR/extensions/whatsapp" ]; then
     OPENCLAW_STATE_DIR="$OPENCLAW_DIR" openclaw plugins install @openclaw/whatsapp || true
 fi
 
