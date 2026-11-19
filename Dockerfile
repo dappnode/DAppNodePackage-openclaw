@@ -1,6 +1,6 @@
 ARG UPSTREAM_VERSION="latest"
 
-FROM node:22-bookworm
+FROM node:24-bookworm
 
 # Install Bun (required by openclaw at runtime) and sudo (needed by openclaw tool executor)
 RUN curl -fsSL https://bun.sh/install | bash && \
