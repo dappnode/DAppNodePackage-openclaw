@@ -93,7 +93,7 @@
     {
       "arg": "UPSTREAM_VERSION",
       "repo": "openclaw/openclaw",
-      "version": "2026.11.3"
+      "version": "v2026.11.8"
     }
   ],
   "version": "0.1.5",
